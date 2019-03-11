@@ -1,0 +1,528 @@
+
+
+    --------------------------   js_chart   ----------------------------
+      (c) 2019 SpeedBit, reg. Czestochowa, Poland 
+    --------------------------------------------------------------------
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Contents:
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  0. Revision
+  1. The js_chart class - short description
+  2. Structure of js_chart class
+  3. Description of the js_chart class
+  4. Properties of the js_chart class (109 items) 
+  5. A short summary of the file js_rnd_demo.js content - a description of the debug function
+  6. The minimum html file needed to run the graph - example
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  0. Revision
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  1.0  12-03-2019  First release
+  
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  1. The js_chart class - short description
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  - any number of charts on the website - we create as much as needed by new js_chart (chart_container, ...);
+  - automatic or manual Y axis scaling
+  - the possibility of describing the X and Y axes and defining their appearance, color, font, etc.
+  - possibility to automatically scale the Y axis for numbers smaller than one
+  - possibility to predefine any number of chart styles (for line, area, bar chart) and their private parameters
+  - the possibility of choosing styles from:
+      - line chart (any quantity limited only by the readability of the chart)
+      - area chart (any quantity limited only by the readability of the chart)
+      - bar graph (any quantity limited only by the readability of the chart)
+  - big possibilities of styles configuration for each chart
+  - the ability to plot Bezier curves instead of straight lines (smoothing the chart) - available configuration parameters
+  - the possibility of own description of the X axis or work without this description - then the data is automatically numbered from 1
+  - automatic detection of inserting a bar chart and adapting the chart to this style (X offset)
+  - after inserting the bar chart, the marker field including all bars and other data is additionally displayed
+  - practically unlimited amount of data to display only limited by the legibility of the chart
+  - possibility to display the range of data from the table [from..do] or a specific number of them (zoom)
+  - possibility of shift the chart to the left and right (if the data range is displayed)
+  - possibility to update data at any time
+  - possibility to display data with missing data in them (null value - holes in the graph)
+  - a large number of global configuration parameters
+  - onClick mouse event handling (displays the value of the data clicked)
+  - onMouseMove mouse event handling (displays all data values ??for a specific cursor location relative to the X axis)
+  - flexible hint configuration in events (start / stop options, colors, lines and other parameters)
+
+  Additionally:
+  - included function to generated random values for chart ??and a code in html to quickly determine if this code matches expectations
+  - a small own contribution to running the graph
+  - the ability to generate data in embedded systems (just define styles in html and enter data from the system as a sequence of numbers)
+  - small and light code so it is possible to insert it into embedded servers
+  - examples of style and data definitions attached
+  - attached example of use on the website
+  
+  Handling the graph with the mouse and keyboard:
+  - [small hint] clicking the left mouse button on the values of a particular chart - a small hint with parameters and data
+  - [cross and big hint] pressing the CTRL key - a cross of coordinates and a large hint with the values of the graph for a given X coordinate
+  - [cross and big hint] pressing both mouse buttons at the same time - switch on / off the coordinates cross and a large hint
+  - [points on graph] pressing the right mouse button 3 times (default) - switch on / off points on the graph values
+  - [zoom      ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the right (select) - zooming the graph (graph of the selected values)
+  - [undo zoom ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the left (undo zoom) - a graph with all values
+  - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  2. Structure of js_chart class
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  class js_chart {
+    constructor(container, Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) // initialize chart engine with data
+    update(                Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) // put new data into chart engine
+    left()                                                           // if is zoom then shift chart to left
+    right()                                                          // if is zoom then shift chart to right 
+    draw_FromTo(from, to)                                            // draw chart from index to index of data (zoom)
+    draw_FromCount(from, cnt)                                        // draw chart from index from to from plus number of data (zoom)
+    undozoom()                                                       // undo zoom - show all data
+    clear()                                                          // clear chart
+    redraw()                                                         // the same as draw()
+    draw()                                                           // draw chart
+    make_chart()                                                     // internal, main function of the chart engine
+  }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 3. Description of the js_chart class
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //--------------------------------------------------------------------------
+  //  constructor( container, Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) 
+  //--------------------------------------------------------------------------
+      Initializes all chart parameters, sets the chart data.
+      ------------------------------------------------------
+            parameter 1: container (html)
+            ------------------------------
+                              Chart container. Enter the id of the created container, which will be the parent of the chart. 
+                              Parameters such as location and dimensions can be set directly in the html code.
+                              The dimensions of the chart are the same as the container.
+
+            parameter 2: Ydata
+            ------------------------------
+                              Array of data tables containing a series of data for the chart. Each series of data is placed in a separate table.
+                              data_1 = [ d1_1, d1_2, d1_3, d1_4, d1_5, ... ];
+                              data_2 = [ d2_1, d2_2, d2_3, d2_4, d2_5, ... ];
+                              data   = [data_1, data_2];
+
+            parameter 3: Ystyle
+            ------------------------------
+                              Array od tables containing a strings with parameters defining how to draw char 
+                              Each data series must have its own style. 
+                              Minimal content table of style is a chart type: ["type = line"] or ["type = area"] or ["type = bar"]. 
+                              It's also good to set the color of the chart ;-)
+
+            parameter 4: Xdesc
+            ------------------------------
+                              Array of strings of x-axis descriptions e.g. ["Monday", ... , "Saturday"]
+                              The X axis can have its own description. We pass it as this parametr - string table, one string for each x-axis marker. 
+                              The number of strings should be identical to the amount of data in the data tables.
+                              You can specify a null value instead of the description table - then the X-axis markers will be numbered automatically 
+                              desc1 = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "November", "December"];
+                              desc2 = ["00:00", "00:15", "00:30", "00:45", "01:00", "00:15", ... ];
+                              desc = desc1;
+
+            parameter 5: XaxisTxt
+            ------------------------------
+                              
+                              
+
+            parameter 6: YaxisTxt
+            -----------------------------
+                              
+                              
+
+  //--------------------------------------------------------------------------
+  //  update(Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt)
+  //--------------------------------------------------------------------------
+      Sets new data for the chart. Draw the chart.
+      ------------------------------------------------------
+          Parameters are the same as in initialize (without container parameter).
+
+
+
+  //--------------------------------------------------------------------------
+  //  left()
+  //--------------------------------------------------------------------------
+      If is zoom then shift chart to left. Draw the chart.
+
+
+
+  //--------------------------------------------------------------------------
+  //  right()
+  //--------------------------------------------------------------------------
+      If is zoom then shift chart to right. Draw the chart.
+
+
+
+  //--------------------------------------------------------------------------
+  //  draw_FromTo(from, to)
+  //--------------------------------------------------------------------------
+      draw chart from index to index of data (zoom). Draw the chart.
+            parameter 1: from
+            ------------------------------
+                              First index of data to draw.
+            parameter 2: to
+            ------------------------------
+                              Last index of data to draw.
+                              Minimum of 2 more than the 'from' index (minimum 2 points to draw)
+
+
+
+  //--------------------------------------------------------------------------
+  //  draw_FromCount(from, cnt)
+  //--------------------------------------------------------------------------
+      draw chart from index from to from plus number of data (zoom).Draw the chart.
+            parameter 1: from
+            ------------------------------
+                              First index of data to draw.
+            parameter 2: cnt
+            ------------------------------
+                              Number point to draw.
+                              Minimum 2 points to draw.
+
+
+
+  //--------------------------------------------------------------------------
+  //  undozoom()
+  //--------------------------------------------------------------------------
+      Undo zoom - show all data. Draw chart.
+
+
+  //--------------------------------------------------------------------------
+  //  clear()
+  //--------------------------------------------------------------------------
+      Clear the chart area. Sometimes it can be useful.
+
+  //--------------------------------------------------------------------------
+  //  redraw()
+  //--------------------------------------------------------------------------
+      The same as draw()
+
+
+  //--------------------------------------------------------------------------
+  // draw()
+  //--------------------------------------------------------------------------
+      Draw the chart.
+
+
+  //--------------------------------------------------------------------------
+  //  make_chart()
+  //--------------------------------------------------------------------------
+      Internal, main function of the chart engine.
+      Do not call from the outside class!
+
+
+
+    ----------------------------------------------------------------------------------------------
+    Full style for every chart type. Not every item must be included, RGBA data my be changed)
+    ----------------------------------------------------------------------------------------------
+
+      line_style=["type="        + "line", 
+                  "linecolor="   + "rgba(255, 250, 0, 1.0)", 
+                  "linewidth="   + "1" ,
+                  "points="      + "false",  
+                  "pointsize="   + "5", 
+                  "pointcolor="  + "rgba(255, 250, 0, 0.6)",
+                  "beziercurve=" + "true", 
+                  "beziercnst="  + "3" ];
+    
+      bar_style = ["type="       + "bar", 
+                  "linecolor="  + "rgba(0, 255, 250, 1.0)", 
+                  "fillcolor="  + "rgba(0, 255, 250, 0.6)", 
+                  "linewidth="  + "1",
+                  "points="     + "false",  
+                  "pointsize="  + "5", 
+                  "pointcolor=" + "rgba(0, 255, 250, 0.3)"];
+                
+      area_style=["type="        + "area", 
+                  "linecolor="   + "rgba(250, 0, 250, 1.0)",
+                  "fillcolor="   + "rgba(250, 0, 250, 0.6)",
+                  "linewidth="   + "1", 
+                  "points="      + "false", 
+                  "pointsize="   + "5", 
+                  "pointcolor="  + "rgba(250, 0, 250, 0.3)",
+                  "beziercurve=" + "true",
+                  "beziercnst="  + "3" ];
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 4. Properties of the js_chart class (109 items) - short description:
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    name              |  description                                                         | default value
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // events on / off
+    onmouseclick      |  mouse click event on/off                                            |  true
+    onmousemove       |  mose move event on/off                                              |  true
+    ontouchmove       |  touch move event on/off                                             |  true
+    onmousedown       |  mouse down event on/off                                             |  true
+    onmouseup         |  mouse up event on/off                                               |  true
+    onkeydown         |  key down event on/off                                               |  true
+    onkeyup           |  key up event on/off                                                 |  true
+    oncontext         |  block context menu event on/off (turn off context memu)             |  true
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    axisXtxt          |  axis X description                                                  |  "x"
+    axisYtxt          |  axis Y description                                                  |  "y"
+    Ymax              |  Xmin or 0 for auto                                                  |   0
+    Ymin              |  Ymin or 0 for auto                                                  |   0
+    decimalX          |  decimal point X-axis                                                |   0
+    decimalY          |  decimal point Y-axis                                                |   0
+    // margins
+    margv             |  vertical margin                                                     |  15
+    margh             |  horizontal margin                                                   |  35
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // canvas background
+    canvasbkcol       |  canvas background color                                             |  "rgba(250, 250, 170, 0.4)"
+    canvasfrw         |  canvas frame width                                                  |   2
+    canvasfrcol       |  canvas frame color                                                  |  "rgba(  0,   0, 255, 1)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // markers
+    marw              |  width of marker                                                     |   8
+    drawaxis          |  draw axis ?                                                         |  true
+    drawarrow         |  draw axis arrows ?                                                  |  true
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // axes & arrows & description
+    al                |  arrow length                                                        |  18
+    aw                |  arrow width                                                         |   9
+    axcol             |  axis color                                                          |  "rgba(  0,   0,   0, 1)" 
+    axw               |  axis width                                                          |   2
+    axisdesc          |  draw description of axis ?                                          |  true
+    axdesccol         |  axis description color                                              |  "rgba(  0, 100, 200, 1)"
+    drawdesc          |  draw values ?                                                       |  true
+    dgroup            |  use group digits                                                    |  true
+    drawmark          |  draw markers ?                                                      |  true
+    descol            |  description / markers color                                         |  "rgba(  0,   0, 255, 1)"
+    descfpx           |  font size for description                                           |  15
+    descfontmod       |  font modifier                                                       |  " italic "
+    descfont          |  description font                                                    |  "px Courier New"
+    rotdescX          |  rotate the x-axis description 90 degrees                            |  true
+    drw0x             |  draw zero value X-axis                                              |  true
+    drw0y             |  draw zero value Y-axis                                              |  false
+    hmarshift         |  move X markers by 1/2 sie (for bars its better)                     |  false
+    addmaxmarg        |  additional margin from max value to border                          |  0.03;  // 0 = none, 0,01 = 1% of max value
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // mesh
+    drawmesh          |  draw mesh ?                                                         |  true
+    mshcol            |  mesh color                                                          |  "rgb(200, 200, 200, 0.7)" 
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // draw zone (for test)
+    drawzone          |  draw zone ?                                                         |  true
+    drawzfrm          |  draw zone frame ?                                                   |  true
+    drwfracol         |  draw zone frame color                                               |  "rgba(150,   0,   0, 0.5)"
+    drwfilcol         |  draw zone fill color                                                |  "rgba(250, 250, 250, 0.3)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // cross & hint	style
+    crXYline          |  cross                                                               |  true
+    crXjump           |  jump on X markers                                                   |  false
+    crYjumpM          |  jump on Y markers                                                   |  false
+    crYjumpP          |  jump on Y values                                                    |  true
+    crHint            |  show hint                                                           |  true
+    crpointhint       |  show arc hint                                                       |  true
+    crpointfill       |  arc hint color                                                      |  true
+    crlinetomouse     |  draw line to mouse cursor                                           |  false
+    crlinetosmallhint |  draw line to small rectangle hint (onclick)                         |  true
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // cross lines
+    crlinecol         |  color of cross lines                                                |  "rgb(  0,   0, 255)"
+    crlinewidth       |  width of cross lines                                                |   1
+    crXlinedash       |  dash of cross line X                                                |  [7, 7]
+    crYlinedash       |  dash of cross line Y                                                |  [7, 7]
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // hint text
+    hintwithctrl      |  hint only when ctrl key is pressed                                  |  true
+    hintfillcol       |  hint rectangle fill color                                           |  "rgba(150, 200, 150, 0.7)"
+    hintframewidth    |  hint rectangle line width                                           |   3
+    hintrectcol       |  hint rectangle line color                                           |  "rgba( 50,  50,  50, 0.7)"
+    hintfpx           |  hint font size                                                      |  11;
+    hintfontmod       |  font modifier                                                       |  " italic "
+    hintfont          |  hint font                                                           |  "px Courier New"
+    hinttxtcol        |  hint text color                                                     |  "rgb (  0,   0,  50)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // hint data point
+    hintpointw        |  hint point width                                                    |   5
+    hintlinecol       |  hint frame color                                                    |  "rgba( 50,  50,  50, 1)"
+    hintpointfill     |  hint frame fill color                                               |  "rgba( 50,  50, 150, 0.5)"
+    hintpointlwdth    |  hint point line width                                               |   1
+    hintlinetoMcol    |  hint line to mouse color                                            |  "rgba(250,   0,   0, 1)"
+    hintlinetoMwidth  |  hint line to mouse width                                            |   0.5
+    hintmaxalpha      |  hint fill alpha set to max (1)                                      |  false
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // hint shadow
+    hintdatashadow    |  hint data shadow ? (only if any bar chart exists)                   |  true
+    hintshadowcol     |  hint data shadow color                                              |  "rgba(150, 150, 150, 0.2)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // default line graph
+    linecol           |  chart line color                                                    |  "rgba(250,   0,   0, 0.6)"
+    linewidth         |  chart line width                                                    |   2
+    linepoints        |  points on chart line ?                                              |  false
+    linepointsize     |  points size                                                         |   4
+    linepointcol      |  points color                                                        |  "rgba(250,   0,   0, 0.7)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // default area graph
+    arealine          |  area chart line color                                               |  "rgb (250,   0, 250)"
+    areafill          |  area chart fill color                                               |  "rgba(250,   0, 250, 0.3)"
+    areawidth         |  area line width                                                     |   2
+    areapoints        |  points on area line ?                                               |  false
+    areapointsize     |  area point size                                                     |   5
+    areapointcol      |  area point color                                                    |  "rgb (250,   0, 250)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // default bezier curve for line and area graph
+    beziercurve       |  bezier curve or normal line ?                                       |  true
+    beziercnst        |  bezier coefficient                                                  |   3
+    bezierlvloff      |  global level auto off bezier curve                                  |   3;   // if data points number for one X markers > bezierlvloff 
+                                                                                                      // then bezier curve will be off. Value -1 block this feature. Optimal value is 3
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // default bar graph
+    barline           |  bar line color                                                      |  "rgb (  0, 250, 250)"
+    barfill           |  bar fill color                                                      |  "rgba(  0, 250, 250, 0.3)"
+    barlw             |  bar line width                                                      |   1
+    barpoints         |  points on bars ?                                                    |  false
+    barpointsize      |  bar point size                                                      |   5
+    barpointcol       |  bar point color                                                     |  "rgba(  0, 250, 250, 0.3)"
+    barperc           |  percent filling bar markers                                         |   0.75
+    bigmax            |  above this number, all data will be converted to the decimal power  |  10000
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // for a partial chart (from the scope of data)
+    allmaxmin         |  true = auto from scope, false = auto from all data                  |  true    // (if Ymax or Ymin  != 0 => these values will be constans)
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // mouse multi click - on/off points for all draws (mouse rigth key)
+    multimsdown       |  on/off points for all draws                                         |  true
+    multimsdowncnt    |  number cliks for points switch                                      |  3
+    multimstout       |  timeout for points switch in ms                                     |  1000
+    multimsdowncol    |  color for points switch                                             |  "rgba(0, 0, 0, 0.15)"
+    // shedow when select zoom
+    hintselectshadow  |  on/off select shadow                                                |  true
+    hintselectcol     |  select shadow color                                                 |  "rgba(0, 0, 0, 0.3)"
+    // shift chart left/rigth by moouse left click (if zoomed)
+    mouseclickLR      |  on/off shift                                                        |  true
+    LRsize            |  click area (left and right) - fraction of the entire chart area     |  1/5 = 0.2 => 20%
+    hintzoomcol       |  color of the shift click area                                       |  "rgba(0, 250, 0, 0.15)"
+    undozoompx        |  the number of pixels to move the mouse to the left to undo the zoom | 20
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 5. A short summary of the file js_rnd_demo.js content - a description of the debug function
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ ------------------------------------------------------
+  miscellaneous (additional) functions - only for debug
+ ------------------------------------------------------
+
+  function debug(s)                            // places debug text to span id="debug" in html file
+  function debug1(s)                           // places debug text to span id="debug1" in html file
+  function debug2(s)                           // places debug text to span id="debug2" in html file
+
+  function set_random_data_array(array)        // set random data in given array. Parameters for genering random data are inside this function.
+
+  function getRndRGBColor(alpha)               // Makes a random color from the RGB palette. Returns the string "rgb(r, g, b)". 
+                                               // If a paramter is given and this is additionally returned the value of alpha - "rgba(r, g, b, a)";
+
+  function changeRGBAalpha(rgba, alpha)        // changes the alpha parameter in the string "rgba (r, g, b, a)" to the given value
+
+  function generate_random_data()              // randomly generates several data tables and several chart styles. Used only to create random data to display a demo chart.
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 6. The minimum html file needed to run the graph - example
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Embedded JavaScript Chart by SpeedBit (c)</title>
+    <style>body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; } </style>
+    <!-- load script file -->
+    <script type="text/javascript" src="js_chart.js"></script>
+  </head>
+  
+  <script>
+    // here we are preparing chart data ...
+    var chart_container = "container";
+    // here we are preparing chart data value (they can come e.g. from an embedded system)
+    mydata_1= [ 0,  4, 5,  25, 25, 30, 18, 12, 24,  26,  0, -12, -15, -14, -12, 0,  0,  3,  1,  0,  3,  12,  7, 10];
+    mydata_2= [26, -2, 3, -10,  0,  5, -7, -9,  5,  25, 20,  25,  21,   6, 12,  8, 14,  0, -6, -5, -12, -10, 0, 20];
+    mydata_3= [ 3,  2, 8,  13,  3, -5, -1, 15,  6, -12, 15,   5,  -5,  16, 12, 28, 18, 20, 16, 25,  16,  -3, 5,  2];
+    // here we are preparing chart styles
+    myarea_1=["type=bar" , "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.3)", "linewidth=1", "beziercurve=true"];
+    myarea_2=["type=area", "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.3)", "linewidth=1", "beziercurve=true"];
+    myarea_3=["type=line", "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.3)", "linewidth=1", "beziercurve=true"];
+    // insert data and styles into tables that will be passed to the chart
+    style = [myarea_1, myarea_2, myarea_3];
+    data  = [mydata_1, mydata_2, mydata_3];
+    // description of X axis
+    desc  = ["00:00", "00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00", "02:15", "02:30", "02:45", 
+            "03:00", "03:15", "03:30", "03:45", "04:00", "04:15", "04:30", "04:45", "05:00", "05:15", "05:30", "05:45"];
+  </script>
+  
+  <body onresize="chart.draw()">    
+    <h3><center>js_chart by the SpeedBit</h3>
+    
+    <script>
+      // make container for chart data 
+      document.write("<center><div id='" + chart_container + "' style='width: 90%; height: 80%; position: relative'></div>");
+      // chart creating
+      var chart = new js_chart(chart_container, data, style, desc, "time of day", String.fromCharCode(176)+"C" );
+      // setting chart parameters
+      chart.descfpx = 15;
+      chart.hintfpx = 11;
+      chart.decimalY = 1;
+      // draw this chart
+      chart.draw();
+    </script>
+
+    <p><center>Enjoy :-) </p>
+  </body>
+</html>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+

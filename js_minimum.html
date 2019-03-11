@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Embedded JavaScript Chart by SpeedBit (c)</title>
+    <style>body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; } </style>
+    <!-- load script file -->
+    <script type="text/javascript" src="js_chart.js"></script>
+  </head>
+  
+  <script>
+    // here we are preparing chart data ...
+    var chart_container = "container";
+    // here we are preparing chart data value (they can come e.g. from an embedded system)
+    mydata_1= [ 0,  4, 5,  25, 25, 30, 18, 12, 24,  26,  0, -12, -15, -14, -12, 0,  0,  3,  1,  0,  3,  12,  7, 10];
+    mydata_2= [26, -2, 3, -10,  0,  5, -7, -9,  5,  25, 20,  25,  21,   6, 12,  8, 14,  0, -6, -5, -12, -10, 0, 20];
+    mydata_3= [ 3,  2, 8,  13,  3, -5, -1, 15,  6, -12, 15,   5,  -5,  16, 12, 28, 18, 20, 16, 25,  16,  -3, 5,  2];
+    // here we are preparing chart styles
+    myarea_1=["type=bar" , "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.3)", "linewidth=1", "beziercurve=true"];
+    myarea_2=["type=area", "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.3)", "linewidth=1", "beziercurve=true"];
+    myarea_3=["type=line", "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.3)", "linewidth=1", "beziercurve=true"];
+    // insert data and styles into tables that will be passed to the chart
+    style = [myarea_1, myarea_2, myarea_3];
+    data  = [mydata_1, mydata_2, mydata_3];
+    // description of X axis
+    desc  = ["00:00", "00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00", "02:15", "02:30", "02:45", 
+             "03:00", "03:15", "03:30", "03:45", "04:00", "04:15", "04:30", "04:45", "05:00", "05:15", "05:30", "05:45"];
+  </script>
+  
+  <body onresize="chart.draw()">    
+    <h3><center>js_chart by the SpeedBit</h3>
+    
+    <script>
+      // make container for chart data 
+      document.write("<center><div id='" + chart_container + "' style='width: 90%; height: 80%; position: relative'></div>");
+      // chart creating
+      var chart = new js_chart(chart_container, data, style, desc, "time of day", String.fromCharCode(176)+"C" );
+      // setting chart parameters
+      chart.descfpx = 15;
+      chart.hintfpx = 11;
+      chart.decimalY = 1;
+      // draw this chart
+      chart.draw();
+    </script>
+    <br>
+    <p><center>Enjoy :-) </p>
+  </body>
+</html>

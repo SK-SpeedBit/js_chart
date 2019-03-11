@@ -1,0 +1,204 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">    
+    <meta charset="utf-8">    
+    <!-- <meta http-equiv="refresh" content="10">  -->
+    <title>Embedded Javascript Chart by SpeedBit (c)</title>    
+    <style>body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; } </style>  
+    <style> td { border: 0px solid black; } </style>
+    <style> table { width: 90%; height: 300; border: 2px solid blue; border-spacing: 3px;} </style>
+    
+    <!-- load script file -->
+    <script type="text/javascript" src="js_chart.js"   ></script>
+    <script type="text/javascript" src="js_rnd_demo.js"></script>
+  </head>  
+  
+  <script>
+    // here we are preparing chart data ...
+    var chart_container = "container";
+    // here we are preparing chart data value (they can come e.g. from an embedded system)
+    mydata_1= [ 0,  4, 5,  25, 25, 30, 18, 12, 24,  26,  0, -12, -15, -14, -12, 0,  0,  3,  1,  0,  3,  12,  7, 10];
+    mydata_2= [26, -2, 3, -10,  0,  5, -7, -9,  5,  25, 20,  25,  21,   6, 12,  8, 14,  0, -6, -5, -12, -10, 0, 20];
+    mydata_3= [ 3,  2, 8,  13,  3, -5, -1, 15,  6, -12, 15,   5,  -5,  16, 12, 28, 18, 20, 16, 25,  16,  -3, 5,  2];
+    // here we are preparing chart styles
+    mystyle_B1=["type=bar" , "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.3)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_B2=["type=bar" , "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.3)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_B3=["type=bar" , "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.3)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_A1=["type=area", "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.2)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_A2=["type=area", "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.2)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_A3=["type=area", "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.2)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_L1=["type=line", "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.3)", "linewidth=1", "beziercurve=true"];
+    mystyle_L2=["type=line", "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.3)", "linewidth=1", "beziercurve=true"];
+    mystyle_L3=["type=line", "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.3)", "linewidth=1", "beziercurve=true"];
+    // insert data and styles into tables that will be passed to the chart
+    style = [mystyle_B1, mystyle_A1, mystyle_L1];
+    data  = [mydata_1, mydata_2, mydata_3];
+    desc  = ["00:00", "00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00", "02:15", "02:30", "02:45", 
+             "03:00", "03:15", "03:30", "03:45", "04:00", "04:15", "04:30", "04:45", "05:00", "05:15", "05:30", "05:45"];
+  </script>
+
+  <body onresize="redrawAll()">    
+    <h3><center>js_chart by the SpeedBit</h3>    
+
+    <center><table>
+    <tr>
+      <td>
+     		<div id="chart1" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Area graph demo
+      </td>
+    </tr>
+    <tr>
+      <td>
+     		<div id="chart2" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Line graph demo
+      </td>
+    </tr>
+    <tr>
+      <td>
+     		<div id="chart3" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Bar graph demo
+      </td>
+    </tr>
+    </table>
+
+    <br>
+
+
+    <script>
+      var dr1 = new js_chart('chart1', [mydata_1, mydata_2, mydata_3], [mystyle_A1, mystyle_A2, mystyle_A3], null, "day", "$" );
+      var dr2 = new js_chart('chart2', [mydata_1, mydata_2, mydata_3], [mystyle_L1, mystyle_L2, mystyle_L3], desc, "t", "mA" );
+      var dr3 = new js_chart('chart3', [mydata_1, mydata_2, mydata_3], [mystyle_B1, mystyle_B2, mystyle_B3], null, "month", "MB" );
+      
+      dr1.crHint   = false;
+      dr1.crYjumpM = false;
+      dr1.crYjumpP = false;
+      dr1.crXjump  = false;
+      //dr1.crpointhint   = false;
+      //dr1.crlinetomouse = true;
+      dr1.hintwithctrl = false;
+      dr1.draw();
+      
+      dr2.crHint   = true;
+      dr2.crYjumpM = true;
+      dr2.crYjumpP = true;
+      dr2.crXjump  = true;
+      //dr2.crpointhint   = false;
+      //dr2.crlinetomouse = true;
+      dr2.hintwithctrl = false;
+      dr2.draw();
+      
+      dr3.crHint   = true;
+      dr3.crYjumpM = false;
+      dr3.crYjumpP = false;
+      dr3.crXjump  = false;
+      //dr3.crpointhint  = false;
+      dr3.crlinetomouse= true;
+      dr3.hintwithctrl = false;
+      dr3.hintlinetoMwidth = 1;
+      dr3.hintmaxalpha = true;
+			dr3.crXYline =false;
+      dr3.draw();
+    
+      // make container for chart data 
+      document.write("<center><div id='" + chart_container + "' style='z-index: 1; width: 90%; height: 80%; position: relative'></div>");
+      // do chart
+      var dr = new js_chart(chart_container, data, style, desc, "time of day", String.fromCharCode(176)+"C" );
+      var maxdrlength = dr.alldatalength;
+      dr.descfpx = 15;
+      dr.hintfpx = 11;
+      dr.decimalY = 1;
+      dr.draw();
+      
+      
+
+      function redrawAll() {
+        dr1.draw()
+        dr2.draw()
+        dr3.draw()
+        dr.draw()
+      }
+        
+      function drawFT() {
+        from = parseInt(document.getElementById("from").value); 
+        to   = parseInt(document.getElementById("to"  ).value);
+        if (dr) dr.draw_FromTo(from, to);
+      }
+      
+      function drawFC() {
+        from = parseInt(document.getElementById("from2").value); 
+        cnt  = parseInt(document.getElementById("size2").value);
+        if (dr) dr.draw_FromCount(from, cnt);
+      }
+      
+      function undozoom(){
+        if (dr) dr.undozoom();
+      }
+      
+      function left() {
+        if (dr) dr.left();
+      }
+      
+      function right() {
+        if (dr) dr.right();
+      }
+
+      var interval;
+      function anim() {
+        if ((interval) || (interval != null)) {
+          clearInterval(interval);
+          interval = null;
+          return;
+        }
+        var dir = true;
+        interval= setInterval(function() {
+                    if (dir)
+                      if (dr.to < dr.alldatalength) dr.right(); else dir = false;
+                    else
+                      if (dr.from > 0) dr.left();  else dir = true;
+                  }, 250);    
+      }
+
+      function random() {
+        generate_random_data(); 
+        dr.update(demodata, demostyle, null);
+      }
+      // scroll top...
+      document.body.scrollTop = 0;
+    </script>	
+    <br>
+    <p> If is zoom then: <button onclick="left()" > Shift chart to left </button> 
+                         <button onclick="right()"> Shift chart to right </button> 
+                         <button onclick="anim()" > Animate on/off</button> 
+    </p>
+    <p> From: <input id = "from" type = "number" value = "0" min = 0 max = "50" size = "2" />  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        to:    <input id = "to"   type = "number" value = "0" min = 0 max = "50" size = "2"/> 
+               <button onclick="drawFT()">Chart: From - To</button> 
+    <br>From:  <input id = "from2" type = "number" value = "0" min = 0 max = "50" size = "2" />  
+        count: <input id = "size2" type = "number" value = "0" min = 0 max = "50" size = "2"/> 
+               <button onclick="drawFC()">Chart: From - Cnt</button> 
+    <br>
+    <button onclick="undozoom()"> Undo zoom </button>
+    </p>
+    Make big chaos ;-) 
+    <button onclick="random()">Set random data</button> 
+
+    <p><center>Enjoy :-) </p>  
+    
+  </body>
+</html>
