@@ -9,10 +9,8 @@ The size of the js_chart file:
 You can also reduce the file by removing eg automatic scaling.
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  The js_chart class - short description
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+The js_chart class - short description
+===========================================
   - any number of charts on the website - we create as much as needed by new js_chart (chart_container, ...);
   - automatic or manual Y axis scaling
   - the possibility of describing the X and Y axes and defining their appearance, color, font, etc.
