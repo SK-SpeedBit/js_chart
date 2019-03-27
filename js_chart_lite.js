@@ -1,5 +1,5 @@
 /*
-    --------------------   js_chart_lite ver. 1.0  ---------------------
+    -----------------------   js_chart ver. 1.1  -----------------------
       (c) 2019 SpeedBit, reg. Czestochowa, Poland 
     --------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
@@ -71,6 +71,7 @@ class js_chart {
     // mesh
     this.drawmesh    = true;  // draw mesh ?
     this.mshcol      = "rgb(200,200,200, 0.7)"; // mesh color 
+    this.meshlw      =  1;    // mesh line width
     // draw zone (for test)
     this.drawzone    = true;  // draw zone ?
     this.drawzfrm    = true;  // draw zone frame ?
@@ -104,6 +105,7 @@ class js_chart {
     this.hintpointw      = 5;                       // hint point width
     this.hintlinecol     = "rgba(50, 50, 50, 1)";   // hint frame color
     this.hintpointfill   = "rgba(50, 50, 150, 0.5)";// hint frame fill color
+    this.hintpointcolfromdraw = true;               // hint point fill color from draw 
     this.hintpointlwdth  = 1;                       // hint point line width
     this.hintlinetoMcol  = "rgba(250, 0, 0, 1)";    // hint line to mouse color
     this.hintlinetoMwidth= 0.5;                     // hint line to mouse width
@@ -503,8 +505,20 @@ class js_chart {
         // first data
         if (x0def && !lastdef) {
           self.ctx.beginPath();
-          self.ctx.moveTo(x, y);
-          self.ctx.lineTo(x, y);
+					if (x1def) {
+						self.ctx.moveTo(x, y);
+						self.ctx.lineTo(x, y);
+					}
+					else {
+						self.ctx.save;
+						self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+						self.ctx.fillStyle   = locpointcolor;
+						self.ctx.beginPath();
+						self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[i + self.from * self.zoom] * self.wght * self.dcorr, locpointsize, 0, 2 * Math.PI);
+						self.ctx.stroke();
+						self.ctx.fill();
+						self.ctx.restore;
+					}
         }	
         // middle data
         if (x0def && x1def) {
@@ -516,6 +530,7 @@ class js_chart {
           else
             self.ctx.lineTo(x, y);
         }
+
         // last data
         if (x0def && !x1def) {
           self.ctx.lineTo(x, y);
@@ -525,12 +540,29 @@ class js_chart {
           self.ctx.closePath();
           self.ctx.beginPath();
         }
+        // true last data
+        if (x0def && !lastdef && !x1def ) {
+					if (i+1 < self.datalength) {
+						self.ctx.lineTo(x + self.marhpx , y);
+					}
+					else {
+						self.ctx.save;
+						self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+						self.ctx.fillStyle   = locpointcolor;
+						self.ctx.beginPath();
+						self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[i + self.from * self.zoom] * self.wght * self.dcorr, locpointsize, 0, 2 * Math.PI);
+						self.ctx.stroke();
+						self.ctx.fill();
+						self.ctx.restore;
+					}
+				}
+				
         lastdef = x0def;
       }	
       // data big points
       if (loclinepoints || self.allpoints) { 
         self.ctx.beginPath();
-        self.ctx.strokeStyle = locpointcolor;	
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
         self.ctx.fillStyle   = locpointcolor;
         self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[0 + self.from * self.zoom] * self.wght * self.dcorr , locpointsize, 0, 2 * Math.PI);
         self.ctx.stroke();
@@ -586,7 +618,7 @@ class js_chart {
       // data big points
       if (locpoints || self.allpoints) { 
         self.ctx.beginPath();
-        self.ctx.strokeStyle = locpointcolor;	
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
         self.ctx.fillStyle   = locpointcolor;
         //self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[0 + self.from * self.zoom] * self.wght  * self.dcorr, locpointsize, 0, 2 * Math.PI);
         self.ctx.stroke();
@@ -671,7 +703,7 @@ class js_chart {
       // data big points
       if (locpoints || self.allpoints) { 
         self.ctx.beginPath();
-        self.ctx.strokeStyle = locpointcolor;	
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
         self.ctx.fillStyle   = locpointcolor;
         self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[0 + self.from * self.zoom] * self.wght * self.dcorr , locpointsize, 0, 2 * Math.PI);
         self.ctx.stroke();
@@ -686,6 +718,95 @@ class js_chart {
     }
 
 
+    // stairs graph
+    function do_stairs_graph(data, style) {
+      if (typeof data == "undefined") return; // if no data then exit
+      let w1 = 0;
+      let w2 = 0;
+      if (maxv != 0) { w1 = Math.abs( (self.zlvl - self.drt ) / maxv ); } else w1 = 0;
+      if (minv != 0) { w2 = Math.abs( (self.drb  - self.zlvl) / minv ); } else w2 = 0;
+      self.wght = Math.max(w1, w2);
+      let loclinecolor   = getStyle(style, "linecolor"  , self.linecol      );
+      let loclinewidth   = getStyle(style, "linewidth"  , self.linewidth    );
+      let loclinepoints  = getStyle(style, "points"     , self.linepoints   ).toString() == "true";
+      let locpointsize   = getStyle(style, "pointsize"  , self.linepointsize);
+      let locpointcolor  = getStyle(style, "pointcolor" , self.linepointcol );
+
+      if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(loclinecolor, 0.3);
+
+      // Chart line
+      self.ctx.strokeStyle = loclinecolor;
+      self.ctx.fillStyle   = loclinecolor;
+      self.ctx.lineWidth   = loclinewidth;
+      let lastdef = false;
+      let x = 0; let x1 = 0; 
+      let y = 0; let y1 = 0; 
+      for (let i = 0; i < self.datalength; i++) {
+        let x0def = (typeof data[i + 0 + self.from * self.zoom] != "undefined") && (data[i + 0 + self.from * self.zoom] != null);
+        let x1def = (typeof data[i + 1 + self.from * self.zoom] != "undefined") && (data[i + 1 + self.from * self.zoom] != null);
+        if (i == self.datalength - 1) x1def = false;
+        x = self.lvlv + ((i * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
+        if (x0def) y = self.zlvl - (data[i + self.from * self.zoom] * self.wght * self.dcorr);
+        else       y = self.zlvl;
+				if (x1def) y1 = self.zlvl - (data[i + 1 + self.from * self.zoom] * self.wght * self.dcorr); else y1=y;
+        // first data
+        if (x0def && !lastdef && x1def) {
+          self.ctx.beginPath();
+          self.ctx.moveTo(x, y);
+          self.ctx.lineTo(x + self.marhpx , y);
+        }	
+        // middle data
+        if (x0def && x1def) {
+          self.ctx.lineTo(x + self.marhpx , y);
+					self.ctx.lineTo(x + self.marhpx , y1);
+        }
+        // last data
+        if (x0def && !x1def  ) {
+					if (i+1 < self.datalength) {
+					  self.ctx.moveTo(x, y1);
+						self.ctx.lineTo(x + self.marhpx , y1);
+				  }
+          self.ctx.stroke();
+          //self.ctx.fill();
+          self.ctx.closePath();
+          self.ctx.beginPath();
+        }
+        // true last data
+        if (x0def && !lastdef && !x1def ) {
+					if (i+1 < self.datalength) {
+						self.ctx.lineTo(x + self.marhpx , y);
+					}
+					else {
+						self.ctx.save;
+						self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+						self.ctx.fillStyle   = locpointcolor;
+						self.ctx.beginPath();
+						self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[i + self.from * self.zoom] * self.wght * self.dcorr, locpointsize, 0, 2 * Math.PI);
+						self.ctx.stroke();
+						self.ctx.fill();
+						self.ctx.restore;
+					}
+				}
+        lastdef = x0def;
+      }	
+      // data big points
+      if (loclinepoints || self.allpoints) { 
+        self.ctx.beginPath();
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+        self.ctx.fillStyle   = locpointcolor;
+        self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[0 + self.from * self.zoom] * self.wght * self.dcorr , locpointsize, 0, 2 * Math.PI);
+        self.ctx.stroke();
+        self.ctx.fill();
+        for (let i = 1; i < self.datalength; i++) {
+          self.ctx.beginPath();
+          self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2), self.zlvl - data[i + self.from * self.zoom] * self.wght * self.dcorr, locpointsize, 0, 2 * Math.PI);
+          self.ctx.stroke();
+          self.ctx.fill();
+        }
+      }
+    }
+    
+
 
     // make all charts ...
     function do_graph() {
@@ -695,9 +816,10 @@ class js_chart {
       }
       for (let i = 0; i < self.data.length; i++) {
         if (typeof self.style[i] == "undefined") continue;
-        if (getStyle(self.style[i], "type", "") == "line" ) do_line_graph(self.data[i], self.style[i]); else
-        if (getStyle(self.style[i], "type", "") == "area" ) do_area_graph(self.data[i], self.style[i]); else
-        if (getStyle(self.style[i], "type", "") == "bar"  ) do_bar_graph (self.data[i], self.style[i]); else
+        if (getStyle(self.style[i], "type", "") == "line"  ) do_line_graph  (self.data[i], self.style[i]); else
+        if (getStyle(self.style[i], "type", "") == "area"  ) do_area_graph  (self.data[i], self.style[i]); else
+        if (getStyle(self.style[i], "type", "") == "bar"   ) do_bar_graph   (self.data[i], self.style[i]); else
+        if (getStyle(self.style[i], "type", "") == "stairs") do_stairs_graph(self.data[i], self.style[i]); else
         ;
       }
     }	
@@ -707,7 +829,7 @@ class js_chart {
     function isArea(i) {	return getStyle(self.style[i], "type", "") == "area"; }
     function isLine(i) {	return getStyle(self.style[i], "type", "") == "line"; }
     
-
+    
     // the beginning of the main procedure
 
     this.datalength = this.alldatalength;
@@ -894,6 +1016,7 @@ class js_chart {
     }
     // draw mesh Y
     if (this.drawmesh) {
+      this.ctx.lineWidth=this.meshlw;
       // mesh Y+
       this.ctx.strokeStyle = this.mshcol;	
       this.ctx.fillStyle   = this.mshcol;

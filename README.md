@@ -17,9 +17,10 @@ The js_chart class - short description
   - possibility to automatically scale the Y axis for numbers smaller than one
   - possibility to predefine any number of chart styles (for line, area, bar chart) and their private parameters
   - the possibility of choosing styles from:
-      - line chart (any quantity limited only by the readability of the chart)
-      - area chart (any quantity limited only by the readability of the chart)
-      - bar graph (any quantity limited only by the readability of the chart)
+      - line   chart (any quantity limited only by the readability of the chart)
+      - stairs chart (any quantity limited only by the readability of the chart)
+      - area   chart (any quantity limited only by the readability of the chart)
+      - bar    graph (any quantity limited only by the readability of the chart)
   - big possibilities of styles configuration for each chart
   - the ability to plot Bezier curves instead of straight lines (smoothing the chart) - available configuration parameters
   - the possibility of own description of the X axis or work without this description - then the data is automatically numbered from 1

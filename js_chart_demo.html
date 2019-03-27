@@ -21,15 +21,24 @@
     mydata_2= [26, -2, 3, -10,  0,  5, -7, -9,  5,  25, 20,  25,  21,   6, 12,  8, 14,  0, -6, -5, -12, -10, 0, 20];
     mydata_3= [ 3,  2, 8,  13,  3, -5, -1, 15,  6, -12, 15,   5,  -5,  16, 12, 28, 18, 20, 16, 25,  16,  -3, 5,  2];
     // here we are preparing chart styles
-    mystyle_B1=["type=bar" , "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.3)", "linewidth=0.5", "beziercurve=true"];
-    mystyle_B2=["type=bar" , "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.3)", "linewidth=0.5", "beziercurve=true"];
-    mystyle_B3=["type=bar" , "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.3)", "linewidth=0.5", "beziercurve=true"];
-    mystyle_A1=["type=area", "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.2)", "linewidth=0.5", "beziercurve=true"];
-    mystyle_A2=["type=area", "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.2)", "linewidth=0.5", "beziercurve=true"];
-    mystyle_A3=["type=area", "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.2)", "linewidth=0.5", "beziercurve=true"];
-    mystyle_L1=["type=line", "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.3)", "linewidth=1", "beziercurve=true"];
-    mystyle_L2=["type=line", "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.3)", "linewidth=1", "beziercurve=true"];
-    mystyle_L3=["type=line", "linecolor=rgba(0, 255, 0, 1)", "fillcolor=rgba(0, 255, 0, 0.3)", "linewidth=1", "beziercurve=true"];
+    mystyle_B1=["type=bar"   , "linecolor=rgba(255,   0,   0, 1  )", "fillcolor=rgba(255,   0,   0, 0.3)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_B2=["type=bar"   , "linecolor=rgba(  0, 255,   0, 1  )", "fillcolor=rgba(  0, 255,   0, 0.3)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_B3=["type=bar"   , "linecolor=rgba(  0, 150, 255, 1  )", "fillcolor=rgba(  0, 150, 255, 0.3)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_A1=["type=area"  , "linecolor=rgba(  0, 255,   0, 1  )", "fillcolor=rgba(  0, 255,   0, 0.2)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_A2=["type=area"  , "linecolor=rgba(  0, 150, 255, 1  )", "fillcolor=rgba(  0, 150, 255, 0.2)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_A3=["type=area"  , "linecolor=rgba(255,   0,   0, 1  )", "fillcolor=rgba(255,   0,   0, 0.2)", "linewidth=0.5", "beziercurve=true"];
+    mystyle_L1=["type=line"  , "linecolor=rgba(  0, 150, 255, 1  )", "fillcolor=rgba(  0,   0, 255, 0.3)", "linewidth=1"  , "beziercurve=true"];
+    mystyle_L2=["type=line"  , "linecolor=rgba(255,   0,   0, 1  )", "fillcolor=rgba(255,   0,   0, 0.3)", "linewidth=1"  , "beziercurve=true"];
+    mystyle_L3=["type=line"  , "linecolor=rgba(  0, 255,   0, 1  )", "fillcolor=rgba(  0, 255,   0, 0.3)", "linewidth=1"  , "beziercurve=true"];
+    mystyle_C1=["type=area"  , "linecolor=rgba(  0, 255,   0, 1  )", "fillcolor=rgba(  0, 255,   0, 0.3)", "linewidth=2"  , "pointsize=3", "beziercurve=true"];
+    mystyle_C2=["type=area"  , "linecolor=rgba(  0, 150, 255, 1  )", "fillcolor=rgba(  0, 150, 255, 0.3)", "linewidth=2"  , "pointsize=3", "beziercurve=true"];
+    mystyle_C3=["type=area"  , "linecolor=rgba(255,   0,   0, 1  )", "fillcolor=rgba(255,   0,   0, 0.3)", "linewidth=2"  , "pointsize=3", "beziercurve=true"];
+    mystyle_D1=["type=bar"   , "linecolor=rgba(255,   0,   0, 1  )", "fillcolor=rgba(255,   0,   0, 0.4)", "linewidth=1"  , "beziercurve=true"];
+    mystyle_D2=["type=bar"   , "linecolor=rgba(  0, 255,   0, 1  )", "fillcolor=rgba(  0, 255,   0, 0.4)", "linewidth=1"  , "beziercurve=true"];
+    mystyle_D3=["type=bar"   , "linecolor=rgba(  0, 150, 255, 1  )", "fillcolor=rgba(  0, 150, 255, 0.4)", "linewidth=1"  , "beziercurve=true"];
+    mystyle_S1=["type=stairs", "linecolor=rgba(  0, 150, 255, 0.7)", "fillcolor=rgba(  0,   0, 255, 0.3)", "linewidth=2"];
+    mystyle_S2=["type=stairs", "linecolor=rgba(255,   0,   0, 0.7)", "fillcolor=rgba(255,   0,   0, 0.3)", "linewidth=2"];
+    mystyle_S3=["type=stairs", "linecolor=rgba(  0, 255,   0, 0.7)", "fillcolor=rgba(  0, 255,   0, 0.3)", "linewidth=2"];
     // insert data and styles into tables that will be passed to the chart
     style = [mystyle_B1, mystyle_A1, mystyle_L1];
     data  = [mydata_1, mydata_2, mydata_3];
@@ -43,13 +52,57 @@
     <center><table>
     <tr>
       <td>
+     		<div id="chart1a" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Area graph black demo
+      </td>
+    </tr>
+    <tr>
+      <td>
+     		<div id="chart2a" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Line graph black demo
+      </td>
+    </tr>
+    <tr>
+      <td>
+     		<div id="chart4a" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Stairs graph black demo
+      </td>
+    </tr>
+    <tr>
+      <td>
+     		<div id="chart3a" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Bar graph black demo
+      </td>
+    </tr>
+    <tr>
+      <td>
      		<div id="chart1" style='width: 100%; height: 100%; position: relative'></div> 				
         <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
       </td>
     </tr>
     <tr>
       <td>
-        <center>Area graph demo
+        <center>Area graph soft demo
       </td>
     </tr>
     <tr>
@@ -60,7 +113,18 @@
     </tr>
     <tr>
       <td>
-        <center>Line graph demo
+        <center>Line graph soft demo
+      </td>
+    </tr>
+    <tr>
+      <td>
+     		<div id="chart4" style='width: 100%; height: 100%; position: relative'></div> 				
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <center>Stairs graph soft demo
       </td>
     </tr>
     <tr>
@@ -71,7 +135,7 @@
     </tr>
     <tr>
       <td>
-        <center>Bar graph demo
+        <center>Bar graph soft demo
       </td>
     </tr>
     </table>
@@ -80,9 +144,15 @@
 
 
     <script>
-      var dr1 = new js_chart('chart1', [mydata_1, mydata_2, mydata_3], [mystyle_A1, mystyle_A2, mystyle_A3], null, "day", "$" );
-      var dr2 = new js_chart('chart2', [mydata_1, mydata_2, mydata_3], [mystyle_L1, mystyle_L2, mystyle_L3], desc, "t", "mA" );
-      var dr3 = new js_chart('chart3', [mydata_1, mydata_2, mydata_3], [mystyle_B1, mystyle_B2, mystyle_B3], null, "month", "MB" );
+      var dr1a= new js_chart('chart1a', [mydata_1, mydata_2, mydata_3], [mystyle_C1, mystyle_C2, mystyle_C3], null, "min", "mA" );
+      var dr2a= new js_chart('chart2a', [mydata_1, mydata_2, mydata_3], [mystyle_L1, mystyle_L2, mystyle_L3], desc, "t", "mA" );
+      var dr3a= new js_chart('chart3a', [mydata_1, mydata_2, mydata_3], [mystyle_D2, mystyle_D3, mystyle_D1], null, "month", "MB" );
+      var dr4a= new js_chart('chart4a', [mydata_1, mydata_2, mydata_3], [mystyle_S3, mystyle_S1, mystyle_S2], desc, "ms", "V" );
+			
+      var dr1 = new js_chart('chart1' , [mydata_1, mydata_2, mydata_3], [mystyle_A1, mystyle_A2, mystyle_A3], null, "day", "$" );
+      var dr2 = new js_chart('chart2' , [mydata_1, mydata_2, mydata_3], [mystyle_L1, mystyle_L2, mystyle_L3], desc, "t", "mA" );
+      var dr3 = new js_chart('chart3' , [mydata_1, mydata_2, mydata_3], [mystyle_B1, mystyle_B2, mystyle_B3], null, "month", "MB" );
+      var dr4 = new js_chart('chart4' , [mydata_1, mydata_2, mydata_3], [mystyle_S3, mystyle_S1, mystyle_S2], null, "ms", "V" );
       
       dr1.crHint   = false;
       dr1.crYjumpM = false;
@@ -93,6 +163,38 @@
       dr1.hintwithctrl = false;
       dr1.draw();
       
+      dr1a.crHint   = false;
+      dr1a.crYjumpM = true;
+      dr1a.crYjumpP = true;
+      dr1a.crXjump  = true;
+      //dr1a.crpointhint   = false;
+      //dr1a.crlinetomouse = true;
+      dr1a.canvasbkcol = "rgba(0,0,0,1)";
+      dr1a.axcol       = "rgba(155,155,155,1)";
+      dr1a.axdesccol   = "rgba(255,255, 0, 1)";
+      dr1a.descol      = "rgba(0,250,250,0.7)";
+      dr1a.drwfracol   = "rgba(50,50,50,0.2)";      
+      dr1a.drwfilcol   = "rgba(50,50,50, 0.2)"; 
+      dr1a.mshcol      = "rgb(100,100,100, 0.7)"; 
+      dr1a.crlinecol   = "rgb(255, 255,255)"; 
+      dr1a.crlinewidth = 0.5;     
+      dr1a.meshlw      = 0.5; 
+      dr1a.descfpx     = 12;
+      dr1a.crXjump     = false;  
+      dr1a.crYjumpM    = false; 
+      dr1a.crYjumpP    = false;  
+      dr1a.hintpointfill   = "rgba(0, 150, 150, 0.3)";
+      dr1a.hintlinecol     = "rgba(250, 250, 250, 1)";
+      dr1a.hintpointcolfromdraw = false; 
+      dr1a.hintpointw = 4;
+      dr1a.hintpointlwdth = 1;
+      dr1a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
+      dr1a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
+      dr1a.hintwithctrl = false;
+
+      dr1a.draw();
+
+
       dr2.crHint   = true;
       dr2.crYjumpM = true;
       dr2.crYjumpP = true;
@@ -102,6 +204,40 @@
       dr2.hintwithctrl = false;
       dr2.draw();
       
+
+
+      dr2a.crHint   = true;
+      dr2a.crYjumpM = true;
+      dr2a.crYjumpP = true;
+      dr2a.crXjump  = true;
+      //dr2a.crpointhint   = false;
+      //dr2a.crlinetomouse = true;
+      dr2a.canvasbkcol = "rgba(0,0,0,1)";
+      dr2a.axcol       = "rgba(155,155,155,1)";
+      dr2a.axdesccol   = "rgba(255,255, 0, 1)";
+      dr2a.descol      = "rgba(0,250,250,0.7)";
+      dr2a.drwfracol   = "rgba(50,50,50,0.2)";      
+      dr2a.drwfilcol   = "rgba(50,50,50, 0.2)"; 
+      dr2a.mshcol      = "rgb(100,100,100, 0.7)"; 
+      dr2a.crlinecol   = "rgb(255, 255,255)"; 
+      dr2a.crlinewidth = 0.5;     
+      dr2a.meshlw      = 0.5; 
+      dr2a.descfpx     = 12;
+      dr2a.crXjump     = false;  
+      dr2a.crYjumpM    = false; 
+      dr2a.crYjumpP    = false;  
+      dr2a.hintpointfill  = "rgba(0, 150, 150, 0.3)";
+      dr2a.hintlinecol    = "rgba(250, 250, 250, 1)";
+      dr2a.hintpointcolfromdraw = true; // new
+      dr2a.hintpointw     = 4;
+      dr2a.hintpointlwdth = 1;
+      dr2a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
+      dr2a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
+      dr2a.hintwithctrl   = false;
+      dr2a.draw();
+
+
+
       dr3.crHint   = true;
       dr3.crYjumpM = false;
       dr3.crYjumpP = false;
@@ -110,10 +246,83 @@
       dr3.crlinetomouse= true;
       dr3.hintwithctrl = false;
       dr3.hintlinetoMwidth = 1;
-      dr3.hintmaxalpha = true;
-			dr3.crXYline =false;
+      dr3.hintmaxalpha = false;
+			dr3.crXYline     = false;
       dr3.draw();
+
+
+      dr3a.crHint   = true;
+      //dr3a.crpointhint   = false;
+      //dr3a.crlinetomouse = true;
+      dr3a.canvasbkcol = "rgba(0,0,0,1)";
+      dr3a.axcol       = "rgba(155,155,155,1)";
+      dr3a.axdesccol   = "rgba(255,255, 0, 1)";
+      dr3a.descol      = "rgba(0,250,250,0.7)";
+      dr3a.drwfracol   = "rgba(50,50,50,0.2)";      
+      dr3a.drwfilcol   = "rgba(50,50,50, 0.2)"; 
+      dr3a.mshcol      = "rgb(100,100,100, 0.7)"; 
+      dr3a.crlinecol   = "rgb(255, 255,255)"; 
+      dr3a.crlinewidth = 0.5;     
+      dr3a.meshlw = 0.5; 
+      dr3a.descfpx = 12;
+      dr3a.crXjump     = false;  
+      dr3a.crYjumpM    = false; 
+      dr3a.crYjumpP    = false;  
+      dr3a.hintpointfill  = "rgba(0, 150, 150, 0.3)";
+      dr3a.hintlinecol    = "rgba(250, 250, 250, 1)";
+      dr3a.hintpointcolfromdraw = false; 
+      dr3a.hintpointw     = 4;
+      dr3a.hintpointlwdth = 1;
+      dr3a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
+      dr3a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
+      dr3a.hintwithctrl = false;
+      dr3a.crlinetomouse= true;
+      dr3a.hintwithctrl = false;
+      dr3a.hintlinetoMwidth = 1;
+      dr3a.hintmaxalpha = false;
+			dr3a.crXYline     = true;
+      dr3a.hintlinetoMcol = "rgba(250, 250, 0, 1)";
+      dr3a.draw();
+
+      dr4a.crHint   = true;
+      dr4a.crYjumpM = true;
+      dr4a.crYjumpP = true;
+      dr4a.crXjump  = true;
+      //dr4a.crpointhint   = false;
+      //dr4a.crlinetomouse = true;
+      dr4a.canvasbkcol = "rgba(0,0,0,1)";
+      dr4a.axcol       = "rgba(155,155,155,1)";
+      dr4a.axdesccol   = "rgba(255,255, 0, 1)";
+      dr4a.descol      = "rgba(0,250,250,0.7)";
+      dr4a.drwfracol   = "rgba(50,50,50,0.2)";      
+      dr4a.drwfilcol   = "rgba(50,50,50, 0.2)"; 
+      dr4a.mshcol      = "rgb(100,100,100, 0.7)"; 
+      dr4a.crlinecol   = "rgb(255, 255,255)"; 
+      dr4a.crlinewidth = 0.5;     
+      dr4a.meshlw      = 0.5; 
+      dr4a.descfpx     = 12;
+      dr4a.crXjump     = false;  
+      dr4a.crYjumpM    = false; 
+      dr4a.crYjumpP    = false;  
+      dr4a.hintpointfill  = "rgba(0, 150, 150, 0.3)";
+      dr4a.hintlinecol    = "rgba(250, 250, 250, 1)";
+      dr4a.hintpointcolfromdraw = true; // new
+      dr4a.hintpointw     = 4;
+      dr4a.hintpointlwdth = 1;
+      dr4a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
+      dr4a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
+      dr4a.hintwithctrl   = false;
+      dr4a.draw();
     
+      dr4.crHint   = true;
+      dr4.crYjumpM = true;
+      dr4.crYjumpP = true;
+      dr4.crXjump  = true;
+      //dr4.crpointhint   = false;
+      //dr4.crlinetomouse = true;
+      dr4.hintwithctrl = false;
+      dr4.draw();
+		
       // make container for chart data 
       document.write("<center><div id='" + chart_container + "' style='z-index: 1; width: 90%; height: 80%; position: relative'></div>");
       // do chart
@@ -127,9 +336,14 @@
       
 
       function redrawAll() {
+        dr1a.draw()
+        dr2a.draw()
+        dr3a.draw()
+        dr4a.draw()
         dr1.draw()
         dr2.draw()
         dr3.draw()
+        dr4.draw()
         dr.draw()
       }
         

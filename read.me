@@ -27,7 +27,7 @@
   1. The js_chart class - short description
   2. Structure of js_chart class
   3. Description of the js_chart class
-  4. Properties of the js_chart class (109 items) 
+  4. Properties of the js_chart class (111 items) 
   5. A short summary of the file js_rnd_demo.js content - a description of the debug function
   6. The minimum html file needed to run the graph - example
 
@@ -36,7 +36,12 @@
 //  0. Revision
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   1.0  12-03-2019  First release
-  
+  1.1  27-03-2019  - New properties:
+                       meshlw               =    1;  // mesh line width
+                       hintpointcolfromdraw = true;  // hint point fill color from draw 
+                   - hint big point corrected
+                   - new chart added - stairs
+									 - corrected linear graph for cases of missing data
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +58,7 @@
   - possibility to predefine any number of chart styles (for line, area, bar chart) and their private parameters
   - the possibility of choosing styles from:
       - line chart (any quantity limited only by the readability of the chart)
+      - stairs chart (any quantity limited only by the readability of the chart)
       - area chart (any quantity limited only by the readability of the chart)
       - bar graph (any quantity limited only by the readability of the chart)
   - big possibilities of styles configuration for each chart
@@ -251,32 +257,39 @@
     Full style for every chart type. Not every item must be included, RGBA data my be changed)
     ----------------------------------------------------------------------------------------------
 
-      line_style=["type="        + "line", 
-                  "linecolor="   + "rgba(255, 250, 0, 1.0)", 
-                  "linewidth="   + "1" ,
-                  "points="      + "false",  
-                  "pointsize="   + "5", 
-                  "pointcolor="  + "rgba(255, 250, 0, 0.6)",
-                  "beziercurve=" + "true", 
-                  "beziercnst="  + "3" ];
+        line_style  =["type="        + "line", 
+                      "linecolor="   + "rgba(255, 250, 0, 1.0)", 
+                      "linewidth="   + "1" ,
+                      "points="      + "false",  
+                      "pointsize="   + "5", 
+                      "pointcolor="  + "rgba(255, 250, 0, 0.6)",
+                      "beziercurve=" + "true", 
+                      "beziercnst="  + "3" ];
     
-      bar_style = ["type="       + "bar", 
-                  "linecolor="  + "rgba(0, 255, 250, 1.0)", 
-                  "fillcolor="  + "rgba(0, 255, 250, 0.6)", 
-                  "linewidth="  + "1",
-                  "points="     + "false",  
-                  "pointsize="  + "5", 
-                  "pointcolor=" + "rgba(0, 255, 250, 0.3)"];
+        bar_style   = ["type="       + "bar", 
+                      "linecolor="  + "rgba(0, 255, 250, 1.0)", 
+                      "fillcolor="  + "rgba(0, 255, 250, 0.6)", 
+                      "linewidth="  + "1",
+                      "points="     + "false",  
+                      "pointsize="  + "5", 
+                      "pointcolor=" + "rgba(0, 255, 250, 0.3)"];
                 
-      area_style=["type="        + "area", 
-                  "linecolor="   + "rgba(250, 0, 250, 1.0)",
-                  "fillcolor="   + "rgba(250, 0, 250, 0.6)",
-                  "linewidth="   + "1", 
-                  "points="      + "false", 
-                  "pointsize="   + "5", 
-                  "pointcolor="  + "rgba(250, 0, 250, 0.3)",
-                  "beziercurve=" + "true",
-                  "beziercnst="  + "3" ];
+        area_style  =["type="        + "area", 
+                      "linecolor="   + "rgba(250, 0, 250, 1.0)",
+                      "fillcolor="   + "rgba(250, 0, 250, 0.6)",
+                      "linewidth="   + "1", 
+                      "points="      + "false", 
+                      "pointsize="   + "5", 
+                      "pointcolor="  + "rgba(250, 0, 250, 0.3)",
+                      "beziercurve=" + "true",
+                      "beziercnst="  + "3" ];
+
+        stairs_style=["type="        + "stairs", 
+                      "linecolor="   + "rgba(255, 250, 0, 1.0)", 
+                      "linewidth="   + "1" ,
+                      "points="      + "false",  
+                      "pointsize="   + "5", 
+                      "pointcolor="  + "rgba(255, 250, 0, 0.6)"];
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -285,159 +298,163 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 4. Properties of the js_chart class (109 items) - short description:
+// 4. Properties of the js_chart class (111 items) - short description:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ----------------------------------------------------------------------------------------------------------------------------------------
-    name              |  description                                                         | default value
+    name                 |  description                                                         | default value
   ----------------------------------------------------------------------------------------------------------------------------------------
     // events on / off
-    onmouseclick      |  mouse click event on/off                                            |  true
-    onmousemove       |  mose move event on/off                                              |  true
-    ontouchmove       |  touch move event on/off                                             |  true
-    onmousedown       |  mouse down event on/off                                             |  true
-    onmouseup         |  mouse up event on/off                                               |  true
-    onkeydown         |  key down event on/off                                               |  true
-    onkeyup           |  key up event on/off                                                 |  true
-    oncontext         |  block context menu event on/off (turn off context memu)             |  true
+    onmouseclick         |  mouse click event on/off                                            |  true
+    onmousemove          |  mose move event on/off                                              |  true
+    ontouchmove          |  touch move event on/off                                             |  true
+    onmousedown          |  mouse down event on/off                                             |  true
+    onmouseup            |  mouse up event on/off                                               |  true
+    onkeydown            |  key down event on/off                                               |  true
+    onkeyup              |  key up event on/off                                                 |  true
+    oncontext            |  block context menu event on/off (turn off context memu)             |  true
   ----------------------------------------------------------------------------------------------------------------------------------------
-    axisXtxt          |  axis X description                                                  |  "x"
-    axisYtxt          |  axis Y description                                                  |  "y"
-    Ymax              |  Xmin or 0 for auto                                                  |   0
-    Ymin              |  Ymin or 0 for auto                                                  |   0
-    decimalX          |  decimal point X-axis                                                |   0
-    decimalY          |  decimal point Y-axis                                                |   0
+    axisXtxt             |  axis X description                                                  |  "x"
+    axisYtxt             |  axis Y description                                                  |  "y"
+    Ymax                 |  Xmin or 0 for auto                                                  |   0
+    Ymin                 |  Ymin or 0 for auto                                                  |   0
+    decimalX             |  decimal point X-axis                                                |   0
+    decimalY             |  decimal point Y-axis                                                |   0
     // margins
-    margv             |  vertical margin                                                     |  15
-    margh             |  horizontal margin                                                   |  35
+    margv                |  vertical margin                                                     |  15
+    margh                |  horizontal margin                                                   |  35
   ----------------------------------------------------------------------------------------------------------------------------------------
     // canvas background
-    canvasbkcol       |  canvas background color                                             |  "rgba(250, 250, 170, 0.4)"
-    canvasfrw         |  canvas frame width                                                  |   2
-    canvasfrcol       |  canvas frame color                                                  |  "rgba(  0,   0, 255, 1)"
+    canvasbkcol          |  canvas background color                                             |  "rgba(250, 250, 170, 0.4)"
+    canvasfrw            |  canvas frame width                                                  |   2
+    canvasfrcol          |  canvas frame color                                                  |  "rgba(  0,   0, 255, 1)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // markers
-    marw              |  width of marker                                                     |   8
-    drawaxis          |  draw axis ?                                                         |  true
-    drawarrow         |  draw axis arrows ?                                                  |  true
+    marw                 |  width of marker                                                     |   8
+    drawaxis             |  draw axis ?                                                         |  true
+    drawarrow            |  draw axis arrows ?                                                  |  true
   ----------------------------------------------------------------------------------------------------------------------------------------
     // axes & arrows & description
-    al                |  arrow length                                                        |  18
-    aw                |  arrow width                                                         |   9
-    axcol             |  axis color                                                          |  "rgba(  0,   0,   0, 1)" 
-    axw               |  axis width                                                          |   2
-    axisdesc          |  draw description of axis ?                                          |  true
-    axdesccol         |  axis description color                                              |  "rgba(  0, 100, 200, 1)"
-    drawdesc          |  draw values ?                                                       |  true
-    dgroup            |  use group digits                                                    |  true
-    drawmark          |  draw markers ?                                                      |  true
-    descol            |  description / markers color                                         |  "rgba(  0,   0, 255, 1)"
-    descfpx           |  font size for description                                           |  15
-    descfontmod       |  font modifier                                                       |  " italic "
-    descfont          |  description font                                                    |  "px Courier New"
-    rotdescX          |  rotate the x-axis description 90 degrees                            |  true
-    drw0x             |  draw zero value X-axis                                              |  true
-    drw0y             |  draw zero value Y-axis                                              |  false
-    hmarshift         |  move X markers by 1/2 sie (for bars its better)                     |  false
-    addmaxmarg        |  additional margin from max value to border                          |  0.03;  // 0 = none, 0,01 = 1% of max value
+    al                   |  arrow length                                                        |  18
+    aw                   |  arrow width                                                         |   9
+    axcol                |  axis color                                                          |  "rgba(  0,   0,   0, 1)" 
+    axw                  |  axis width                                                          |   2
+    axisdesc             |  draw description of axis ?                                          |  true
+    axdesccol            |  axis description color                                              |  "rgba(  0, 100, 200, 1)"
+    drawdesc             |  draw values ?                                                       |  true
+    dgroup               |  use group digits                                                    |  true
+    drawmark             |  draw markers ?                                                      |  true
+    descol               |  description / markers color                                         |  "rgba(  0,   0, 255, 1)"
+    descfpx              |  font size for description                                           |  15
+    descfontmod          |  font modifier                                                       |  " italic "
+    descfont             |  description font                                                    |  "px Courier New"
+    rotdescX             |  rotate the x-axis description 90 degrees                            |  true
+    drw0x                |  draw zero value X-axis                                              |  true
+    drw0y                |  draw zero value Y-axis                                              |  false
+    hmarshift            |  move X markers by 1/2 sie (for bars its better)                     |  false
+    addmaxmarg           |  additional margin from max value to border                          |  0.03;  // 0 = none, 0,01 = 1% of max value
   ----------------------------------------------------------------------------------------------------------------------------------------
     // mesh
-    drawmesh          |  draw mesh ?                                                         |  true
-    mshcol            |  mesh color                                                          |  "rgb(200, 200, 200, 0.7)" 
+    drawmesh             |  draw mesh ?                                                         |  true
+    mshcol               |  mesh color                                                          |  "rgb(200, 200, 200, 0.7)" 
+    meshlw               |  mesh line width                                                     |   1
+
+
   ----------------------------------------------------------------------------------------------------------------------------------------
     // draw zone (for test)
-    drawzone          |  draw zone ?                                                         |  true
-    drawzfrm          |  draw zone frame ?                                                   |  true
-    drwfracol         |  draw zone frame color                                               |  "rgba(150,   0,   0, 0.5)"
-    drwfilcol         |  draw zone fill color                                                |  "rgba(250, 250, 250, 0.3)"
+    drawzone             |  draw zone ?                                                         |  true
+    drawzfrm             |  draw zone frame ?                                                   |  true
+    drwfracol            |  draw zone frame color                                               |  "rgba(150,   0,   0, 0.5)"
+    drwfilcol            |  draw zone fill color                                                |  "rgba(250, 250, 250, 0.3)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // cross & hint	style
-    crXYline          |  cross                                                               |  true
-    crXjump           |  jump on X markers                                                   |  false
-    crYjumpM          |  jump on Y markers                                                   |  false
-    crYjumpP          |  jump on Y values                                                    |  true
-    crHint            |  show hint                                                           |  true
-    crpointhint       |  show arc hint                                                       |  true
-    crpointfill       |  arc hint color                                                      |  true
-    crlinetomouse     |  draw line to mouse cursor                                           |  false
-    crlinetosmallhint |  draw line to small rectangle hint (onclick)                         |  true
+    crXYline             |  cross                                                               |  true
+    crXjump              |  jump on X markers                                                   |  false
+    crYjumpM             |  jump on Y markers                                                   |  false
+    crYjumpP             |  jump on Y values                                                    |  true
+    crHint               |  show hint                                                           |  true
+    crpointhint          |  show arc hint                                                       |  true
+    crpointfill          |  arc hint color                                                      |  true
+    crlinetomouse        |  draw line to mouse cursor                                           |  false
+    crlinetosmallhint    |  draw line to small rectangle hint (onclick)                         |  true
   ----------------------------------------------------------------------------------------------------------------------------------------
     // cross lines
-    crlinecol         |  color of cross lines                                                |  "rgb(  0,   0, 255)"
-    crlinewidth       |  width of cross lines                                                |   1
-    crXlinedash       |  dash of cross line X                                                |  [7, 7]
-    crYlinedash       |  dash of cross line Y                                                |  [7, 7]
+    crlinecol            |  color of cross lines                                                |  "rgb(  0,   0, 255)"
+    crlinewidth          |  width of cross lines                                                |   1
+    crXlinedash          |  dash of cross line X                                                |  [7, 7]
+    crYlinedash          |  dash of cross line Y                                                |  [7, 7]
   ----------------------------------------------------------------------------------------------------------------------------------------
     // hint text
-    hintwithctrl      |  hint only when ctrl key is pressed                                  |  true
-    hintfillcol       |  hint rectangle fill color                                           |  "rgba(150, 200, 150, 0.7)"
-    hintframewidth    |  hint rectangle line width                                           |   3
-    hintrectcol       |  hint rectangle line color                                           |  "rgba( 50,  50,  50, 0.7)"
-    hintfpx           |  hint font size                                                      |  11;
-    hintfontmod       |  font modifier                                                       |  " italic "
-    hintfont          |  hint font                                                           |  "px Courier New"
-    hinttxtcol        |  hint text color                                                     |  "rgb (  0,   0,  50)"
+    hintwithctrl         |  hint only when ctrl key is pressed                                  |  true
+    hintfillcol          |  hint rectangle fill color                                           |  "rgba(150, 200, 150, 0.7)"
+    hintframewidth       |  hint rectangle line width                                           |   3
+    hintrectcol          |  hint rectangle line color                                           |  "rgba( 50,  50,  50, 0.7)"
+    hintfpx              |  hint font size                                                      |  11;
+    hintfontmod          |  font modifier                                                       |  " italic "
+    hintfont             |  hint font                                                           |  "px Courier New"
+    hinttxtcol           |  hint text color                                                     |  "rgb (  0,   0,  50)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // hint data point
-    hintpointw        |  hint point width                                                    |   5
-    hintlinecol       |  hint frame color                                                    |  "rgba( 50,  50,  50, 1)"
-    hintpointfill     |  hint frame fill color                                               |  "rgba( 50,  50, 150, 0.5)"
-    hintpointlwdth    |  hint point line width                                               |   1
-    hintlinetoMcol    |  hint line to mouse color                                            |  "rgba(250,   0,   0, 1)"
-    hintlinetoMwidth  |  hint line to mouse width                                            |   0.5
-    hintmaxalpha      |  hint fill alpha set to max (1)                                      |  false
+    hintpointw           |  hint point width                                                    |   5
+    hintlinecol          |  hint frame color                                                    |  "rgba( 50,  50,  50, 1)"
+    hintpointfill        |  hint frame fill color                                               |  "rgba( 50,  50, 150, 0.5)"
+    hintpointcolfromdraw |  hint point fill color from draw                                    |  true
+    hintpointlwdth       |  hint point line width                                               |   1
+    hintlinetoMcol       |  hint line to mouse color                                            |  "rgba(250,   0,   0, 1)"
+    hintlinetoMwidth     |  hint line to mouse width                                            |   0.5
+    hintmaxalpha         |  hint fill alpha set to max (1)                                      |  false
   ----------------------------------------------------------------------------------------------------------------------------------------
     // hint shadow
-    hintdatashadow    |  hint data shadow ? (only if any bar chart exists)                   |  true
-    hintshadowcol     |  hint data shadow color                                              |  "rgba(150, 150, 150, 0.2)"
+    hintdatashadow       |  hint data shadow ? (only if any bar chart exists)                   |  true
+    hintshadowcol        |  hint data shadow color                                              |  "rgba(150, 150, 150, 0.2)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // default line graph
-    linecol           |  chart line color                                                    |  "rgba(250,   0,   0, 0.6)"
-    linewidth         |  chart line width                                                    |   2
-    linepoints        |  points on chart line ?                                              |  false
-    linepointsize     |  points size                                                         |   4
-    linepointcol      |  points color                                                        |  "rgba(250,   0,   0, 0.7)"
+    linecol              |  chart line color                                                    |  "rgba(250,   0,   0, 0.6)"
+    linewidth            |  chart line width                                                    |   2
+    linepoints           |  points on chart line ?                                              |  false
+    linepointsize        |  points size                                                         |   4
+    linepointcol         |  points color                                                        |  "rgba(250,   0,   0, 0.7)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // default area graph
-    arealine          |  area chart line color                                               |  "rgb (250,   0, 250)"
-    areafill          |  area chart fill color                                               |  "rgba(250,   0, 250, 0.3)"
-    areawidth         |  area line width                                                     |   2
-    areapoints        |  points on area line ?                                               |  false
-    areapointsize     |  area point size                                                     |   5
-    areapointcol      |  area point color                                                    |  "rgb (250,   0, 250)"
+    arealine             |  area chart line color                                               |  "rgb (250,   0, 250)"
+    areafill             |  area chart fill color                                               |  "rgba(250,   0, 250, 0.3)"
+    areawidth            |  area line width                                                     |   2
+    areapoints           |  points on area line ?                                               |  false
+    areapointsize        |  area point size                                                     |   5
+    areapointcol         |  area point color                                                    |  "rgb (250,   0, 250)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // default bezier curve for line and area graph
-    beziercurve       |  bezier curve or normal line ?                                       |  true
-    beziercnst        |  bezier coefficient                                                  |   3
-    bezierlvloff      |  global level auto off bezier curve                                  |   3;   // if data points number for one X markers > bezierlvloff 
+    beziercurve          |  bezier curve or normal line ?                                       |  true
+    beziercnst           |  bezier coefficient                                                  |   3
+    bezierlvloff         |  global level auto off bezier curve                                  |   3;   // if data points number for one X markers > bezierlvloff 
                                                                                                       // then bezier curve will be off. Value -1 block this feature. Optimal value is 3
   ----------------------------------------------------------------------------------------------------------------------------------------
     // default bar graph
-    barline           |  bar line color                                                      |  "rgb (  0, 250, 250)"
-    barfill           |  bar fill color                                                      |  "rgba(  0, 250, 250, 0.3)"
-    barlw             |  bar line width                                                      |   1
-    barpoints         |  points on bars ?                                                    |  false
-    barpointsize      |  bar point size                                                      |   5
-    barpointcol       |  bar point color                                                     |  "rgba(  0, 250, 250, 0.3)"
-    barperc           |  percent filling bar markers                                         |   0.75
-    bigmax            |  above this number, all data will be converted to the decimal power  |  10000
+    barline              |  bar line color                                                      |  "rgb (  0, 250, 250)"
+    barfill              |  bar fill color                                                      |  "rgba(  0, 250, 250, 0.3)"
+    barlw                |  bar line width                                                      |   1
+    barpoints            |  points on bars ?                                                    |  false
+    barpointsize         |  bar point size                                                      |   5
+    barpointcol          |  bar point color                                                     |  "rgba(  0, 250, 250, 0.3)"
+    barperc              |  percent filling bar markers                                         |   0.75
+    bigmax               |  above this number, all data will be converted to the decimal power  |  10000
   ----------------------------------------------------------------------------------------------------------------------------------------
     // for a partial chart (from the scope of data)
-    allmaxmin         |  true = auto from scope, false = auto from all data                  |  true    // (if Ymax or Ymin  != 0 => these values will be constans)
+    allmaxmin            |  true = auto from scope, false = auto from all data                  |  true    // (if Ymax or Ymin  != 0 => these values will be constans)
   ----------------------------------------------------------------------------------------------------------------------------------------
     // mouse multi click - on/off points for all draws (mouse rigth key)
-    multimsdown       |  on/off points for all draws                                         |  true
-    multimsdowncnt    |  number cliks for points switch                                      |  3
-    multimstout       |  timeout for points switch in ms                                     |  1000
-    multimsdowncol    |  color for points switch                                             |  "rgba(0, 0, 0, 0.15)"
+    multimsdown          |  on/off points for all draws                                         |  true
+    multimsdowncnt       |  number cliks for points switch                                      |  3
+    multimstout          |  timeout for points switch in ms                                     |  1000
+    multimsdowncol       |  color for points switch                                             |  "rgba(0, 0, 0, 0.15)"
     // shedow when select zoom
-    hintselectshadow  |  on/off select shadow                                                |  true
-    hintselectcol     |  select shadow color                                                 |  "rgba(0, 0, 0, 0.3)"
+    hintselectshadow     |  on/off select shadow                                                |  true
+    hintselectcol        |  select shadow color                                                 |  "rgba(0, 0, 0, 0.3)"
     // shift chart left/rigth by moouse left click (if zoomed)
-    mouseclickLR      |  on/off shift                                                        |  true
-    LRsize            |  click area (left and right) - fraction of the entire chart area     |  1/5 = 0.2 => 20%
-    hintzoomcol       |  color of the shift click area                                       |  "rgba(0, 250, 0, 0.15)"
-    undozoompx        |  the number of pixels to move the mouse to the left to undo the zoom | 20
+    mouseclickLR         |  on/off shift                                                        |  true
+    LRsize               |  click area (left and right) - fraction of the entire chart area     |  1/5 = 0.2 => 20%
+    hintzoomcol          |  color of the shift click area                                       |  "rgba(0, 250, 0, 0.15)"
+    undozoompx           |  the number of pixels to move the mouse to the left to undo the zoom | 20
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
