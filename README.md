@@ -2,6 +2,7 @@
 Simple, light weight javascript chart for embedded systems
 
 All you need to do is just js_chart.js
+After using the html compressor (removing spaces, comments, etc.), the size of the js_chart.js file is approximately 50kb
 
 The js_chart class - short description
 ===========================================
