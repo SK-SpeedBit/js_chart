@@ -5,8 +5,8 @@
     <!-- <meta http-equiv="refresh" content="10">  -->
     <title>Embedded Javascript Chart by SpeedBit (c)</title>    
     <style>body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; } </style>  
-    <style> td { border: 0px solid black; } </style>
-    <style> table { width: 90%; height: 300; border: 2px solid blue; border-spacing: 3px;} </style>
+    <style> td { width: 100%; height: 100%; border: 0px solid black; } </style>
+    <style> table { width: 90%; height: 100; border: 2px solid blue; border-spacing: 3px;} </style>
     
     <!-- load script file -->
     <script type="text/javascript" src="js_chart.js"   ></script>
@@ -46,14 +46,13 @@
              "03:00", "03:15", "03:30", "03:45", "04:00", "04:15", "04:30", "04:45", "05:00", "05:15", "05:30", "05:45"];
   </script>
 
-  <body onresize="redrawAll()">    
+  <body onresize="redrawAll()" >
     <h3><center>js_chart by the SpeedBit</h3>    
 
     <center><table>
     <tr>
       <td>
-     		<div id="chart1a" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart1a" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -63,8 +62,7 @@
     </tr>
     <tr>
       <td>
-     		<div id="chart2a" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart2a" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -74,8 +72,7 @@
     </tr>
     <tr>
       <td>
-     		<div id="chart4a" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart4a" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -85,8 +82,7 @@
     </tr>
     <tr>
       <td>
-     		<div id="chart3a" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart3a" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -96,8 +92,7 @@
     </tr>
     <tr>
       <td>
-     		<div id="chart1" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart1" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -107,8 +102,7 @@
     </tr>
     <tr>
       <td>
-     		<div id="chart2" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart2" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -118,8 +112,7 @@
     </tr>
     <tr>
       <td>
-     		<div id="chart4" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart4" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -129,8 +122,7 @@
     </tr>
     <tr>
       <td>
-     		<div id="chart3" style='width: 100%; height: 100%; position: relative'></div> 				
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     		<div id="chart3" style='width: 100%; height: 400px; position: relative'></div> 				
       </td>
     </tr>
     <tr>
@@ -144,7 +136,7 @@
 
 
     <script>
-      var dr1a= new js_chart('chart1a', [mydata_1, mydata_2, mydata_3], [mystyle_C1, mystyle_C2, mystyle_C3], null, "min", "mA" );
+      var dr1a= new js_chart('chart1a', [mydata_1, mydata_2, mydata_3], [mystyle_C1, mystyle_C2, mystyle_C3], null, "time", "mA" );
       var dr2a= new js_chart('chart2a', [mydata_1, mydata_2, mydata_3], [mystyle_L1, mystyle_L2, mystyle_L3], desc, "t", "mA" );
       var dr3a= new js_chart('chart3a', [mydata_1, mydata_2, mydata_3], [mystyle_D2, mystyle_D3, mystyle_D1], null, "month", "MB" );
       var dr4a= new js_chart('chart4a', [mydata_1, mydata_2, mydata_3], [mystyle_S3, mystyle_S1, mystyle_S2], desc, "ms", "V" );
@@ -153,24 +145,33 @@
       var dr2 = new js_chart('chart2' , [mydata_1, mydata_2, mydata_3], [mystyle_L1, mystyle_L2, mystyle_L3], desc, "t", "mA" );
       var dr3 = new js_chart('chart3' , [mydata_1, mydata_2, mydata_3], [mystyle_B1, mystyle_B2, mystyle_B3], null, "month", "MB" );
       var dr4 = new js_chart('chart4' , [mydata_1, mydata_2, mydata_3], [mystyle_S3, mystyle_S1, mystyle_S2], null, "ms", "V" );
-      
+
       dr1.crHint   = false;
       dr1.crYjumpM = false;
       dr1.crYjumpP = false;
       dr1.crXjump  = false;
-      //dr1.crpointhint   = false;
-      //dr1.crlinetomouse = true;
       dr1.hintwithctrl = false;
+			dr1.legframew   =    1;  
+		  dr1.legframecol = "rgba(250, 250, 0, 1)"; 
+	  	dr1.legfillcol  = "rgba( 50, 250, 50, 0.2)"; 
+      dr1.legpx       = 18;                         
+      dr1.legtxtcol   = "rgba(  0,   0, 250, 1)";   
+      dr1.legtxtcol   = "rgba(0,0,0, 1)"; 
+ 			//dr1.legend("left", ["First", "Second", "Third"]);
+ 			dr1.legend("bottom", ["Monitor", "Disk", "Mouse"]);
       dr1.draw();
+      
       
       dr1a.crHint   = false;
       dr1a.crYjumpM = true;
       dr1a.crYjumpP = true;
       dr1a.crXjump  = true;
-      //dr1a.crpointhint   = false;
-      //dr1a.crlinetomouse = true;
       dr1a.canvasbkcol = "rgba(0,0,0,1)";
-      dr1a.axcol       = "rgba(155,155,155,1)";
+      dr1a.axcol       = "rgba(255,255,255,1)";
+      dr1a.axw     = 1;
+      dr1a.marw    = 1;
+      dr1a.marsize = 10;
+			dr1a.hintfpx = 12;
       dr1a.axdesccol   = "rgba(255,255, 0, 1)";
       dr1a.descol      = "rgba(0,250,250,0.7)";
       dr1a.drwfracol   = "rgba(50,50,50,0.2)";      
@@ -186,12 +187,12 @@
       dr1a.hintpointfill   = "rgba(0, 150, 150, 0.3)";
       dr1a.hintlinecol     = "rgba(250, 250, 250, 1)";
       dr1a.hintpointcolfromdraw = false; 
-      dr1a.hintpointw = 4;
+      dr1a.hintpointw     = 4;
       dr1a.hintpointlwdth = 1;
       dr1a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
       dr1a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
-      dr1a.hintwithctrl = false;
-
+      dr1a.hintwithctrl   = false;
+			dr1a.legend("bottom", ["First", "Second", "Third", "aaa"]);
       dr1a.draw();
 
 
@@ -199,26 +200,27 @@
       dr2.crYjumpM = true;
       dr2.crYjumpP = true;
       dr2.crXjump  = true;
-      //dr2.crpointhint   = false;
-      //dr2.crlinetomouse = true;
       dr2.hintwithctrl = false;
       dr2.draw();
       
 
-
+      dr2a.drawaxis =false;
+      dr2a.margv = 0;
+      dr2a.margh = 0;
+      dr2a.marsize = 5;
+      dr2a.marw = 1.5;
       dr2a.crHint   = true;
       dr2a.crYjumpM = true;
       dr2a.crYjumpP = true;
       dr2a.crXjump  = true;
-      //dr2a.crpointhint   = false;
-      //dr2a.crlinetomouse = true;
+			dr2a.hintfpx  = 12;
       dr2a.canvasbkcol = "rgba(0,0,0,1)";
       dr2a.axcol       = "rgba(155,155,155,1)";
       dr2a.axdesccol   = "rgba(255,255, 0, 1)";
-      dr2a.descol      = "rgba(0,250,250,0.7)";
-      dr2a.drwfracol   = "rgba(50,50,50,0.2)";      
-      dr2a.drwfilcol   = "rgba(50,50,50, 0.2)"; 
-      dr2a.mshcol      = "rgb(100,100,100, 0.7)"; 
+      dr2a.descol      = "rgba(250,250,0,0.7)";
+      dr2a.drwfracol   = "rgba(150,150,150,0.5)";      
+      dr2a.drwfilcol   = "rgba(50,50,50, 0.0)"; 
+      dr2a.mshcol      = "rgb(200,200,200, 0.5)"; 
       dr2a.crlinecol   = "rgb(255, 255,255)"; 
       dr2a.crlinewidth = 0.5;     
       dr2a.meshlw      = 0.5; 
@@ -234,15 +236,14 @@
       dr2a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
       dr2a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
       dr2a.hintwithctrl   = false;
+			dr2a.legend("left", ["First", "Second", "Third"]);
       dr2a.draw();
-
 
 
       dr3.crHint   = true;
       dr3.crYjumpM = false;
       dr3.crYjumpP = false;
       dr3.crXjump  = false;
-      //dr3.crpointhint  = false;
       dr3.crlinetomouse= true;
       dr3.hintwithctrl = false;
       dr3.hintlinetoMwidth = 1;
@@ -252,8 +253,6 @@
 
 
       dr3a.crHint   = true;
-      //dr3a.crpointhint   = false;
-      //dr3a.crlinetomouse = true;
       dr3a.canvasbkcol = "rgba(0,0,0,1)";
       dr3a.axcol       = "rgba(155,155,155,1)";
       dr3a.axdesccol   = "rgba(255,255, 0, 1)";
@@ -263,8 +262,9 @@
       dr3a.mshcol      = "rgb(100,100,100, 0.7)"; 
       dr3a.crlinecol   = "rgb(255, 255,255)"; 
       dr3a.crlinewidth = 0.5;     
-      dr3a.meshlw = 0.5; 
-      dr3a.descfpx = 12;
+      dr3a.meshlw      = 0.5; 
+      dr3a.descfpx     = 12;
+			dr3a.hintfpx     = 15;
       dr3a.crXjump     = false;  
       dr3a.crYjumpM    = false; 
       dr3a.crYjumpP    = false;  
@@ -282,14 +282,16 @@
       dr3a.hintmaxalpha = false;
 			dr3a.crXYline     = true;
       dr3a.hintlinetoMcol = "rgba(250, 250, 0, 1)";
+			dr3a.legpx       = 18;
+			dr3a.legend("top", ["First", "Second", "Third", "aaa"]);
       dr3a.draw();
 
+
       dr4a.crHint   = true;
+      dr4a.smallhint   = false;
       dr4a.crYjumpM = true;
       dr4a.crYjumpP = true;
       dr4a.crXjump  = true;
-      //dr4a.crpointhint   = false;
-      //dr4a.crlinetomouse = true;
       dr4a.canvasbkcol = "rgba(0,0,0,1)";
       dr4a.axcol       = "rgba(155,155,155,1)";
       dr4a.axdesccol   = "rgba(255,255, 0, 1)";
@@ -304,6 +306,7 @@
       dr4a.crXjump     = false;  
       dr4a.crYjumpM    = false; 
       dr4a.crYjumpP    = false;  
+			dr4a.hintfpx     = 12;
       dr4a.hintpointfill  = "rgba(0, 150, 150, 0.3)";
       dr4a.hintlinecol    = "rgba(250, 250, 250, 1)";
       dr4a.hintpointcolfromdraw = true; // new
@@ -311,15 +314,15 @@
       dr4a.hintpointlwdth = 1;
       dr4a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
       dr4a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
-      dr4a.hintwithctrl   = false;
+      dr4a.hintwithctrl   = true;
+			dr4a.legend("right", ["First", "Second", "Third", "aaa"]);
       dr4a.draw();
+    
     
       dr4.crHint   = true;
       dr4.crYjumpM = true;
       dr4.crYjumpP = true;
       dr4.crXjump  = true;
-      //dr4.crpointhint   = false;
-      //dr4.crlinetomouse = true;
       dr4.hintwithctrl = false;
       dr4.draw();
 		
@@ -333,7 +336,7 @@
       dr.decimalY = 1;
       dr.draw();
       
-      
+
 
       function redrawAll() {
         dr1a.draw()
@@ -379,11 +382,32 @@
           return;
         }
         var dir = true;
+        var dirr = true;
+        var dirg = true;
+        var dirb = true;
+        var r = 0;
+        var g = 0;
+        var b = 0;
         interval= setInterval(function() {
                     if (dir)
                       if (dr.to < dr.alldatalength) dr.right(); else dir = false;
                     else
                       if (dr.from > 0) dr.left();  else dir = true;
+                    var fr = Math.random() * 10;
+                    var fg = Math.random() * 10;
+                    var fb = Math.random() * 10;
+                    if (r > 240) dirr = false; 
+                    if (g > 240) dirg = false; 
+                    if (b > 240) dirb = false; 
+                    if (dirr) r = (r + fr) % 255; else r = (r - fr) % 255;
+                    if (dirg) g = (g + fg) % 255; else g = (g - fg) % 255; 
+                    if (dirb) b = (b + fb) % 255; else b = (b - fb) % 255;
+                    if (r < 20) dirr = true;
+                    if (g < 20) dirg = true;
+                    if (b < 20) dirb = true;
+                    dr3.canvasbkcol = "rgba("+r+","+g+","+b+", 0.3)";
+                    dr3.hintwithctrl = true;
+                    dr3.redraw();
                   }, 250);    
       }
 

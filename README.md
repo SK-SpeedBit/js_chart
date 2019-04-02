@@ -3,12 +3,6 @@ Simple, light weight javascript chart for embedded systems
 
 All you need to do is just js_chart.js
 
-The size of the js_chart file:
--  72 kb: full chart with mouse events
--  40 kb: full chart without mouse events
-You can also reduce the file by removing eg automatic scaling.
-
-
 The js_chart class - short description
 ===========================================
   - any number of charts on the website - we create as much as needed by new js_chart (chart_container, ...);
@@ -34,7 +28,9 @@ The js_chart class - short description
   - a large number of global configuration parameters
   - onClick mouse event handling (displays the value of the data clicked)
   - onMouseMove mouse event handling (displays all data values ??for a specific cursor location relative to the X axis)
-  - flexible hint configuration in events (start / stop options, colors, lines and other parameters)
+  - a flexible hint configuration in events (start / stop options, colors, lines and other parameters)
+  - small hint after pointing the mouse on the graph value
+  - a flexible chart legend with a lot of propertis
 
   Additionally:
   - included function to generated random values for chart ??and a code in html to quickly determine if this code matches expectations
@@ -52,3 +48,7 @@ The js_chart class - short description
   - [zoom      ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the right (select) - zooming the graph (graph of the selected values)
   - [undo zoom ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the left (undo zoom) - a graph with all values
   - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
+
+  Is compatible with FireFox, Opera, Chrome
+  Does not work with IE and Safari (also due to lack of class support) :-(
+	

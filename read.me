@@ -36,12 +36,20 @@
 //  0. Revision
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   1.0  12-03-2019  First release
+  
   1.1  27-03-2019  - New properties:
                        meshlw               =    1;  // mesh line width
                        hintpointcolfromdraw = true;  // hint point fill color from draw 
                    - hint big point corrected
                    - new chart added - stairs
-									 - corrected linear graph for cases of missing data
+                   - corrected linear graph for cases of missing data
+                   
+  1.2  01-04-2019  - a few new propertis
+                   - added width of markers
+                   - correction of the chart margins
+                   - added propertis line width around the colored squares in the hint
+                   - added chart legend
+                   - added a small hint when the mouse is over the graph value
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -75,6 +83,8 @@
   - onClick mouse event handling (displays the value of the data clicked)
   - onMouseMove mouse event handling (displays all data values ??for a specific cursor location relative to the X axis)
   - flexible hint configuration in events (start / stop options, colors, lines and other parameters)
+  - small hint after pointing the mouse on the graph value
+  - a flexible chart legend with a lot of propertis
 
   Additionally:
   - included function to generated random values for chart ??and a code in html to quickly determine if this code matches expectations
@@ -93,6 +103,9 @@
   - [undo zoom ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the left (undo zoom) - a graph with all values
   - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
 
+ Is compatible with FireFox, Opera, Chrome
+ Does not work with IE and Safari (also due to lack of class support) :-(
+ 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -104,6 +117,7 @@
 
   class js_chart {
     constructor(container, Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) // initialize chart engine with data
+    legend(pos, leg)                                                 // inserts a legend in the chart.
     update(                Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) // put new data into chart engine
     left()                                                           // if is zoom then shift chart to left
     right()                                                          // if is zoom then shift chart to right 
@@ -170,6 +184,26 @@
             -----------------------------
                               
                               
+
+
+
+  //--------------------------------------------------------------------------
+  //  legend(pos, leg) 
+  //--------------------------------------------------------------------------
+      Inserts a legend in the chart.
+      Note: all parameters of the legend must be set before calling this function!
+      This function must be called before the draw () function.
+      ------------------------------------------------------
+            parameter 1: pos
+            ------------------------------
+                              Determines the place of the legend.
+                              "top", "right", "bottom", "left"  or 0, 1, 2, 3
+            parameter 2: leg
+            ------------------------------
+                              Array of strings - names of charts.
+                              e.g. ["First", "Second", "Third"]
+
+
 
   //--------------------------------------------------------------------------
   //  update(Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt)
@@ -298,7 +332,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 4. Properties of the js_chart class (111 items) - short description:
+// 4. Properties of the js_chart class - short description:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ----------------------------------------------------------------------------------------------------------------------------------------
@@ -321,8 +355,8 @@
     decimalX             |  decimal point X-axis                                                |   0
     decimalY             |  decimal point Y-axis                                                |   0
     // margins
-    margv                |  vertical margin                                                     |  15
-    margh                |  horizontal margin                                                   |  35
+    margv                |  vertical margin                                                     |   5
+    margh                |  horizontal margin                                                   |   5
   ----------------------------------------------------------------------------------------------------------------------------------------
     // canvas background
     canvasbkcol          |  canvas background color                                             |  "rgba(250, 250, 170, 0.4)"
@@ -331,6 +365,7 @@
   ----------------------------------------------------------------------------------------------------------------------------------------
     // markers
     marw                 |  width of marker                                                     |   8
+    marw                 |  width of marker                                                     |   2
     drawaxis             |  draw axis ?                                                         |  true
     drawarrow            |  draw axis arrows ?                                                  |  true
   ----------------------------------------------------------------------------------------------------------------------------------------
@@ -356,10 +391,13 @@
   ----------------------------------------------------------------------------------------------------------------------------------------
     // mesh
     drawmesh             |  draw mesh ?                                                         |  true
+    meshframe            |  draw mesh frame                                                     |  true
     mshcol               |  mesh color                                                          |  "rgb(200, 200, 200, 0.7)" 
     meshlw               |  mesh line width                                                     |   1
-
-
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // chart zone (for test)
+    chartzone            |  draw the graph zone                                                 |  false
+    chartzonecol         |  chart zone frame color                                              |  "rgba(120, 120, 120, 1)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // draw zone (for test)
     drawzone             |  draw zone ?                                                         |  true
@@ -385,8 +423,10 @@
     crYlinedash          |  dash of cross line Y                                                |  [7, 7]
   ----------------------------------------------------------------------------------------------------------------------------------------
     // hint text
+    smallhint            |  small hint                                                          |  true
     hintwithctrl         |  hint only when ctrl key is pressed                                  |  true
     hintfillcol          |  hint rectangle fill color                                           |  "rgba(150, 200, 150, 0.7)"
+    hintfillhitcol       |  hint rectangle fill color when point is hit                         |  "rgba(200, 200, 200, 1)"
     hintframewidth       |  hint rectangle line width                                           |   3
     hintrectcol          |  hint rectangle line color                                           |  "rgba( 50,  50,  50, 0.7)"
     hintfpx              |  hint font size                                                      |  11;
@@ -398,7 +438,7 @@
     hintpointw           |  hint point width                                                    |   5
     hintlinecol          |  hint frame color                                                    |  "rgba( 50,  50,  50, 1)"
     hintpointfill        |  hint frame fill color                                               |  "rgba( 50,  50, 150, 0.5)"
-    hintpointcolfromdraw |  hint point fill color from draw                                    |  true
+    hintpointcolfromdraw |  hint point fill color from draw                                     |  true
     hintpointlwdth       |  hint point line width                                               |   1
     hintlinetoMcol       |  hint line to mouse color                                            |  "rgba(250,   0,   0, 1)"
     hintlinetoMwidth     |  hint line to mouse width                                            |   0.5
@@ -437,6 +477,7 @@
     barpointsize         |  bar point size                                                      |   5
     barpointcol          |  bar point color                                                     |  "rgba(  0, 250, 250, 0.3)"
     barperc              |  percent filling bar markers                                         |   0.75
+  ----------------------------------------------------------------------------------------------------------------------------------------
     bigmax               |  above this number, all data will be converted to the decimal power  |  10000
   ----------------------------------------------------------------------------------------------------------------------------------------
     // for a partial chart (from the scope of data)
@@ -455,6 +496,15 @@
     LRsize               |  click area (left and right) - fraction of the entire chart area     |  1/5 = 0.2 => 20%
     hintzoomcol          |  color of the shift click area                                       |  "rgba(0, 250, 0, 0.15)"
     undozoompx           |  the number of pixels to move the mouse to the left to undo the zoom | 20
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // legend
+    legframew            |  legend rectangle line width                                         |  1
+    legframecol          |  color of the legend frame                                           |  rgba(250, 250, 250, 0.7)
+    legfillcol           |  color of the legend bacground                                       |  "rgba(150, 150, 150, 0.5)"
+    legpx                |  legend font size                                                    |  12
+    legfontmod           |  legend font modifier                                                |  " italic "
+    legfont              |  legend font name                                                    |  "px Courier New"
+    legtxtcol            |  legend text color                                                   |  "rgba(  0, 250, 250, 1)"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
