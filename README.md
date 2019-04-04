@@ -1,3 +1,4 @@
+
 # js_chart
 Simple, light weight javascript chart for embedded systems
 
@@ -13,12 +14,15 @@ The js_chart class - short description
   - the possibility of describing the X and Y axes and defining their appearance, color, font, etc.
   - possibility to automatically scale the Y axis for numbers smaller than one
   - possibility to predefine any number of chart styles (for line, area, bar chart) and their private parameters
-  - the possibility of choosing styles from:
+  - the possibility of choosing styles from: 
       - line   chart (any quantity limited only by the readability of the chart)
+<a href="https://user-images.githubusercontent.com/33321284/55556723-8547fe00-56e8-11e9-84b4-5f5816c59adf.png"><img src="https://user-images.githubusercontent.com/33321284/55556723-8547fe00-56e8-11e9-84b4-5f5816c59adf.png" align="center"  ></a>      
       - stairs chart (any quantity limited only by the readability of the chart)
+<a href="https://user-images.githubusercontent.com/33321284/55556855-d22bd480-56e8-11e9-9053-244494867aee.png"><img src="https://user-images.githubusercontent.com/33321284/55556855-d22bd480-56e8-11e9-9053-244494867aee.png" align="center"  ></a>      
       - area   chart (any quantity limited only by the readability of the chart)
-<a href="https://user-images.githubusercontent.com/33321284/55555130-c9d19a80-56e4-11e9-9752-feec28e1c60d.png"><img src="https://user-images.githubusercontent.com/33321284/55555130-c9d19a80-56e4-11e9-9752-feec28e1c60d.png" align="center"  ></a>      
+<a href="https://user-images.githubusercontent.com/33321284/55556565-3601cd80-56e8-11e9-9f2d-fcd1eda22396.png"><img src="https://user-images.githubusercontent.com/33321284/55556565-3601cd80-56e8-11e9-9f2d-fcd1eda22396.png" align="center"  ></a>      
       - bar    graph (any quantity limited only by the readability of the chart)
+<a href="https://user-images.githubusercontent.com/33321284/55556799-ad376180-56e8-11e9-832e-5d7d38abb41e.png"><img src="https://user-images.githubusercontent.com/33321284/55556799-ad376180-56e8-11e9-832e-5d7d38abb41e.png" align="center"  ></a>      
   - big possibilities of styles configuration for each chart
   - the ability to plot Bezier curves instead of straight lines (smoothing the chart) - available configuration parameters
   - the possibility of own description of the X axis or work without this description - then the data is automatically numbered from 1
