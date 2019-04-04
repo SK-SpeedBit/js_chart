@@ -17,6 +17,7 @@ The js_chart class - short description
       - line   chart (any quantity limited only by the readability of the chart)
       - stairs chart (any quantity limited only by the readability of the chart)
       - area   chart (any quantity limited only by the readability of the chart)
+<a href="Chart example"><img src="https://user-images.githubusercontent.com/33321284/55555130-c9d19a80-56e4-11e9-9752-feec28e1c60d.png" align="center"  ></a>      
       - bar    graph (any quantity limited only by the readability of the chart)
   - big possibilities of styles configuration for each chart
   - the ability to plot Bezier curves instead of straight lines (smoothing the chart) - available configuration parameters
