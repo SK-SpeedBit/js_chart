@@ -57,6 +57,7 @@ The js_chart class - short description
   - [undo zoom ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the left (undo zoom) - a graph with all values
   - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
 
-  Is compatible with FireFox, Opera, Chrome
-  Does not work with IE and Safari (also due to lack of class support) :-(
+<a href="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png"><img src="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png" align="center"  ></a>      
+
+###  Is compatible with FireFox, Opera, Chrome. Does not work with IE and Safari (also due to lack of class support) :-(
 	
