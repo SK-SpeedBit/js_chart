@@ -61,10 +61,11 @@ The js_chart class - short description
   - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll). After pressing by long time the left key of the mouse auto repeat mode will on. If the Ctrl key is pressed, the shifts are faster.
     [Keys: Left, Right, Home, End, Esc] 
                  If key is pressed and chart is in zoom mode, the chart will be shifted to left / right / home / end of data. Esc key makes undo zoom. 
-                 ###Use of the keys requires the chart must be focused!
+###Use of the keys requires the chart must be focused!
 
 
 <a href="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png"><img src="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png" align="center"  ></a>      
 
-###  Is compatible with FireFox, Opera, Chrome. Tested in Firefox on Android 6.0 too. Does not work with IE and Safari (also due to lack of class support) :-(
+###  Is compatible with FireFox, Opera, Chrome. Tested in Firefox on Android 6.0 too. 
+###  Does not work with IE and Safari (also due to lack of class support) :-(
 	
