@@ -35,21 +35,46 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  0. Revision
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  1.0  12-03-2019  First release
-  
-  1.1  27-03-2019  - New properties:
-                       meshlw               =    1;  // mesh line width
-                       hintpointcolfromdraw = true;  // hint point fill color from draw 
-                   - hint big point corrected
-                   - new chart added - stairs
-                   - corrected linear graph for cases of missing data
-                   
+
+  1.3  18-04-2019  Scaling the chart:
+                    - Added chart option from min to max (y-axis extension) when Yzoom parameter is true;
+                      Otherwise, the chart will be drawn from 0 to max as standard.
+                      The option only works if we have only positive values or only negative values.
+                      Specifying the Ymax and Ymin parameters results in setting the minimum and maximum values ??on the Y axis (static window) as before.
+                      You can specify only one value (either Ymax or Ymin) as a constant level (value! = 0) and the other as auto (value = 0)
+                      Ymax must be greater than Ymin. If incorrect values are entered, the scaling will be switched to auto.
+                   Scrolling the graph (in X magnification mode):
+                    - added mouse button repetition while scrolling the X magnification (after pressing the scroll box) while holding down the left mouse button.
+                      If the CTRL key is also pressed after pressing the left mouse button, a high scrolling speed will be used.
+                      If you do not press the CTRL key, holding down the left mouse button will scroll slowly.
+                    - added arrows on the scroll bars.
+                    - scrolling the graph on the X-zoom not only by clicking on the scroll box - now you can also use the keys.
+                      supported keys: left, right, up, down, home, end (use of the keys requires the chart must be focused!)
+                    - the scroll bar is hidden when scrolling is not possible (start or end of data).
+                    - added fuctions home () and end ()
+                    - small improvements to the CTRL key.
+                    - added visual zoom -> a line that indicates the current location of the displayed data range with respect to the entire data set.
+                      It is switched on automatically (if the vsOn parameter is set to true) when the data is displayed in the zoom mode.
+                   Fixes:
+                    - Correction in calculating the max and min values when the data is null or there are missing data in the table.
+                    - Checking the automatic turning off the bezier curve transferred to the line graph and area, because the main module did not work.
+                    - Minor changes in test functions (file: js_rnd_demo.js)  
+
   1.2  01-04-2019  - a few new propertis
                    - added width of markers
                    - correction of the chart margins
                    - added propertis line width around the colored squares in the hint
                    - added chart legend
                    - added a small hint when the mouse is over the graph value
+
+  1.1  27-03-2019  - New properties:
+                       meshlw               =    1;  // mesh line width
+                       hintpointcolfromdraw = true;  // hint point fill color from draw 
+                   - hint big point corrected
+                   - new chart added - stairs
+                   - corrected linear graph for cases of missing data
+
+  1.0  12-03-2019  First release
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +101,8 @@
   - after inserting the bar chart, the marker field including all bars and other data is additionally displayed
   - practically unlimited amount of data to display only limited by the legibility of the chart
   - possibility to display the range of data from the table [from..do] or a specific number of them (zoom)
-  - possibility of shift the chart to the left and right (if the data range is displayed)
+  - possibility of shift the chart to the left, right, home, end (if the data range is displayed) (auto repeat mode is provided)
+  - possibility use of keys: left, right, home, end, for chart move
   - possibility to update data at any time
   - possibility to display data with missing data in them (null value - holes in the graph)
   - a large number of global configuration parameters
@@ -85,7 +111,9 @@
   - flexible hint configuration in events (start / stop options, colors, lines and other parameters)
   - small hint after pointing the mouse on the graph value
   - a flexible chart legend with a lot of propertis
-
+  - visual zoom - a line that indicates the current location of the displayed data range with respect to the entire data set.
+  - possibility to display the chart from min of Y data to max of Y data (y-axis extension) or from 0 to max of Y data.
+                      
   Additionally:
   - included function to generated random values for chart ??and a code in html to quickly determine if this code matches expectations
   - a small own contribution to running the graph
@@ -101,10 +129,16 @@
   - [points on graph] pressing the right mouse button 3 times (default) - switch on / off points on the graph values
   - [zoom      ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the right (select) - zooming the graph (graph of the selected values)
   - [undo zoom ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the left (undo zoom) - a graph with all values
-  - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
+  - [scroll    ] when the graph is in the zoom mode, an area appears in the left or right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
+                 After pressing by long time the left key of the mouse auto repeat mode will on. If the Ctrl key is pressed, the shifts are faster.
+    [Keys: Left, Right, Home, End, Esc] 
+                 If key is pressed and chart is in zoom mode, the chart will be shifted to left / right / home / end of data. Esc key makes undo zoom. 
+                 Use of the keys requires the chart must be focused!
+                 
 
- Is compatible with FireFox, Opera, Chrome
+ Is compatible with FireFox, Opera, Chrome. Tested in Firefox on Android 6.0 too.
  Does not work with IE and Safari (also due to lack of class support) :-(
+ 
  
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -119,8 +153,10 @@
     constructor(container, Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) // initialize chart engine with data
     legend(pos, leg)                                                 // inserts a legend in the chart.
     update(                Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) // put new data into chart engine
-    left()                                                           // if is zoom then shift chart to left
-    right()                                                          // if is zoom then shift chart to right 
+    home()                                                           // if it is zoomed, the chart moves to the home of the data
+    end()                                                            // if it is zoomed, the chart moves to the end of the data
+    left()                                                           // if it is zoomed, the chart moves to left
+    right()                                                          // if it is zoomed, the chart moves to right
     draw_FromTo(from, to)                                            // draw chart from index to index of data (zoom)
     draw_FromCount(from, cnt)                                        // draw chart from index from to from plus number of data (zoom)
     undozoom()                                                       // undo zoom - show all data
@@ -213,18 +249,31 @@
           Parameters are the same as in initialize (without container parameter).
 
 
+  //--------------------------------------------------------------------------
+  //  home()
+  //--------------------------------------------------------------------------
+      If it is zoomed, the chart moves to the home of the data. Draw the chart.
+
+
+
+  //--------------------------------------------------------------------------
+  //  end()
+  //--------------------------------------------------------------------------
+      If it is zoomed, the chart moves to the end of the data. Draw the chart.
+
+
 
   //--------------------------------------------------------------------------
   //  left()
   //--------------------------------------------------------------------------
-      If is zoom then shift chart to left. Draw the chart.
+      If it is zoomed, the chart moves to left. Draw the chart.
 
 
 
   //--------------------------------------------------------------------------
   //  right()
   //--------------------------------------------------------------------------
-      If is zoom then shift chart to right. Draw the chart.
+      If it is zoomed, the chart moves to right. Draw the chart.
 
 
 
@@ -387,7 +436,16 @@
     drw0x                |  draw zero value X-axis                                              |  true
     drw0y                |  draw zero value Y-axis                                              |  false
     hmarshift            |  move X markers by 1/2 sie (for bars its better)                     |  false
-    addmaxmarg           |  additional margin from max value to border                          |  0.03;  // 0 = none, 0,01 = 1% of max value
+deleted:    addmaxmarg           |  additional margin from max value to border                          |  0.03;  // 0 = none, 0,01 = 1% of max value
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // Yzoom
+    Yzoom                |  Y zoom: chart from Ymin to Ymax or from 0 to Ymax                   |  false
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // mouse repetition
+    repeatMouseMode      |  mouse repetition on / off                                           |  true
+    repeatPerDelay       |  delay to mouse repeat mode                                          | 500 [ms]
+    repeatPerSlow        |  mouse slow repetition time                                          | 200 [ms]
+    repeatPerSpeed       |  mouse high speed repetition time (with CTRL key)                    |  50 [ms]
   ----------------------------------------------------------------------------------------------------------------------------------------
     // mesh
     drawmesh             |  draw mesh ?                                                         |  true
@@ -488,7 +546,7 @@
     multimsdowncnt       |  number cliks for points switch                                      |  3
     multimstout          |  timeout for points switch in ms                                     |  1000
     multimsdowncol       |  color for points switch                                             |  "rgba(0, 0, 0, 0.15)"
-    // shedow when select zoom
+    // shadow when select zoom
     hintselectshadow     |  on/off select shadow                                                |  true
     hintselectcol        |  select shadow color                                                 |  "rgba(0, 0, 0, 0.3)"
     // shift chart left/rigth by moouse left click (if zoomed)
@@ -496,6 +554,13 @@
     LRsize               |  click area (left and right) - fraction of the entire chart area     |  1/5 = 0.2 => 20%
     hintzoomcol          |  color of the shift click area                                       |  "rgba(0, 250, 0, 0.15)"
     undozoompx           |  the number of pixels to move the mouse to the left to undo the zoom | 20
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // visual zoom
+    vsOn                 |  visual zoom on / off                                                |  true
+    vzonXaxis            |  visual zoom on X axsis                                              |  drawaxis
+    vzcolor              |  visual zoom color                                                   |  axdesccol
+    vzwdtsm              |  visual zoom small width                                             |  axw
+    vzwdtlg              |  visual zoom large width                                             |  aw
   ----------------------------------------------------------------------------------------------------------------------------------------
     // legend
     legframew            |  legend rectangle line width                                         |  1
@@ -520,7 +585,7 @@
   miscellaneous (additional) functions - only for debug
  ------------------------------------------------------
 
-  function debug(s)                            // places debug text to span id="debug" in html file
+  function debug(s)                            // places debug text to span id="debug"  in html file
   function debug1(s)                           // places debug text to span id="debug1" in html file
   function debug2(s)                           // places debug text to span id="debug2" in html file
 

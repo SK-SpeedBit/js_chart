@@ -55,13 +55,14 @@ var demodesc = [];
 let demolength = 30;      // -1 for random data length
 
 function set_random_data_array(array) {
-  //const maxdatalength   = 25;      // maximum legth of demo data array if random length
-  let differentsize     = false;   // each data array has different size (datalength)
-  const maxdatavalue    = 40;//0.0000000000661; // maximum value of demo data
-  const mindatavalue    = 10.0000001; // minimum value of demo data
-  const randomdeletedata= false;   // delete random data
+  const maxdatalength   = 30;      // maximum legth of demo data array if random length
+  let differentsize     = true;   // each data array has different size (datalength)
+  const maxdatavalue    = -0.0000000000661; // maximum value of demo data
+  const mindatavalue    = -0.0000001; // minimum value of demo data
+  const offsetedatavalue= -0.0000000048; // offset value of demo data
+  const randomdeletedata= true;   // delete random data
   let numberofdelete    =  3;      // the amount of deletion of data
-  const insertnulldata  = false;   // enter null for random data
+  const insertnulldata  = true;   // enter null for random data
   let numberofinserts   =  3;      // number of null entries
   
 
@@ -71,7 +72,8 @@ function set_random_data_array(array) {
   // random data values
   for (let i = 0; i < demolength; i++) {
     let r=Math.random() * maxdatavalue;
-    if (Math.random() > 0.5) r= -Math.random() * mindatavalue;
+    if (Math.random() > 0.5) r= Math.random() * mindatavalue;
+    r += offsetedatavalue;
     array.push(r);
   }
   // insert null data - for test
@@ -187,6 +189,7 @@ function generate_random_data() {
 
   //demostyle = [bar_st_1, bar_st_2, bar_st_3];
   demodata  = [data_1, data_2, data_3, data_4, data_5];
+  //demodata  = [data_1];
   let tl = Math.round(Math.random() * (demodata.length) ) + 1; // if +x then the demodata will accidentally contain a x non-existent data series - for test ;-)
   //if (tl == 0) tl = 1; // if we want to always have at least one data series
   demodata.length = tl;

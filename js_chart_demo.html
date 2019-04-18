@@ -17,9 +17,11 @@
     // here we are preparing chart data ...
     var chart_container = "container";
     // here we are preparing chart data value (they can come e.g. from an embedded system)
-    mydata_1= [ 0,  4, 5,  25, 25, 30, 18, 12, 24,  26,  0, -12, -15, -14, -12, 0,  0,  3,  1,  0,  3,  12,  7, 10];
-    mydata_2= [26, -2, 3, -10,  0,  5, -7, -9,  5,  25, 20,  25,  21,   6, 12,  8, 14,  0, -6, -5, -12, -10, 0, 20];
-    mydata_3= [ 3,  2, 8,  13,  3, -5, -1, 15,  6, -12, 15,   5,  -5,  16, 12, 28, 18, 20, 16, 25,  16,  -3, 5,  2];
+    //mydata_0= [20, 24, 25,  26, 25, 30, 20, 18, 21,  22, 20,  23,  25,  27,  24, 21,  19,  23,  21,  20,  23,  25,  27, 20];
+    //mydata_0= [20.1, 21.3, 20.2,  22.7, 23.2, 20.4, 20.8, 21.6, 21.0, 22, 22.8,  23,  21.1,  21.4,  21.9, 23.1,  21.5,  22.8,  21.1,  20.9,  23.3,  22.6,  21.5, 20.0];
+    mydata_1= [ 0,  4,  5,  25, 25, 30, 18, 12, 24,  26,  0, -12, -15, -14, -12, 0,  0,  3,  1,  0,  3,  12,  7, 10];
+    mydata_2= [26, -2,  3, -10,  0,  5, -7, -9,  5,  25, 20,  25,  21,   6, 12,  8, 14,  0, -6, -5, -12, -10, 0, 20];
+    mydata_3= [ 3,  2,  8,  13,  3, -5, -1, 15,  6, -12, 15,   5,  -5,  16, 12, 28, 18, 20, 16, 25,  16,  -3, 5,  2];
     // here we are preparing chart styles
     mystyle_B1=["type=bar"   , "linecolor=rgba(255,   0,   0, 1  )", "fillcolor=rgba(255,   0,   0, 0.3)", "linewidth=0.5", "beziercurve=true"];
     mystyle_B2=["type=bar"   , "linecolor=rgba(  0, 255,   0, 1  )", "fillcolor=rgba(  0, 255,   0, 0.3)", "linewidth=0.5", "beziercurve=true"];
@@ -137,6 +139,7 @@
 
     <script>
       var dr1a= new js_chart('chart1a', [mydata_1, mydata_2, mydata_3], [mystyle_C1, mystyle_C2, mystyle_C3], null, "time", "mA" );
+      //var dr1a= new js_chart('chart1a', [mydata_0], [mystyle_C1, mystyle_C2, mystyle_C3], desc_0, "time", "mA" );
       var dr2a= new js_chart('chart2a', [mydata_1, mydata_2, mydata_3], [mystyle_L1, mystyle_L2, mystyle_L3], desc, "t", "mA" );
       var dr3a= new js_chart('chart3a', [mydata_1, mydata_2, mydata_3], [mystyle_D2, mystyle_D3, mystyle_D1], null, "month", "MB" );
       var dr4a= new js_chart('chart4a', [mydata_1, mydata_2, mydata_3], [mystyle_S3, mystyle_S1, mystyle_S2], desc, "ms", "V" );
@@ -159,10 +162,13 @@
       dr1.legtxtcol   = "rgba(0,0,0, 1)"; 
  			//dr1.legend("left", ["First", "Second", "Third"]);
  			dr1.legend("bottom", ["Monitor", "Disk", "Mouse"]);
+      dr1.from =  12;
+      dr1.to   =  22;
+      dr1.zoom = true;
       dr1.draw();
       
       
-      dr1a.crHint   = false;
+      dr1a.crHint   = true;
       dr1a.crYjumpM = true;
       dr1a.crYjumpP = true;
       dr1a.crXjump  = true;
@@ -181,9 +187,6 @@
       dr1a.crlinewidth = 0.5;     
       dr1a.meshlw      = 0.5; 
       dr1a.descfpx     = 12;
-      dr1a.crXjump     = false;  
-      dr1a.crYjumpM    = false; 
-      dr1a.crYjumpP    = false;  
       dr1a.hintpointfill   = "rgba(0, 150, 150, 0.3)";
       dr1a.hintlinecol     = "rgba(250, 250, 250, 1)";
       dr1a.hintpointcolfromdraw = false; 
@@ -192,6 +195,10 @@
       dr1a.hintselectcol  = "rgba(200, 200, 200, 0.3)";
       dr1a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
       dr1a.hintwithctrl   = false;
+      //dr1a.Ymax = 25;
+      //dr1a.Ymin = 18;
+      dr1a.decimalY = 2;
+      dr1a.Yzoom = true;
 			dr1a.legend("bottom", ["First", "Second", "Third", "aaa"]);
       dr1a.draw();
 
@@ -237,6 +244,10 @@
       dr2a.hintzoomcol    = "rgba(0, 250, 250, 0.3)"; 
       dr2a.hintwithctrl   = false;
 			dr2a.legend("left", ["First", "Second", "Third"]);
+      dr2a.vzonXaxis = true;
+      dr2a.from =  5;
+      dr2a.to   = 15
+      dr2a.zoom = true;
       dr2a.draw();
 
 
@@ -334,6 +345,10 @@
       dr.descfpx = 15;
       dr.hintfpx = 11;
       dr.decimalY = 1;
+      dr.Yzoom = true;
+      //dr.Ymax = -12;
+      //dr.Ymin = -50;
+      
       dr.draw();
       
 
