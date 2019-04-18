@@ -30,7 +30,8 @@ The js_chart class - short description
   - after inserting the bar chart, the marker field including all bars and other data is additionally displayed
   - practically unlimited amount of data to display only limited by the legibility of the chart
   - possibility to display the range of data from the table [from..do] or a specific number of them (zoom)
-  - possibility of shift the chart to the left and right (if the data range is displayed)
+  - possibility of shift the chart to the left, right, home, end (if the data range is displayed) (auto repeat mode is provided)
+  - possibility use of keys: left, right, home, end, for chart move
   - possibility to update data at any time
   - possibility to display data with missing data in them (null value - holes in the graph)
   - a large number of global configuration parameters
@@ -39,6 +40,8 @@ The js_chart class - short description
   - a flexible hint configuration in events (start / stop options, colors, lines and other parameters)
   - small hint after pointing the mouse on the graph value
   - a flexible chart legend with a lot of propertis
+  - visual zoom - a line that indicates the current location of the displayed data range with respect to the entire data set.
+  - possibility to display the chart from min of Y data to max of Y data (y-axis extension) or from 0 to max of Y data.
 
   Additionally:
   - included function to generated random values for chart ??and a code in html to quickly determine if this code matches expectations
@@ -55,9 +58,13 @@ The js_chart class - short description
   - [points on graph] pressing the right mouse button 3 times (default) - switch on / off points on the graph values
   - [zoom      ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the right (select) - zooming the graph (graph of the selected values)
   - [undo zoom ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the left (undo zoom) - a graph with all values
-  - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
+  - [scroll    ] when the graph is in the zoom mode, an area appears in the left and right of the graph in which the click causes the graph to shift to the left or to the right (scroll). After pressing by long time the left key of the mouse auto repeat mode will on. If the Ctrl key is pressed, the shifts are faster.
+    [Keys: Left, Right, Home, End, Esc] 
+                 If key is pressed and chart is in zoom mode, the chart will be shifted to left / right / home / end of data. Esc key makes undo zoom. 
+                 ###Use of the keys requires the chart must be focused!
+
 
 <a href="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png"><img src="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png" align="center"  ></a>      
 
-###  Is compatible with FireFox, Opera, Chrome. Does not work with IE and Safari (also due to lack of class support) :-(
+###  Is compatible with FireFox, Opera, Chrome. Tested in Firefox on Android 6.0 too. Does not work with IE and Safari (also due to lack of class support) :-(
 	
