@@ -1,6 +1,8 @@
+/* jshint esversion: 6 */
+
 /*
-    -----------------------   js_chart ver. 1.3  -----------------------
-      (c) 2019 SpeedBit, reg. Czestochowa, Poland 
+    -----------------------   js_chart ver. 1.4  -----------------------
+      (c) 2019 SpeedBit, reg. Czestochowa, Poland
     --------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +22,7 @@
 
 //  --------------------------   js_chart   ----------------------------
 class js_chart {
-   
+
   constructor(container, Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) {
     // chart defaults parameters
     this.onmouseclick= true;   // mouse click event on/off
@@ -31,7 +33,7 @@ class js_chart {
     this.onkeydown   = true;   // key down event on/off
     this.onkeyup     = true;   // key up event on/off
     this.oncontext   = true;   // block context menu event on/off (turn off context memu)
-    
+
     this.axisXtxt    =  "x";   // axis X description
     this.axisYtxt    =  "y";   // axis Y description
     this.Ymax        =    0;   // Xmin or 0 for auto
@@ -42,9 +44,9 @@ class js_chart {
     this.margv       =    5;   // vertical margin
     this.margh       =    5;   // horizontal margin
     // canvas background
-    this.canvasbkcol = "rgba(250, 250, 170, 0.4)"; // canvas background color 
+    this.canvasbkcol = "rgba(250, 250, 170, 0.4)"; // canvas background color
     this.canvasfrw   =    2;                       // canvas frame width
-    this.canvasfrcol = "rgba(0, 0, 255, 1)";       // canvas frame color 
+    this.canvasfrcol = "rgba(0, 0, 255, 1)";       // canvas frame color
     // markers
     this.marsize     =    8;  // size of marker
     this.marw        =    2;  // width of marker
@@ -53,14 +55,14 @@ class js_chart {
     // axes & arrows & description
     this.al          =   18;  // arrow length
     this.aw          =    9;  // arrow width
-    this.axcol       = "rgba(0,0,0,1)"; // axis color 
+    this.axcol       = "rgba(0,0,0,1)"; // axis color
     this.axw         =    2;  // axis width
     this.axisdesc    = true;  // draw description of axis ?
-    this.axdesccol   = "rgba(0,100,200,1)"; // axis description color 
+    this.axdesccol   = "rgba(0,100,200,1)"; // axis description color
     this.drawdesc    = true;  // draw values ?
-    this.dgroup      = true;  // use group digits 
+    this.dgroup      = true;  // use group digits
     this.drawmark    = true;  // draw markers ?
-    this.descol      = "rgba(0,0,255,1)"; // description / markers color    
+    this.descol      = "rgba(0,0,255,1)"; // description / markers color
     this.descfpx     = 15;                // font size for description
     this.descfontmod = " italic ";        // font modifier
     this.descfont    = "px Courier New";  // description font
@@ -69,27 +71,27 @@ class js_chart {
     this.drw0y       = true;  // draw zero value Y-axis
     this.hmarshift   = false; // move X markers by 1/2 size (for bars it's better)
     // Yzoom
-    this.Yzoom       = false; // Y zoom: chart from Ymin to Ymax or from 0 to Ymax 
+    this.Yzoom       = false; // Y zoom: chart from Ymin to Ymax or from 0 to Ymax
     // mouse repetition
     this.repeatMouseMode= true; // mouse repetition on / off
     this.repeatPerDelay =  500; // delay to mouse repeat
     this.repeatPerSlow  =  200; // mouse slow repetition time
     this.repeatPerSpeed =   50; // mouse high speed repetition time (with CTRL key)
     // mesh
-    this.drawmesh    = true;  // draw mesh 
+    this.drawmesh    = true;  // draw mesh
     this.meshframe   = true;  // draw mesh frame
-    this.mshcol      = "rgb(200,200,200, 0.7)";  // mesh color 
+    this.mshcol      = "rgb(200,200,200, 0.7)";  // mesh color
     this.meshlw      =  1;    // mesh line width
     // chart zone (for test)
     this.chartzone   = false;                    // draw the graph zone
-    this.chartzonecol= "rgba(120, 120, 120, 1)"; // chart zone frame color 
+    this.chartzonecol= "rgba(120, 120, 120, 1)"; // chart zone frame color
     // draw zone (for test)
     this.drawzone    = false;  // draw zone ?
     this.drawzfrm    = true;   // draw zone frame ?
-    this.drwfracol   = "rgba(150,  0,  0, 0.5)"; // draw zone frame color 
-    this.drwfilcol   = "rgba(250,250,250, 0.3)"; // draw zone fill color 
+    this.drwfracol   = "rgba(150,  0,  0, 0.5)"; // draw zone frame color
+    this.drwfilcol   = "rgba(250,250,250, 0.3)"; // draw zone fill color
     // cross & hint	style
-    this.crXYline    = true;  // cross 
+    this.crXYline    = true;  // cross
     this.crXjump     = true;  // jump on X markers
     this.crYjumpM    = false; // jump on Y markers
     this.crYjumpP    = true;  // jump on Y values
@@ -118,7 +120,7 @@ class js_chart {
     this.hintpointw      = 5;                       // hint point width
     this.hintlinecol     = "rgba(50, 50, 50, 1)";   // hint frame color
     this.hintpointfill   = "rgba(50, 50, 150, 0.5)";// hint frame fill color
-    this.hintpointcolfromdraw = true;               // hint point fill color from draw 
+    this.hintpointcolfromdraw = true;               // hint point fill color from draw
     this.hintpointlwdth  = 1;                       // hint point line width
     this.hintcolfrwdth   = 0.5;                     // hint color square frame line width
     this.hintlinetoMcol  = "rgba(250, 0, 0, 1)";    // hint line to mouse color
@@ -131,8 +133,8 @@ class js_chart {
     this.linecol      = "rgba(250, 0, 0, 0.6)"; // chart line color
     this.linewidth    = 2;                      // char line width
     this.linepoints   = false;                  // points on chart line ?
-    this.linepointsize= 4;                      // points size	
-    this.linepointcol = "rgba(250, 0, 0, 0.7)"; // points color	
+    this.linepointsize= 4;                      // points size
+    this.linepointcol = "rgba(250, 0, 0, 0.7)"; // points color
     // default area graph
     this.arealine     = "rgb(250, 0, 250)";	     // area chart line color
     this.areafill     = "rgba(250, 0, 250, 0.3)";// area chart fill color
@@ -143,7 +145,7 @@ class js_chart {
     // default bezier curve for line and area graph
     this.beziercurve  = true; // bezier curve or normal line ?
     this.beziercnst   = 3;    // bezier coefficient
-    this.bezierlvloff = 2;    // global level auto off bezier curve. if data points number for one X markers > bezierlvloff 
+    this.bezierlvloff = 2;    // global level auto off bezier curve. if data points number for one X markers > bezierlvloff
                               // then bezier curve will be off. Value -1 block this feature. Optimal value is 3
     // default bar graph
     this.barline     = "rgb(0, 250, 250)";       // bar line color
@@ -168,7 +170,7 @@ class js_chart {
     // shift chart left/rigth by moouse left click (if zoomed)
     this.mouseclickLR   = true; // on/off shift
     this.LRsize         = 1/6;  // click area (left and right) - fraction of the entire chart area 1/5 = 20%
-    this.hintzoomcol    = "rgba(0, 250, 0, 0.15)"; // color of the shift click area 
+    this.hintzoomcol    = "rgba(0, 250, 0, 0.15)"; // color of the shift click area
     this.undozoompx     = 20;   // the number of pixels by which the mouse must be moved to the left to undo the magnification
     // visual zoom
     this.vsOn           =  true; // visual zoom on / off
@@ -176,7 +178,7 @@ class js_chart {
     this.vzcolor        = this.axdesccol; // visual zoom color
     this.vzwdtsm        = this.axw; // visual zoom small width
     this.vzwdtlg        = this.aw;  // visual zoom large width
-    
+
 //--- internal ------------------------------------------------------------
 
     this.zcorr       =    1;   // calculated correction for Yzoom
@@ -190,7 +192,7 @@ class js_chart {
     this.legleft     =    0;   // place for the legend on the left
     this.legbottom   =    0;   // place for the legend on the bottom
     this.legright    =    0;   // place for the legend on the right
-    
+
     this.legframew   =    1;   // legend rectangle line width
     this.legframecol = "rgba(250, 250, 250, 0.7)"; // color of the legend frame
     this.legfillcol  = "rgba(150, 150, 150, 0.5)"; // color of the legend bacground
@@ -198,7 +200,7 @@ class js_chart {
     this.legfontmod  = " italic ";                 // legend font modifier
     this.legfont     = "px Courier New";           // legend font name
     this.legtxtcol   = "rgba(  0, 250, 250, 1)";   // legend text color
-    
+
     // this must be for start
     if (typeof container == "undefined") return -1; // no container
     if (typeof Ydata     == "undefined") return -2; // no data
@@ -211,11 +213,11 @@ class js_chart {
     if (typeof XaxisTxt != "undefined") this.axisXtxt = XaxisTxt;
     if (typeof YaxisTxt != "undefined") this.axisYtxt = YaxisTxt;
     // varables and calculations
-    this.container = container; // main container 
-    this.ctx   ; // main context
-    this.ctxl2 ; // cross & hint context
-    this.canvas; // main canvas
-    this.layer2; // cross & hint canvas
+    this.container = container; // main container
+    this.ctx    = null; // main context
+    this.ctxl2  = null; // cross & hint context
+    this.canvas = null; // main canvas
+    this.layer2 = null; // cross & hint canvas
     this.canvas = document.createElement("canvas"); this.canvas.id = "canvas";
     this.layer2 = document.createElement("canvas"); this.layer2.id = "layer2";
     this.canvas.style.zindex= 1;
@@ -238,20 +240,20 @@ class js_chart {
 
     // find the data length and maximum values
     if ( Array.isArray(this.data) ) {
-      for (let i=0; i < this.data.length; i++ ) 
-        if ( (typeof this.data[i] != "undefined") && 
+      for (let i=0; i < this.data.length; i++ )
+        if ( (typeof this.data[i] != "undefined") &&
              (this.alldatalength < this.data[i].length)) this.alldatalength = this.data[i].length;
     }
     this.datalength = this.alldatalength;
-    // zoom data 
+    // zoom data
     this.to         = this.alldatalength;
-    
+
     this.eventsactivated = false; // events invoked only once!
-    this.pointclicked    = false; // mouse point clicked 
+    this.pointclicked    = false; // mouse point clicked
     // chart data
     this.xdiv   = 0;
-    this.wght   = 0; // calculated weight of Y data	
-    this.barcnt = 0; // count bar charts 
+    this.wght   = 0; // calculated weight of Y data
+    this.barcnt = 0; // count bar charts
     this.barnr  = 0; // bar number for draw
     this.marhpx = 0;
     this.zlvl   = 0;
@@ -271,14 +273,14 @@ class js_chart {
     this.drl    = 0; // draw left
     this.drr    = 0; // draw right
     this.drv    = 0; // draw height
-    
+
     this.allpoints = false; //
-    
+
   } // constructor
-  
+
 
   // ------------------------- start of legend -------------------------
- 
+
   legend(pos, leg) {
     var marg =  0;
     var txt  = "";
@@ -287,7 +289,7 @@ class js_chart {
     function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
       if (typeof stroke == 'undefined') stroke = true;
       if (typeof radius == 'undefined') radius = 5;
-      if (typeof radius == 'number') 
+      if (typeof radius == 'number')
         radius = {tl: radius, tr: radius, br: radius, bl: radius};
       else {
         var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
@@ -318,24 +320,25 @@ class js_chart {
       }
       return defvalue;
     }
-    
+
     function colRect(t, i, x, y) {
       if (typeof t.style[i] == "undefined") return;
-      t.ctx.save;
+      t.ctx.save();
       t.ctx.beginPath();
       t.ctx.strokeStyle = "rgba(0,0,0,1)";
       t.ctx.fillStyle   = getStyle(t.style[i], "linecolor", getStyle(t.style[i], "fillcolor", t.areafill) );
       t.ctx.lineWidth   = t.hintcolfrwdth;
       t.ctx.globalAlpha = 1;
-      t.ctx.rect    (x, y - t.legpx, t.legpx, t.legpx); 
-      t.ctx.fillRect(x, y - t.legpx, t.legpx, t.legpx); 
+      t.ctx.rect    (x, y - t.legpx, t.legpx, t.legpx);
+      t.ctx.fillRect(x, y - t.legpx, t.legpx, t.legpx);
       t.ctx.closePath();
       t.ctx.stroke();
-      t.ctx.restore;
+      t.ctx.restore();
     }
-  
+
     if (typeof this.data == "undefined") return;
     if ( (typeof pos == "undefined") && (typeof leg == "undefined") && (this.islegend == false) ) return;
+    var lw   = 0;
     if ( (typeof pos != "undefined") && (typeof leg != "undefined") ) {
       this.islegend = true;
       this.legstr = leg;
@@ -349,61 +352,66 @@ class js_chart {
       this.legbottom = 0;
       this.legleft   = 0;
 
-      this.ctx.save;
+      this.ctx.save();
       this.ctx.font  = this.legfontmod + this.legpx + this.legfont;
-      var lw   = 0;
-      var txtw = 0;
-      if ((this.legpos == 1) || (this.legpos == 3) ) { 
+      lw   = 0;
+      txtw = 0;
+      if ((this.legpos == 1) || (this.legpos == 3) ) {
         for (let i=0; i < this.legstr.length; i++ ) {
-          if (typeof this.data[i] == "undefined") continue
+          if (typeof this.data[i] == "undefined") continue;
           lw = this.ctx.measureText(this.legstr[i]).width;
           if (lw > txtw ) txtw = lw;
         }
       }
-      this.ctx.restore;
-      
+      this.ctx.restore();
+
       if (this.legpos == 0) this.legtop    = this.legpx * 2 + this.legframew * 2 + this.legmarg;
       if (this.legpos == 1) this.legright  = txtw + this.legpx * 2.2 + this.legframew * 2 + this.legmarg;
       if (this.legpos == 2) this.legbottom = this.legpx * 2 + this.legframew * 2 + this.legmarg;
-      if (this.legpos == 3) this.legleft   = txtw + this.legpx * 2.2 + this.legframew * 2 + this.legmarg; 
-      
+      if (this.legpos == 3) this.legleft   = txtw + this.legpx * 2.2 + this.legframew * 2 + this.legmarg;
+
       for (let i=0; i < this.legstr.length; i++ ) {
         if ( (typeof this.legstr[i] == "undefined") || (this.legstr[i] == null) || (this.legstr[i] == "") ) this.legstr[i] = (i+1).toString();
       }
-      
+
       return;
     }
 
-    this.ctx.save;
+    this.ctx.save();
     this.ctx.beginPath();
     marg = this.legpx / 2;
     this.ctx.lineWidth   = this.legframew  ;
     this.ctx.strokeStyle = this.legframecol;
-    this.ctx.fillStyle   = this.legfillcol ;			
+    this.ctx.fillStyle   = this.legfillcol ;
     this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
-      
+
     // the legend on top or bottom
+    var cl = 0;
+    var wd = 0;
+    var lf = 0;
+    var frmy = 0;
+    var recy = 0;
     if ( ( this.legpos == 0 ) || ( this.legpos == 2 ) ) {
-      var cl = 0;
+      cl = 0;
       for (let i=0; i < this.legstr.length; i++ ) {
-        if (typeof this.data[i] == "undefined") continue
+        if (typeof this.data[i] == "undefined") continue;
         cl++;
         txt += this.legstr[i]; // all txt together for measurement
-      }  
+      }
       txtw = this.ctx.measureText(txt).width + cl * this.legpx * 2.2 - this.legpx;
-      var wd   =  txtw + marg * 2;
-      var lf   = (this.ctx.canvas.width - wd) / 2;
+      wd   =  txtw + marg * 2;
+      lf   = (this.ctx.canvas.width - wd) / 2;
 
-      var recy = 0;
       var txty = 0;
-      var frmy = 0;
+      recy = 0;
+      frmy = 0;
       if (this.legpos==0) frmy = this.top - this.legpx * 2 - this.legframew - this.legmarg;
       else                frmy = this.bot + this.legframew * 2 + this.legmarg;
       recy = frmy + this.legpx / 0.7;
       txty = frmy + this.legpx / 0.8;
       let txtx = lf + marg;
       // frame of legend
-      roundRect(this.ctx, lf, frmy, wd, this.legpx * 1.8, 8, true, true);    
+      roundRect(this.ctx, lf, frmy, wd, this.legpx * 1.8, 8, true, true);
       // text of legend propertis
       this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
       this.ctx.fillStyle = this.legtxtcol;
@@ -414,30 +422,30 @@ class js_chart {
         // text of legend
         this.ctx.fillStyle = this.legtxtcol;
         this.ctx.fillText(this.legstr[i], txtx, txty);
-        txtx += (this.ctx.measureText(this.legstr[i]).width + this.legpx * 1); 
+        txtx += (this.ctx.measureText(this.legstr[i]).width + this.legpx * 1);
       }
     }
-    
+
     // the legend on right or left
     if ( ( this.legpos == 1 ) || ( this.legpos == 3 ) ) {
       txtw = 0;
-      var lw   = 0;
-      var cl =0;
+      lw = 0;
+      cl = 0;
       for (let i=0; i < this.legstr.length; i++ ) {
         lw = this.ctx.measureText(this.legstr[i]).width ;
-        if (typeof this.data[i] == "undefined") continue
+        if (typeof this.data[i] == "undefined") continue;
         cl++;
         if (lw > txtw ) txtw = lw;
       }
-      var wd =  txtw + this.legpx * 2.2;
-      var lf = 0;
+      wd =  txtw + this.legpx * 2.2;
+      lf = 0;
       if (this.legpos == 1) lf   = this.rgt   + this.legframew + this.legmarg;
       else                  lf   = this.margh + this.legframew;
-      
-      var frmy = (this.ctx.canvas.height - this.legpx * (this.legstr.length + 1) ) / 2;
+
+      frmy = (this.ctx.canvas.height - this.legpx * (this.legstr.length + 1) ) / 2;
       let txtx = lf + marg;
       // frame of legend
-      roundRect(this.ctx, lf, frmy, wd, this.legpx * (cl + 1), 8, true, true);    
+      roundRect(this.ctx, lf, frmy, wd, this.legpx * (cl + 1), 8, true, true);
       recy = frmy + this.legpx * 1.5;
       this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
       this.ctx.fillStyle = this.legtxtcol;
@@ -451,9 +459,9 @@ class js_chart {
       }
     }
     this.ctx.closePath();
-    this.ctx.restore;
+    this.ctx.restore();
   }
-  
+
   // ------------------------- end of legend -------------------------
 
 
@@ -462,14 +470,14 @@ class js_chart {
     if (typeof Ystyle   != "undefined") this.style    = Ystyle  ; // new style
     if (typeof Xdesc    != "undefined") this.desc     = Xdesc   ; // new desc
     if (typeof XaxisTxt != "undefined") this.axisXtxt = XaxisTxt; // new X axis text
-    if (typeof YaxisTxt != "undefined") this.axisYtxt = YaxisTxt; // new Y axis text 
+    if (typeof YaxisTxt != "undefined") this.axisYtxt = YaxisTxt; // new Y axis text
     this.alldatalength = 0;
-    // find the length and maximum values of new data 
+    // find the length and maximum values of new data
     if ( Array.isArray(this.data) ) {
-      for (let i = 0; i < this.data.length; i++ ) 
-        if ( (typeof this.data[i] != "undefined") && 
+      for (let i = 0; i < this.data.length; i++ )
+        if ( (typeof this.data[i] != "undefined") &&
              (this.alldatalength < this.data[i].length)) this.alldatalength = this.data[i].length;
-    }	
+    }
     if (this.datalength > this.alldatalength) { // new data is shorter
       this.from = 0;
       this.to   = this.alldatalength;
@@ -508,8 +516,8 @@ class js_chart {
     this.draw();
   }
 
-  
-  
+
+
   right() {
     if (!this.zoom) return; // no zoom
     if (this.to >= this.alldatalength) return; // not possible
@@ -518,8 +526,8 @@ class js_chart {
     this.draw();
   }
 
-  
-  
+
+
   draw_FromTo(from, to) {
     if (( from <  0) || (from >= this.alldatalength) ) return -1;
     if (( to   <  0) || (to   >  this.alldatalength) ) return -1;
@@ -530,7 +538,7 @@ class js_chart {
     if ((this.from == 0) && (this.to == this.alldatalength)) this.zoom = false;
     this.draw();
   }
-  
+
   draw_FromCount(from, cnt) {
     if (( from <  0) || (from > this.alldatalength - 2 ) ) return -1; // params error
     if (  cnt  <= 1) return -1;
@@ -541,7 +549,7 @@ class js_chart {
     if ((this.from == 0) && (this.to == this.alldatalength)) this.zoom = false;
     this.draw();
   }
-  
+
   undozoom() {
     this.from = 0;
     this.to   = this.alldatalength;
@@ -549,27 +557,27 @@ class js_chart {
     this.zoom = false;
     this.draw();
   }
-  
-   
+
+
   clear() {
     // main canvas & layer2 clear
     this.ctx.clearRect  (0, 0, this.ctx.canvas.width  , this.ctx.canvas.height  );
     this.ctxl2.clearRect(0, 0, this.ctxl2.canvas.width, this.ctxl2.canvas.height);
   }
-  
-  
+
+
   redraw() { this.draw(); }
-  
-  
+
+
   draw() {
-    // set canvas position and dimmensions the same as parent dimmensions 
+    // set canvas position and dimmensions the same as parent dimmensions
     let cv = document.getElementById(this.container);
-    
+
     this.canvas.style.left = 0;
     this.canvas.style.top  = 0;
     this.canvas.width      = cv.offsetWidth ;
     this.canvas.height     = cv.offsetHeight;
-    
+
     this.layer2.style.left = 0;
     this.layer2.style.top  = 0;
     this.layer2.width      = cv.offsetWidth ;
@@ -605,14 +613,14 @@ class js_chart {
     let minv       = 0; // min of Y data
     let maxv       = 0; // max of Y data
     //---------------------------------------------
-    let rangev     = { minv:0, maxv:0};           // range of data - min & max
-    let marpldata  = { cnt:0, factor:1, weight:1} // markers data plus
-    let marmidata  = { cnt:0, factor:1, weight:1} // markers data minus 
-    let marxdata   = { cnt:0, div:1}              // markers data X 
+    let rangev     = { minv:0, maxv:0};            // range of data - min & max
+    let marpldata  = { cnt:0, factor:1, weight:1}; // markers data plus
+    let marmidata  = { cnt:0, factor:1, weight:1}; // markers data minus
+    let marxdata   = { cnt:0, div:1};              // markers data X
 
     let maxhm = 0;
     let marh  = 0;
-    
+
     function getMinMax(arr) {
       if (typeof arr == "undefined") return { "min":0, "max":0 };
       let min   = Infinity;
@@ -634,7 +642,7 @@ class js_chart {
 
 
     function getMaxMarkerValue(maxvalue, marcntmax) {
-      if ((marcntmax == 0) || (maxvalue==0)) return { "cnt":1, "factor":0, "weight": 0, "value": 0}
+      if ((marcntmax == 0) || (maxvalue==0)) return { "cnt":1, "factor":0, "weight": 0, "value": 0};
       maxvalue   = Math.abs(maxvalue);
       marcntmax  = Math.abs(marcntmax);
       let weight = 1;
@@ -678,10 +686,10 @@ class js_chart {
         }
         weight = 1 / weight;
       }
-      return { "cnt":marcntact, "factor":factor, "weight": weight, "value": (factor * weight) }
+      return { "cnt":marcntact, "factor":factor, "weight": weight, "value": (factor * weight) };
     }
-    
-    
+
+
     function getXmarkersDiv(data_cnt, maxhm) {
       let marcnt = data_cnt;
       let div    = 1;
@@ -692,10 +700,10 @@ class js_chart {
         div = 5; marcnt = Math.abs( data_cnt / (div * weight) ); if (marcnt <= maxhm) break;
         weight = weight * 10;
       } while (marcnt > maxhm);
-      return { "cnt": marcnt, "div": div * weight }
+      return { "cnt": marcnt, "div": div * weight };
     }
-    
-    
+
+
     function getStyle(style, name, defvalue) {
       let s;
       if (typeof style == "undefined") return defvalue;
@@ -762,22 +770,22 @@ class js_chart {
             self.ctx.lineTo(x, y);
           }
           else {
-            self.ctx.save;
-            self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+            self.ctx.save();
+            self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
             self.ctx.fillStyle   = locpointcolor;
             self.ctx.beginPath();
             self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2), self.zlvl - (data[i + self.from * self.zoom] +self.zoffs) * self.wght * self.dcorr * self.zcorr, locpointsize, 0, 2 * Math.PI);
             self.ctx.stroke();
             self.ctx.fill();
-            self.ctx.restore;
+            self.ctx.restore();
           }
-        }	
+        }
         // middle data
         if (x0def && x1def) {
           if (locbeziercurve) { //bezier curve
             x1 = self.lvlv + ( ( (i + 1) * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
             y1 = self.zlvl - ( (data[i + 1 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
-            self.ctx.bezierCurveTo(x + self.marhpx / locbezierconst, y, x1 - self.marhpx / locbezierconst, y1, x1, y1);	
+            self.ctx.bezierCurveTo(x + self.marhpx / locbezierconst, y, x1 - self.marhpx / locbezierconst, y1, x1, y1);
           }
           else
             self.ctx.lineTo(x, y);
@@ -796,31 +804,31 @@ class js_chart {
             self.ctx.lineTo(x + self.marhpx , y);
           }
           else {
-            self.ctx.save;
-            self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+            self.ctx.save();
+            self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
             self.ctx.fillStyle   = locpointcolor;
             self.ctx.beginPath();
-            self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2), 
+            self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2),
                          self.zlvl - (data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr,
                          locpointsize, 0, 2 * Math.PI);
             self.ctx.stroke();
             self.ctx.fill();
-            self.ctx.restore;
+            self.ctx.restore();
           }
         }
-        
+
         lastdef = x0def;
-      }	
+      }
       // data big points
-      if (loclinepoints || self.allpoints) { 
+      if (loclinepoints || self.allpoints) {
         self.ctx.beginPath();
-        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
         self.ctx.fillStyle   = locpointcolor;
         if ( (typeof data[0 + self.from * self.zoom] != "undefined") && (data[0 + self.from * self.zoom] != null) ) {
           self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - (data[0 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr, locpointsize, 0, 2 * Math.PI);
           self.ctx.stroke();
           self.ctx.fill();
-        }  
+        }
         for (let i = 1; i < self.datalength; i++) {
           if ( (typeof data[i + self.from * self.zoom] == "undefined") || (data[i + self.from * self.zoom] == null) ) continue;
           self.ctx.beginPath();
@@ -830,7 +838,7 @@ class js_chart {
         }
       }
     }
-    
+
 
 
     // bar graph
@@ -848,9 +856,9 @@ class js_chart {
       let locpoints    = getStyle(style, "points"     , self.barpoints   ).toString() == "true";
       let locpointsize = getStyle(style, "pointsize"  , self.barpointsize);
       let locpointcolor= getStyle(style, "pointcolor" , self.barpointcol );
-      
+
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(self.ctx.fillStyle, 0.3);
-      
+
       self.ctx.beginPath();
       let xdef = false;             // is data?
       let wdh  = self.marhpx * self.barperc; // place for all bars
@@ -866,14 +874,14 @@ class js_chart {
           self.ctx.rect(x , y, wob, self.zlvl - y);
         }
       }
-      self.ctx.stroke(); 
+      self.ctx.stroke();
       self.ctx.fill();
       self.ctx.closePath();
       self.barnr++; // bar counter ++
       // data big points
-      if (locpoints || self.allpoints) { 
+      if (locpoints || self.allpoints) {
         self.ctx.beginPath();
-        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
         self.ctx.fillStyle   = locpointcolor;
         self.ctx.stroke();
         self.ctx.fill();
@@ -892,7 +900,7 @@ class js_chart {
 
 
     // area graph
-    function do_area_graph(data, style) { 
+    function do_area_graph(data, style) {
       if (typeof data == "undefined") return; // if no data then exit
       let w1 = 0;
       let w2 = 0;
@@ -903,30 +911,30 @@ class js_chart {
       let loclinewidth   = getStyle(style, "linewidth"  , self.areawidth    );
       let locfillcolor   = getStyle(style, "fillcolor"  , self.areafill     );
       let locpoints      = getStyle(style, "points"     , self.areapoints   ).toString() == "true";
-      
+
       let locpointsize   = getStyle(style, "pointsize"  , self.areapointsize);
       let locpointcolor  = getStyle(style, "pointcolor" , self.areapointcol );
       let locbeziercurve = getStyle(style, "beziercurve", self.beziercurve  ).toString() == "true";
       let locbezierconst = getStyle(style, "beziercnst" , self.beziercnst   );
 
-      self.ctx.strokeStyle = loclinecolor;	
+      self.ctx.strokeStyle = loclinecolor;
       self.ctx.fillStyle   = locfillcolor;
       self.ctx.lineWidth   = loclinewidth;
-      
+
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor = changeRGBAalpha(locfillcolor, 0.3);
 
       // too much points for marker for bezier curve mode - the chart looks unserious :-)
       if ( (self.bezierlvloff >= 0) && (( self.datalength / maxhm ) > self.bezierlvloff) ) locbeziercurve = false;
-      
+
       let lastdef = false;
       let x = 0; let x1 = 0;
       let y = 0; let y1 = 0;
-      
+
       for (let i = 0; i < self.datalength; i++) {
         let x0def = (typeof data[i + 0 + self.from * self.zoom] != "undefined") && (data[i + 0 + self.from * self.zoom] != null);
         let x1def = (typeof data[i + 1 + self.from * self.zoom] != "undefined") && (data[i + 1 + self.from * self.zoom] != null);
         if (i == self.datalength - 1) x1def = false;
-        
+
         x = self.lvlv + ((i * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
         y = 0;
         if (x0def) y = self.zlvl - ( (data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
@@ -936,13 +944,13 @@ class js_chart {
           self.ctx.beginPath();
           self.ctx.moveTo(x, self.zlvl);
           self.ctx.lineTo(x, y);
-        }	
+        }
         // middle data
         if (x0def && x1def) {
           if (locbeziercurve) { //bezier curve
             x1 = self.lvlv + ( ( (i + 1) * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
             y1 = self.zlvl - ( (data[i + 1 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
-            self.ctx.bezierCurveTo(x + self.marhpx / locbezierconst, y, x1 - self.marhpx / locbezierconst, y1, x1, y1);	
+            self.ctx.bezierCurveTo(x + self.marhpx / locbezierconst, y, x1 - self.marhpx / locbezierconst, y1, x1, y1);
           }
           else
             self.ctx.lineTo(x, y);
@@ -959,15 +967,15 @@ class js_chart {
         lastdef = x0def;
       }
       // data big points
-      if (locpoints || self.allpoints) { 
+      if (locpoints || self.allpoints) {
         self.ctx.beginPath();
-        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
         self.ctx.fillStyle   = locpointcolor;
         if ( (typeof data[0 + self.from * self.zoom] != "undefined") && (data[0 + self.from * self.zoom] != null) ) {
           self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - (data[0 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr, locpointsize, 0, 2 * Math.PI);
           self.ctx.stroke();
           self.ctx.fill();
-        }  
+        }
         for (let i = 1; i < self.datalength; i++) {
           if ( (typeof data[i + self.from * self.zoom] == "undefined") || (data[i + self.from * self.zoom] == null) ) continue;
           self.ctx.beginPath();
@@ -1000,8 +1008,8 @@ class js_chart {
       self.ctx.fillStyle   = loclinecolor;
       self.ctx.lineWidth   = loclinewidth;
       let lastdef = false;
-      let x = 0; let x1 = 0; 
-      let y = 0; let y1 = 0; 
+      let x = 0; let x1 = 0;
+      let y = 0; let y1 = 0;
       for (let i = 0; i < self.datalength; i++) {
         let x0def = (typeof data[i + 0 + self.from * self.zoom] != "undefined") && (data[i + 0 + self.from * self.zoom] != null);
         let x1def = (typeof data[i + 1 + self.from * self.zoom] != "undefined") && (data[i + 1 + self.from * self.zoom] != null);
@@ -1015,7 +1023,7 @@ class js_chart {
           self.ctx.beginPath();
           self.ctx.moveTo(x, y);
           self.ctx.lineTo(x + self.marhpx , y);
-        }	
+        }
         // middle data
         if (x0def && x1def) {
           self.ctx.lineTo(x + self.marhpx , y);
@@ -1038,28 +1046,28 @@ class js_chart {
             self.ctx.lineTo(x + self.marhpx , y);
           }
           else {
-            self.ctx.save;
-            self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+            self.ctx.save();
+            self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
             self.ctx.fillStyle   = locpointcolor;
             self.ctx.beginPath();
             self.ctx.arc(self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2), self.zlvl - (data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr, locpointsize, 0, 2 * Math.PI);
             self.ctx.stroke();
             self.ctx.fill();
-            self.ctx.restore;
+            self.ctx.restore();
           }
         }
         lastdef = x0def;
-      }	
+      }
       // data big points
-      if (loclinepoints || self.allpoints) { 
+      if (loclinepoints || self.allpoints) {
         self.ctx.beginPath();
-        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);	
+        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
         self.ctx.fillStyle   = locpointcolor;
         if ( (typeof data[0 + self.from * self.zoom] != "undefined") && (data[0 + self.from * self.zoom] != null) ) {
           self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - (data[0 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr, locpointsize, 0, 2 * Math.PI);
           self.ctx.stroke();
           self.ctx.fill();
-        }  
+        }
         for (let i = 1; i < self.datalength; i++) {
           if ( (typeof data[i + self.from * self.zoom] == "undefined") || (data[i + self.from * self.zoom] == null) ) continue;
           self.ctx.beginPath();
@@ -1069,7 +1077,7 @@ class js_chart {
         }
       }
     }
-    
+
 
 
     // make all charts ...
@@ -1086,19 +1094,19 @@ class js_chart {
         if (getStyle(self.style[i], "type", "") == "stairs") do_stairs_graph(self.data[i], self.style[i]); else
         ;
       }
-    }	
+    }
 
 
     function isBar (i) {	return getStyle(self.style[i], "type", "") == "bar" ; }
     function isArea(i) {	return getStyle(self.style[i], "type", "") == "area"; }
     function isLine(i) {	return getStyle(self.style[i], "type", "") == "line"; }
-    
-    
+
+
     // ------------------------- start of events -------------------------
 
-    
+
     var lastX = 0;
-    var lastY = 0;   
+    var lastY = 0;
     var Zfrom = 0;
     var ZRfrom= 0;
     var Zto   = 0;
@@ -1106,12 +1114,12 @@ class js_chart {
     var mousebuttons = 0;
     var lastRX = 0;
     var noclick= false;
-    
+
     // mouse events
     function on_mouseMove(ev) {
-   
+
       let lastXshadow = lastX;
-      
+
       if ((ev.type != "keydown") && (ev.offsetX!=0) && (ev.offsetY!=0) ) {
         lastX = ev.offsetX;
         lastY = ev.offsetY;
@@ -1120,27 +1128,27 @@ class js_chart {
         lastX = ev.offsetX;
         lastY = ev.offsetY;
       }
-      
+
       if (self.data.length <= 0) return;
       if (self.pointclicked) return; // then mouse hint stay on screen
       let xnbr = 0;
       let ynbr = 0;
       let x = ev.offsetX;
-      let y = ev.offsetY;  
-      
+      let y = ev.offsetY;
+
       if (ev.type != "mousemove") {
         x = lastX;
-        y = lastY;  
+        y = lastY;
       }
 
-      // clear layer2 canvas 
+      // clear layer2 canvas
       self.ctxl2.clearRect(0, 0, self.layer2.width, self.layer2.height);
-      if ((y >= self.drt - self.hintpointw * 2) && (y <= self.drb + self.hintpointw * 2) && 
+      if ((y >= self.drt - self.hintpointw * 2) && (y <= self.drb + self.hintpointw * 2) &&
           (x >= self.drl - self.hintpointw * 2) && (x <= self.drr + self.hintpointw * 2)) {
         xnbr = Math.round( (x - self.lvlv - self.hmarshift * (self.marhpx / 2) ) / (self.marhpx / self.xdiv) );
         if ( isNaN(xnbr) || (xnbr < 0 ) || (xnbr >= self.datalength) ) return;
         let xJump = self.lvlv + ((xnbr * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
-        
+
         let LRmarg = self.LRsize * self.drv;
         if (self.zoom && self.mouseclickLR && !ev.shiftKey) {
           // left shift area
@@ -1150,16 +1158,16 @@ class js_chart {
               self.ctxl2.fillStyle   = self.hintzoomcol;
               self.ctxl2.beginPath();
               self.ctxl2.fillRect(self.drl, self.drt, LRmarg, self.drv);
-              self.ctxl2.stroke(); 
-              self.ctxl2.fill(); 
+              self.ctxl2.stroke();
+              self.ctxl2.fill();
               //triangle
               self.ctxl2.beginPath();
               self.ctxl2.moveTo( self.drl + LRmarg * 0.8, self.drt + self.drv / 2 - self.drv * 0.1);
               self.ctxl2.lineTo( self.drl + LRmarg * 0.2, self.drt + (self.drb - self.drt) / 2);
               self.ctxl2.lineTo( self.drl + LRmarg * 0.8, self.drt + self.drv / 2 + self.drv * 0.1);
               //self.ctxl2.lineTo( self.drl + LRmarg * 0.9, self.drt + self.drv / 2 - self.drv * 0.1);
-              self.ctxl2.stroke(); 
-              //self.ctxl2.fill();               
+              self.ctxl2.stroke();
+              //self.ctxl2.fill();
               self.ctxl2.closePath();
           }
           // right shift area
@@ -1169,25 +1177,25 @@ class js_chart {
               self.ctxl2.fillStyle = self.hintzoomcol;
               self.ctxl2.beginPath();
               self.ctxl2.fillRect(self.drr - LRmarg, self.drt, LRmarg, self.drv);
-              self.ctxl2.stroke(); 
-              self.ctxl2.fill(); 
+              self.ctxl2.stroke();
+              self.ctxl2.fill();
               //triangle
               self.ctxl2.beginPath();
               self.ctxl2.moveTo( self.drr - LRmarg * 0.8, self.drt + self.drv / 2 - self.drv * 0.1);
               self.ctxl2.lineTo( self.drr - LRmarg * 0.2, self.drt + (self.drb - self.drt) / 2);
               self.ctxl2.lineTo( self.drr - LRmarg * 0.8, self.drt + self.drv / 2 + self.drv * 0.1);
               //self.ctxl2.lineTo( self.drr - LRmarg * 0.9, self.drt + self.drv / 2 - self.drv * 0.1);
-              self.ctxl2.stroke(); 
-              //self.ctxl2.fill(); 
+              self.ctxl2.stroke();
+              //self.ctxl2.fill();
               self.ctxl2.closePath();
           }
         }
         // draw shadow when zoom is selected?
-        if ( self.hintselectshadow ) { 
-          if ( (ev.shiftKey) && mouseisdown && (mousebuttons == 1) ) { // 1 = mouse left key 
+        if ( self.hintselectshadow ) {
+          if ( (ev.shiftKey) && mouseisdown && (mousebuttons == 1) ) { // 1 = mouse left key
             Zto = xnbr + self.from;
             let xFrom = self.lvlv + (((Zfrom - self.from) * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
-            let selx = xJump - xFrom; 
+            let selx = xJump - xFrom;
             if (selx < 1) selx = self.marhpx;
             self.ctxl2.fillStyle = self.hintselectcol;
             let difx = self.marhpx / 2;
@@ -1198,11 +1206,11 @@ class js_chart {
             // it's not maximum zoom? - draw rectangle
             if (Math.abs(self.from - self.to) > 2) // two markers on the screen plus one because the upper limit is exclusive
               self.ctxl2.fillRect(xFrom, self.drt, selx, self.drb - self.drt);
-            self.ctxl2.stroke(); 
-            self.ctxl2.fill(); 
+            self.ctxl2.stroke();
+            self.ctxl2.fill();
             self.ctxl2.closePath();
             // undo zoom
-            if ((x-lastXshadow) < (-self.undozoompx)) { 
+            if ((x-lastXshadow) < (-self.undozoompx)) {
               Zfrom = 0;
               Zto   = 0;
               mouseisdown = false;
@@ -1211,7 +1219,7 @@ class js_chart {
             return; // nothing else to do in this time
           }
         }
-  
+
 
         // change back color on hit point or small hint
         let wassmallhint = false;
@@ -1230,11 +1238,11 @@ class js_chart {
           xa = xzero;
           // if bar then make shift on x
           if ( isBar(i) ) {
-            locbarnr++;	
-            xa = xa - difx + wob * (locbarnr - 1); ;
+            locbarnr++;
+            xa = xa - difx + wob * (locbarnr - 1);
           }
           // check...
-          if ( (Math.abs(xa - lastX) < sens) && (Math.abs(ya - lastY ) < sens) ) 
+          if ( (Math.abs(xa - lastX) < sens) && (Math.abs(ya - lastY ) < sens) )
              { hitpoint = true; break; }
           else hitpoint = false;
         }
@@ -1242,12 +1250,12 @@ class js_chart {
         // mini hint over point?
         if (hitpoint && self.smallhint) { noclick = true; on_canvas_click(ev); noclick = false; wassmallhint = true;}
 
-        // hint only with ctrl ?  
+        // hint only with ctrl ?
         if (self.hintwithctrl && !ev.ctrlKey) return;
         self.ctxl2.lineWidth   = self.crlinewidth;
         self.ctxl2.setLineDash (self.crYlinedash);
         self.ctxl2.strokeStyle = self.crlinecol;
-                      
+
         // data shadow (only if any bar chart exists)
         if (self.hintdatashadow) {
           if ( self.barcnt > 0 ) {
@@ -1255,8 +1263,8 @@ class js_chart {
             let difx = self.marhpx / 2;
             self.ctxl2.beginPath();
             self.ctxl2.fillRect(xJump - difx, self.drt, difx * 2, self.drb - self.drt);
-            self.ctxl2.stroke(); 
-            self.ctxl2.fill(); 
+            self.ctxl2.stroke();
+            self.ctxl2.fill();
             self.ctxl2.closePath();
           }
         }
@@ -1269,7 +1277,7 @@ class js_chart {
           self.ctxl2.beginPath();
           self.ctxl2.moveTo(x, self.drb);
           self.ctxl2.lineTo(x, self.drt);
-          self.ctxl2.stroke(); 
+          self.ctxl2.stroke();
           self.ctxl2.closePath();
         }
         self.ctxl2.setLineDash(self.crXlinedash);
@@ -1295,7 +1303,7 @@ class js_chart {
                 // check ...
                 let ydif = Math.abs( y2 - y );
                 if ( (!self.crYjumpM) && (ydif < sens) && (ydif <= oldydif) ) {
-                  oldydif = ydif; 
+                  oldydif = ydif;
                   y = y2;
                 }
               }
@@ -1305,13 +1313,13 @@ class js_chart {
             }
           }
         }
-        
+
         if (self.crXYline && (y >= self.drt) && (y <= self.drb) ) {
           // line horizontal
           self.ctxl2.beginPath();
           self.ctxl2.moveTo(self.drl , y);
           self.ctxl2.lineTo(self.drr , y);
-          self.ctxl2.stroke(); 
+          self.ctxl2.stroke();
           self.ctxl2.closePath();
         }
 
@@ -1337,27 +1345,27 @@ class js_chart {
                 if (self.hintpointcolfromdraw) {
                   self.ctxl2.fillStyle   = getStyle(self.style[i], "linecolor", self.hintpointfill);
                   self.ctxl2.strokeStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
-                }  
+                }
                 else {
                   self.ctxl2.fillStyle   = self.hintpointfill;
                   self.ctxl2.strokeStyle = self.hintlinecol  ;
-                }  
-              }  
+                }
+              }
               else {
                 if (self.hintpointcolfromdraw) {
                   self.ctxl2.fillStyle   = getStyle(self.style[i], "fillcolor", self.hintpointfill);
                   self.ctxl2.strokeStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
-                }  
+                }
                 else {
                   self.ctxl2.fillStyle   = self.hintpointfill;
                   self.ctxl2.strokeStyle = self.hintlinecol  ;
-                }  
+                }
               }
               if (self.hintmaxalpha) self.ctxl2.fillStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
               if ( isBar(i) ) {
                 let wdh = self.marhpx * self.barperc; // room for all bars
                 let wob = wdh / self.barcnt;          // width of one bar
-                difx = (wdh / 2) - (wob * (bnr)) - (wob / 2); 
+                difx = (wdh / 2) - (wob * (bnr)) - (wob / 2);
                 bnr++;
               }
               self.ctxl2.beginPath();
@@ -1376,7 +1384,7 @@ class js_chart {
             }
           }
         }
-        
+
         // hint...
         if (self.crHint && ! wassmallhint) {
           self.ctxl2.setLineDash([]);
@@ -1388,15 +1396,15 @@ class js_chart {
           let txt2 = "";
           txtw = self.ctxl2.measureText(txt).width;
           for (let i = 0; i < self.data.length; i++) {
-            if ((typeof self.data[i] != "undefined") && (typeof self.data[i][xnbr + self.from * self.zoom] != "undefined") && (self.data[i][xnbr + self.from * self.zoom] != null)) 
+            if ((typeof self.data[i] != "undefined") && (typeof self.data[i][xnbr + self.from * self.zoom] != "undefined") && (self.data[i][xnbr + self.from * self.zoom] != null))
             s.push( (self.data[i][xnbr + self.from * self.zoom] * self.dcorr ).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalY, maximumFractionDigits: self.decimalY}) + " " + self.aYtxt);
             else s.push("no data");
             txtwt = self.ctxl2.measureText(s[i]).width + (self.hintfpx * 3);
             if (txtwt > txtw) txtw = txtwt;
           }
           while (self.ctxl2.measureText(txt2).width < txtw) txt2 += "-";
-                  
-          self.ctxl2.beginPath();	
+
+          self.ctxl2.beginPath();
           if (self.hintmaxalpha) self.ctxl2.fillStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
           if (hitpoint)
             self.ctxl2.fillStyle    = self.hintfillhitcol;
@@ -1430,23 +1438,23 @@ class js_chart {
             else
               self.ctxl2.fillStyle   = getStyle(self.style[i], "fillcolor", self.hintpointfill);
             if (self.hintmaxalpha) self.ctxl2.fillStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
-            //ctxl2.fillRect(mx + hintfpx / 2, my + hintfpx * 0.5 + (hintfpx * (i + 2)), hintfpx, hintfpx - 2); 
+            //ctxl2.fillRect(mx + hintfpx / 2, my + hintfpx * 0.5 + (hintfpx * (i + 2)), hintfpx, hintfpx - 2);
             self.ctxl2.strokeStyle = "rgba(0,0,0,1)";
             self.ctxl2.lineWidth   = self.hintcolfrwdth;
-            self.ctxl2.rect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)), self.hintfpx, self.hintfpx); 
+            self.ctxl2.rect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)), self.hintfpx, self.hintfpx);
             self.ctxl2.stroke();
             self.ctxl2.beginPath();
-            self.ctxl2.fillRect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)), self.hintfpx, self.hintfpx); 
+            self.ctxl2.fillRect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)), self.hintfpx, self.hintfpx);
             self.ctxl2.stroke();
             // text
             self.ctxl2.fillStyle = self.hinttxtcol;
             self.ctxl2.textAlign = "start";
-            self.ctxl2.fillText(" ", mx + self.hintfpx * 2 , my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)) ); 
+            self.ctxl2.fillText(" ", mx + self.hintfpx * 2 , my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)) );
             self.ctxl2.textAlign = "end";
-            self.ctxl2.fillText(s[i], mx + self.hintfpx / 2 + txtw, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)) ); 
+            self.ctxl2.fillText(s[i], mx + self.hintfpx / 2 + txtw, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)) );
           }
         }
-        
+
       }
       self.ctxl2.setLineDash([]);
     }
@@ -1456,23 +1464,23 @@ class js_chart {
       if (self.data.length <= 0) return;
       if (self.pointclicked == true) {
         self.pointclicked = false; // turn off mouse click
-        // clear layer2 canvas 
+        // clear layer2 canvas
         self.ctxl2.clearRect(0, 0, self.layer2.width, self.layer2.height); // must be when onmousemove & ontouchmove are disabled
-        if (self.onmousemove || self.ontouchmove) { 
+        if (self.onmousemove || self.ontouchmove) {
           on_mouseMove(ev);        // release mouse click and call the event that would redrawing of hints
         }
       }
-      
+
       if (self.zoom && ev.shiftKey) return; // if is zoom and shift key is pressed then it's scrolling left/right mode
-      let x = ev.offsetX; 
+      let x = ev.offsetX;
       let y = ev.offsetY;
       let xnbr = 0;
       let ynbr = 0;
 
-      if ((y >= self.drt - self.hintpointw * 2) && (y <= self.drb + self.hintpointw * 2) && 
+      if ((y >= self.drt - self.hintpointw * 2) && (y <= self.drb + self.hintpointw * 2) &&
           (x >= self.drl - self.hintpointw * 2) && (x <= self.drr + self.hintpointw * 2)) {
         xnbr = Math.round( (x - self.lvlv - self.hmarshift * (self.marhpx / 2) ) / (self.marhpx / self.xdiv) );
-        if ( isNaN(xnbr) || (xnbr <0 ) || (xnbr > self.datalength) ) return;		
+        if ( isNaN(xnbr) || (xnbr <0 ) || (xnbr > self.datalength) ) return;
 
         let sens = self.hintpointw * 2;
         let xzero = self.lvlv + ((xnbr * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
@@ -1481,15 +1489,15 @@ class js_chart {
         let difx = (self.marhpx * self.barperc) / 2 - wob / 2; // start of left border bars
         let locbarnr = 0;
         let xa = 0;
-        let ya = 0;;
+        let ya = 0;
         for ( let i = 0; i < self.data.length; i++) {
-          if (typeof self.data[i] == "undefined") continue
+          if (typeof self.data[i] == "undefined") continue;
           ya = self.zlvl - ( (self.data[i][xnbr + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
           xa = xzero;
           // if bar then make shift on x
           if ( isBar(i) ) {
-            locbarnr++;	
-            xa = xa - difx + wob * (locbarnr - 1); ;
+            locbarnr++;
+            xa = xa - difx + wob * (locbarnr - 1);
           }
           // check...
           if ( (Math.abs(xa - x) < sens) && (Math.abs(ya - y ) < sens) ) {
@@ -1500,16 +1508,16 @@ class js_chart {
             let txtw = self.ctxl2.measureText(txt).width;
             // small hint
             txtw = txtw + self.hintfpx * 2; // for color rectangle
-            // clear layer2 canvas 
+            // clear layer2 canvas
             self.ctxl2.clearRect(0, 0, self.layer2.width, self.layer2.height);
             self.ctxl2.setLineDash([]);
-            self.ctxl2.beginPath();	
+            self.ctxl2.beginPath();
             self.ctxl2.fillStyle    = self.hintfillcol;
             self.ctxl2.textBaseline = "top";
             self.ctxl2.textAlign    = "start";
             let xflipped = false;
-            let yflipped = false;	
-            
+            let yflipped = false;
+
             // out of X+
             let mx = 0;
             let my = 0;
@@ -1534,28 +1542,28 @@ class js_chart {
             if (self.hintmaxalpha) self.ctxl2.fillStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
             self.ctxl2.strokeStyle = "rgba(0,0,0,1)";
             self.ctxl2.lineWidth   = self.hintcolfrwdth;
-            self.ctxl2.rect(mx + self.hintfpx / 2, my + self.hintfpx / 2, self.hintfpx, self.hintfpx); 
+            self.ctxl2.rect(mx + self.hintfpx / 2, my + self.hintfpx / 2, self.hintfpx, self.hintfpx);
             self.ctxl2.stroke();
             self.ctxl2.beginPath();
-            self.ctxl2.fillRect(mx + self.hintfpx / 2, my + self.hintfpx / 2, self.hintfpx, self.hintfpx); 
+            self.ctxl2.fillRect(mx + self.hintfpx / 2, my + self.hintfpx / 2, self.hintfpx, self.hintfpx);
             self.ctxl2.stroke();
 
             self.ctxl2.strokeStyle = self.hinttxtcol;
             self.ctxl2.fillStyle = self.hinttxtcol;
             if (self.hintmaxalpha) self.ctxl2.fillStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
             self.ctxl2.textAlign = "end";
-            self.ctxl2.fillText(txt , mx + self.hintfpx * 0 + txtw, my + self.hintfpx * 0.5 ); 
+            self.ctxl2.fillText(txt , mx + self.hintfpx * 0 + txtw, my + self.hintfpx * 0.5 );
 
             self.ctxl2.lineWidth   = self.hintlinetoMwidth;
             self.ctxl2.strokeStyle = self.hintlinetoMcol;
             self.ctxl2.beginPath();
             self.ctxl2.arc(xa, ya, self.hintpointw, 0, 2 * Math.PI);
             // line to hint
-            if (self.crlinetosmallhint) 
+            if (self.crlinetosmallhint)
               self.ctxl2.moveTo(mx + (txtw + self.hintfpx * 0.5) * xflipped, my + (self.hintfpx * 2) * yflipped);
             self.ctxl2.lineTo(xa, ya);
             self.ctxl2.stroke();
-            
+
             break; // found it.
           }
         }
@@ -1563,14 +1571,14 @@ class js_chart {
     }
 
 
-    
-    // On mouse out 
+
+    // On mouse out
     function on_mouseout() {
       self.ctxl2.clearRect(0, 0, self.ctxl2.canvas.width, self.ctxl2.canvas.height);
-      self.pointclicked = false; 
+      self.pointclicked = false;
     }
 
-    
+
     let lastrepev    =  null;
     let intervalId   =  null;
     let CtrlKeyDown  = false;
@@ -1578,7 +1586,7 @@ class js_chart {
     let inRepeat     = false;
     // auto scroll
     function repeatMouse(ev) {
-      let x = lastX; 
+      let x = lastX;
       let y = lastY;
       if ((y >= self.drt) && (y <= self.drb) && (x >= self.drl) && (x <= self.drr) && (mousebuttons == 1) ) {
         if (CtrlKeyDown) self.repeatMousePer = self.repeatPerSpeed;
@@ -1600,11 +1608,11 @@ class js_chart {
     // if shift key pressed when mouse left key pressed then it's zoom mode
     function on_mouseDown(ev) {
       if (ev.buttons == 3) self.hintwithctrl = !self.hintwithctrl; // turn on/off cross
-      
+
       if ((self.multimsdown) && (ev.buttons == 2) ) {
         var now = new Date();
         var ticks = now.getTime();
-        if ( (ticks - oldticks) > self.multimstout) {mdcnt = 0; oldticks=ticks;} 
+        if ( (ticks - oldticks) > self.multimstout) {mdcnt = 0; oldticks=ticks;}
         mdcnt++;
         if (mdcnt >= self.multimsdowncnt) {
           mdcnt = 0;
@@ -1615,7 +1623,7 @@ class js_chart {
       }
       mouseisdown  = true;
       mousebuttons = ev.buttons;
-      let x = ev.offsetX; 
+      let x = ev.offsetX;
       let y = ev.offsetY;
       let xnbr = 0;
       if ((y >= self.drt) && (y <= self.drb) && (x >= self.drl) && (x <= self.drr) && (mousebuttons == 1) ) {
@@ -1631,15 +1639,15 @@ class js_chart {
           let difx = (self.marhpx * self.barperc) / 2 - wob / 2; // start of left border bars
           let locbarnr = 0;
           let xa = 0;
-          let ya = 0;;
+          let ya = 0;
           for ( let i = 0; i < self.data.length; i++) {
             if (typeof self.data[i] == "undefined") continue;
             ya = self.zlvl - (self.data[i][xnbr + self.from * self.zoom] * self.wght * self.dcorr * self.zcorr);
             xa = xzero;
             // if bar then make shift on x
             if ( isBar(i) ) {
-              locbarnr++;	
-              xa = xa - difx + wob * (locbarnr - 1); ;
+              locbarnr++;
+              xa = xa - difx + wob * (locbarnr - 1);
             }
             // check...
             if ( (Math.abs(xa - x) < sens) && (Math.abs(ya - y ) < sens) ) return; // point is reached !
@@ -1648,7 +1656,7 @@ class js_chart {
           let LRmarg = self.LRsize * self.drv;
           if ((x - self.drl) < LRmarg) self.left();
           if ((self.drr - x) < LRmarg) self.right();
-          
+
           // auto scroll mouse repeat
           if (self.repeatMouseMode) {
             if ( ((x - self.drl) < LRmarg) || ((self.drr - x) < LRmarg) ) {
@@ -1658,7 +1666,7 @@ class js_chart {
           }
 
         }
-        
+
         if ( ev.shiftKey) {
           let xJump = self.lvlv + ((xnbr * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
           Zfrom = xnbr + self.from;
@@ -1677,7 +1685,7 @@ class js_chart {
       clearInterval(intervalId); // autoscroll off
       inRepeat    = false;
       lastrepev   =  null;
-      
+
       mouseisdown = false;
       if ( (mousebuttons == 1) && (ev.shiftKey) ) {
         if ((Zfrom == Zto) || (Zto + 1 <= Zfrom))
@@ -1694,7 +1702,7 @@ class js_chart {
       return false;
     }
 
-    
+
 
     // on key down
     function on_keyDown(ev) {
@@ -1714,7 +1722,7 @@ class js_chart {
         case "End"       : { self.end();      if (ev.preventDefault) ev.preventDefault(); break; }
         case "Escape"    : { self.undozoom(); if (ev.preventDefault) ev.preventDefault(); break; }
       }
-      on_mouseMove(ev);       
+      on_mouseMove(ev);
       return false;
     }
 
@@ -1744,25 +1752,25 @@ class js_chart {
       return false;
     }
 
-     
+
 
       // first start mouse events...
     if ( this.eventsactivated == false ) {
-      if ( this.onmouseclick) this.ctxl2.canvas.addEventListener('click'      , on_canvas_click, true);	
-      if ( this.onmousemove ) this.ctxl2.canvas.addEventListener('mousemove'  , on_mouseMove   , true);	
-      if ( this.ontouchmove ) this.ctxl2.canvas.addEventListener('touchmove'  , on_mouseMove   , true); 
-      
-      if ( this.onmousedown ) this.ctxl2.canvas.addEventListener('mousedown'  , on_mouseDown   , true);	
-      if ( this.onmouseup   ) this.ctxl2.canvas.addEventListener('mouseup'    , on_mouseUp     , true);	
+      if ( this.onmouseclick) this.ctxl2.canvas.addEventListener('click'      , on_canvas_click, true);
+      if ( this.onmousemove ) this.ctxl2.canvas.addEventListener('mousemove'  , on_mouseMove   , true);
+      if ( this.ontouchmove ) this.ctxl2.canvas.addEventListener('touchmove'  , on_mouseMove   , true);
+
+      if ( this.onmousedown ) this.ctxl2.canvas.addEventListener('mousedown'  , on_mouseDown   , true);
+      if ( this.onmouseup   ) this.ctxl2.canvas.addEventListener('mouseup'    , on_mouseUp     , true);
       if ( this.onkeydown   ) this.ctxl2.canvas.addEventListener('keydown'    , on_keyDown     , true);
 
       if ( this.onkeyup     ) this.ctxl2.canvas.addEventListener('keyup'      , on_keyUp       , true);
-      if ( this.oncontext   ) this.ctxl2.canvas.addEventListener('contextmenu', onContextMenu  , true);	
+      if ( this.oncontext   ) this.ctxl2.canvas.addEventListener('contextmenu', onContextMenu  , true);
 
       this.ctxl2.canvas.setAttribute("tabindex", 0);
       this.ctxl2.canvas.focus();
-        
-      if ( this.onmouseclick || this.onmousemove || this.ontouchmove ) this.ctxl2.canvas.addEventListener('mouseout' , on_mouseout, true); 
+
+      if ( this.onmouseclick || this.onmousemove || this.ontouchmove ) this.ctxl2.canvas.addEventListener('mouseout' , on_mouseout, true);
       this.eventsactivated = true;
     }
 
@@ -1772,11 +1780,11 @@ class js_chart {
     // the beginning of the main procedure
 
     this.datalength = this.alldatalength;
-    this.wght   = 0; // calculated weight of Y data	
-    this.barcnt = 0; // count bar charts 
+    this.wght   = 0; // calculated weight of Y data
+    this.barcnt = 0; // count bar charts
     this.barnr  = 0; // bar number for draw
     this.marhpx = 0; // number px for X marker
-   
+
     minv =  Infinity;
     maxv = -Infinity;
     // let start calculate ...
@@ -1785,15 +1793,15 @@ class js_chart {
         if (typeof this.data[i] == "undefined") continue; // if no data then no min & max
         // for bars it's better
         if ( isBar(i) ) { self.barcnt++; self.hmarshift = true; }
-        // get max & min of data array 
+        // get max & min of data array
         rangev = getMinMax(this.data[i]);    // get min & max of data
         if (rangev.min < minv) minv = rangev.min; // max of data
-        if (rangev.max > maxv) maxv = rangev.max; // min of data		
+        if (rangev.max > maxv) maxv = rangev.max; // min of data
        }
     }
     if (minv ==  Infinity) minv = 0; // min not found
     if (maxv == -Infinity) maxv = 0; // max not found
-    
+
     if ((maxv>0) && (minv>0) && !this.Yzoom) minv = 0;
     if ((maxv<0) && (minv<0) && !this.Yzoom) maxv = 0;
 
@@ -1809,11 +1817,11 @@ class js_chart {
       this.to    = this.alldatalength;
       this.datalength = this.alldatalength;
       this.zoom  = false;
-    }  
-    
+    }
+
     if (this.Ymax != 0) maxv = this.Ymax; // max Y constant value
     if (this.Ymin != 0) minv = this.Ymin; // min Y constant value
-    
+
     // calculate Y zoom offset and correction
     if (this.Yzoom && (maxv > 0) && (minv>0) ) { // Y+
       this.zoffs = -minv;
@@ -1823,14 +1831,14 @@ class js_chart {
       this.zoffs = -maxv;
       this.zcorr = Math.abs(minv) / (Math.abs(minv)-Math.abs(maxv));
     }
-    
+
     // decimal points 0 .. 5
     if ((this.decimalX < 0 ) || (this.decimalX > 5 )) this.decimalX = 0;
     if ((this.decimalY < 0 ) || (this.decimalY > 5 )) this.decimalY = 0;
     // initialize description X-axis table if not exists
     if ((typeof this.desc == "undefined") || (this.desc == null) || (this.desc == 0) || (this.desc.length == 0) ) {
       this.desc  = [];
-      for (let i = 0; i < this.datalength; i++) this.desc.push( (i + 1) ); 
+      for (let i = 0; i < this.datalength; i++) this.desc.push( (i + 1) );
     }
     // main canvas clear
     this.ctx.beginPath();
@@ -1841,9 +1849,9 @@ class js_chart {
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.ctx.stroke();
     this.ctx.closePath();
-    
+
     this.legend();
-    
+
     this.ctx.strokeStyle = this.canvasfrcol;
     if (this.drawzfrm) {
       this.ctx.beginPath();
@@ -1851,13 +1859,13 @@ class js_chart {
       this.ctx.stroke();
       this.ctx.closePath();
     }
-    
-    
+
+
     // canvas start parameters
     this.ctx.lineWidth   = 1;
     this.ctx.font        = this.descfontmod + this.descfpx + this.descfont;
-    this.ctx.lineCap     = "round"; 
-    this.ctx.lineJoin    = "miter"; 
+    this.ctx.lineCap     = "round";
+    this.ctx.lineJoin    = "miter";
     this.ctx.miterLimit  = 1;
 
     this.aYtxt = self.axisYtxt.toString();
@@ -1867,14 +1875,14 @@ class js_chart {
       let tw = 1;
       let ti = 0;
       if (tm > 0)
-        while (tm * tw < 10) { 
-          tw *= 10;  ti++; 
+        while (tm * tw < 10) {
+          tw *= 10;  ti++;
           if (ti > 10) break; // STOP: 10 it is very much! (10^10)
-        } 
+        }
       if (ti > 0) {
         this.aYtxt = ("*(10^-" + ti + ")") + self.axisYtxt.toString();
-        minv *= tw; 
-        maxv *= tw; 
+        minv *= tw;
+        maxv *= tw;
         this.dcorr = tw;
       }
       if (this.decimalY == 0) this.decimalY = 2; //ti;
@@ -1885,28 +1893,28 @@ class js_chart {
     if ( tm > this.bigmax) {
       let tw = 1;
       let ti = 0;
-      while ( (tm / tw) > this.bigmax) { 
-        tw = tw * 10;  ti++; 
+      while ( (tm / tw) > this.bigmax) {
+        tw = tw * 10;  ti++;
         if (ti > 10) break; // STOP: 10 it is very much! (10^10)
-      } 
+      }
       if (ti > 0) {
         this.aYtxt = ("*(10^" + ti + ")") + self.axisYtxt.toString();
-        minv = minv / tw; 
-        maxv = maxv / tw; 
+        minv = minv / tw;
+        maxv = maxv / tw;
         this.dcorr = 1 / tw;
       }
       this.decimalY = 0;
     }
-    
+
     // for zoom
     if (!this.zoom) this.datalength = this.alldatalength;
     else this.datalength = this.to - this.from;
-    
+
     // level zero shift (from min, max) only if Y+ & Y- data exists, else 0 or (drb-drt)
     if ( (maxv >= 0) && (minv == 0) ) this.zerox = 0;         // only Y+
     if ( (minv <  0) && (maxv == 0) ) this.zerox = this.drb - this.drt; // only Y-
-    if ( (maxv >  0) && (minv <  0) ) this.zerox = Math.abs( ( minv/(maxv - minv) ) * this.drv ) // Y+ & Y-
-    
+    if ( (maxv >  0) && (minv <  0) ) this.zerox = Math.abs( ( minv/(maxv - minv) ) * this.drv ); // Y+ & Y-
+
     this.zlvl = this.drb - this.zerox; // level zero horizontal axis
 
     if (this.datalength==0) this.zlvl = this.drb; // if no data then zero level
@@ -1915,7 +1923,7 @@ class js_chart {
     let maxw      = 0;
     // find max width of X-axis description
     for (let i = this.from * this.zoom; i < this.desc.length; i++) {
-      maxw = this.ctx.measureText( this.desc[i].toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalX, maximumFractionDigits:this.decimalX}) ).width;  
+      maxw = this.ctx.measureText( this.desc[i].toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalX, maximumFractionDigits:this.decimalX}) ).width;
       if (maxw > marwxdesc) marwxdesc = maxw;
     }
     // if descritions X-axis heigth > room we have to change the drawing area and move X-axis up
@@ -1924,8 +1932,8 @@ class js_chart {
       //this.bot   = this.ctx.canvas.clientHeight - this.margv - marwxdesc;    // new bottom coordinate
       this.drb   = this.bot - this.marsize / 2 - marwxdesc - this.descfpx / 2;    // new bottom draw coordinate
       this.drv   = this.drb - this.drt;     // new draw height
-      // new level zero shift 
-      if ((maxv > 0) && (minv < 0)) this.zerox = Math.abs( ( minv/(maxv - minv) ) * this.drv ) // Y+ & Y-
+      // new level zero shift
+      if ((maxv > 0) && (minv < 0)) this.zerox = Math.abs( ( minv/(maxv - minv) ) * this.drv ); // Y+ & Y-
       else if (maxv >= 0) this.zerox = 0;   // only Y+
       else if (minv <  0) this.zerox = this.drb - this.drt;  // only Y-
       this.zlvl  = this.drb - this.zerox;                    // new level zero horizontal axis
@@ -1941,7 +1949,7 @@ class js_chart {
     let vmp   = marpldata.value;
     // get marker minus count and weigth
     marmidata = getMaxMarkerValue(minv - (maxv < 0 ? maxv * this.Yzoom : 0), marmi);
-    marmi     = marmidata.cnt;;
+    marmi     = marmidata.cnt;
     let vmm   = marmidata.value;
 
     // calculate pixels for one marker
@@ -1950,15 +1958,15 @@ class js_chart {
     let marax = Math.max(marpx, marmx);                        // max pixels all for one marker
     marpx = marax;
     marmx = marax;
-    
+
     // get max value of markers weight
-    if ( vmp > vmm ) vmm = vmp; 
-    if ( vmm > vmp ) vmp = vmm; 
-    
+    if ( vmp > vmm ) vmm = vmp;
+    if ( vmm > vmp ) vmp = vmm;
+
     // calculate new markers
     marpl  = Math.floor(Math.abs( (this.zlvl - this.drt) / marax) );  // new markers plus max counter
     marmi  = Math.floor(Math.abs( (this.drb - this.zlvl) / marax) );  // new markers minus max counter
-    marall = marpl + marmi;                                           // new all markers max counter	
+    marall = marpl + marmi;                                           // new all markers max counter
 
     // level vertical shift (from description text width) only if no room for descrition
     let wp = this.ctx.measureText( (maxv).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalY, maximumFractionDigits: this.decimalY}) ).width + this.descfpx;  // width max Y text plus
@@ -1970,7 +1978,7 @@ class js_chart {
       this.lvlv = lvlt;
       this.drl  = this.lvlv;
     }
-    // if the number of markers minus == 0 then level X-axis must be calculated becouse the description 
+    // if the number of markers minus == 0 then level X-axis must be calculated becouse the description
     // of this axis is below drawing area. we have to move the axis up by the height of the axis description
     maxhm    = Math.round( Math.abs( (this.lvlv - this.drr) / this.descfpx ) ) + 1;  // max markers counter
     marxdata = getXmarkersDiv(this.datalength - 0, maxhm);
@@ -1978,7 +1986,7 @@ class js_chart {
     this.xdiv     = marxdata.div;
     marh     = Math.min(this.datalength - 1, maxhm) + 1 * this.hmarshift; // +1 if shift
     this.marhpx   = ( this.drr - this.lvlv ) / marh;  // pixels for one marker X
-    
+
     // let start draw ...
     // chart zone control (for test)
     if (this.chartzone) {
@@ -1991,7 +1999,7 @@ class js_chart {
       this.ctx.strokeStyle = this.drwfracol;
       this.ctx.fillStyle   = this.drwfilcol;
       this.ctx.beginPath();
-      if (this.drawzfrm) 
+      if (this.drawzfrm)
         this.ctx.rect(this.drl, this.drt, this.drr - this.drl, this.drb - this.drt);
       this.ctx.fillRect(this.drl, this.drt, this.drr - this.drl, this.drb - this.drt);
       this.ctx.stroke();
@@ -2001,21 +2009,21 @@ class js_chart {
       let zm = false;
       this.ctx.lineWidth=this.meshlw;
       // mesh Y+
-      this.ctx.strokeStyle = this.mshcol;	
+      this.ctx.strokeStyle = this.mshcol;
       this.ctx.fillStyle   = this.mshcol;
-  
+
       if (this.meshframe) {
         this.ctx.rect(this.drl, this.drt, this.drr - this.drl, this.drb - this.drt);
         this.ctx.stroke();
       }
-      
+
       let i = 0;
       let lvl = (this.zlvl - i * marpx );
       while (lvl >= this.drt) {
         this.ctx.beginPath();
         this.ctx.moveTo(this.lvlv, this.zlvl - i * marpx);
         this.ctx.lineTo(this.drr , this.zlvl - i * marpx);
-        this.ctx.stroke(); 
+        this.ctx.stroke();
         i++;
         lvl = (this.zlvl - i * marpx);
       }
@@ -2028,18 +2036,18 @@ class js_chart {
         this.ctx.lineTo(this.drr , this.zlvl + i * marmx);
         i++;
         lvl = (this.zlvl + i * marmx);
-        this.ctx.stroke(); 
+        this.ctx.stroke();
       }
     }
     // draw mesh X
     if (this.drawmesh) {
       // mesh X
-      this.ctx.strokeStyle = this.mshcol;	
+      this.ctx.strokeStyle = this.mshcol;
       this.ctx.fillStyle   = this.mshcol;
       let i=0;
       i = 1 * this.hmarshift;
       if (this.meshframe) i=1;
-      
+
       let hor = 0;
       hor = (this.lvlv + i * this.marhpx) - this.hmarshift * (this.marhpx / 2);
       while (hor <= this.drr) {
@@ -2047,7 +2055,7 @@ class js_chart {
         this.ctx.beginPath();
         this.ctx.moveTo(hor, this.drt);
         this.ctx.lineTo(hor, this.drb);
-        this.ctx.stroke(); 
+        this.ctx.stroke();
         i++;
         hor = (this.lvlv + i * this.marhpx) - this.hmarshift * (this.marhpx / 2);
       }
@@ -2062,13 +2070,13 @@ class js_chart {
       this.ctx.beginPath();
       this.ctx.moveTo( this.drl, zoomlvl );
       this.ctx.lineTo( this.drr, zoomlvl );
-      this.ctx.stroke(); 
+      this.ctx.stroke();
       let all = (this.drr - this.drl) / this.alldatalength;
       this.ctx.lineWidth = this.vzwdtlg;
       this.ctx.beginPath();
       this.ctx.moveTo( this.drl + this.from * all, zoomlvl );
       this.ctx.lineTo( this.drl + this.to   * all, zoomlvl );
-      this.ctx.stroke(); 
+      this.ctx.stroke();
       this.ctx.closePath();
     }
     // draw markers and descriptions Y
@@ -2099,7 +2107,7 @@ class js_chart {
           }
           i++;
           lvl = (this.zlvl - i * marpx);
-          this.ctx.stroke(); 
+          this.ctx.stroke();
         }
       }
       // markers plus & axis Y- description
@@ -2120,7 +2128,7 @@ class js_chart {
           }
           i++;
           lvl = (this.zlvl + i * marmx);
-          this.ctx.stroke(); 
+          this.ctx.stroke();
         }
       }
     }
@@ -2160,7 +2168,7 @@ class js_chart {
           }
           i++;
           hor = (this.lvlv + i * this.marhpx) + this.hmarshift * (this.marhpx / 2);
-          this.ctx.stroke(); 
+          this.ctx.stroke();
         }
       }
     }
@@ -2170,7 +2178,7 @@ class js_chart {
       this.ctx.fillStyle   = this.axcol;
       this.ctx.lineWidth   = this.axw;
       this.ctx.font        = this.descfontmod + this.descfpx + this.descfont;
- 
+
      // axis X
       this.ctx.beginPath();
       //this.ctx.moveTo(this.lft + (this.lvlv - this.lft ) / 2, this.zlvl);
@@ -2225,12 +2233,12 @@ class js_chart {
         this.ctx.fillStyle = this.axdesccol;
         this.ctx.fillText(this.aYtxt, this.lvlv + this.aw / 1, this.top + this.al / 2);
       }
-      
+
     }
-    
+
     // do draw lines, areas, bars as defined ...
     do_graph();
-    
+
   }
 
 }
