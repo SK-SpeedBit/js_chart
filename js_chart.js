@@ -1,5 +1,5 @@
 /* jshint esversion: 6 */
-
+ 
 /*
     -----------------------   js_chart ver. 1.4  -----------------------
       (c) 2019 SpeedBit, reg. Czestochowa, Poland
