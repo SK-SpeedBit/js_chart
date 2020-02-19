@@ -62,7 +62,11 @@ The js_chart class - short description
     [Keys: Left, Right, Home, End, Esc] 
                  If key is pressed and chart is in zoom mode, the chart will be shifted to left / right / home / end of data. Esc key makes undo zoom. 
 ###Use of the keys requires the chart must be focused!
-
+  - [hide/show] click on legend make hide / show chart that has been clicked
+  - [bold chart] mouse move over the chart legend make chart "bold"
+  - [scroll by mouse] scroll the chart with the right mouse button
+  - [download data] download chart data by alt + ctrl + right mouse key
+  - [download png ] download chart png  by alt + right mouse key
 
 <a href="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png"><img src="https://user-images.githubusercontent.com/33321284/55557824-01434580-56eb-11e9-8c70-fc3924b241fd.png" align="center"  ></a>      
 

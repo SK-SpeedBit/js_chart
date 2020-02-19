@@ -1,8 +1,10 @@
 /* jshint esversion: 6 */
- 
+
+
+
 /*
-    -----------------------   js_chart ver. 1.4  -----------------------
-      (c) 2019 SpeedBit, reg. Czestochowa, Poland
+    -----------------------   js_chart ver. 1.5  -----------------------
+      (c) 2019/2020 SpeedBit, reg. Czestochowa, Poland
     --------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,7 +35,16 @@ class js_chart {
     this.onkeydown   = true;   // key down event on/off
     this.onkeyup     = true;   // key up event on/off
     this.oncontext   = true;   // block context menu event on/off (turn off context memu)
+    // cursors
+    this.moveCursor    = "pointer";    // cursor in move mode
+    this.pointerCursor = "crosshair";  // cursor in zoom mode
+    this.autoCursor    = "auto";       // cursor in normal mode
+    // download
+    this.downloadChartEnable = true; // download chart enable
+    this.download_png_fname  = "chart.png"; // default filename for download chart png file  (altKey + right mouse key)
+    this.download_csv_fname  = "data.csv";  // default filename for download chart data file (altKey + ctrlkey + right mouse key)
 
+    // axis
     this.axisXtxt    =  "x";   // axis X description
     this.axisYtxt    =  "y";   // axis Y description
     this.Ymax        =    0;   // Xmin or 0 for auto
@@ -72,6 +83,7 @@ class js_chart {
     this.hmarshift   = false; // move X markers by 1/2 size (for bars it's better)
     // Yzoom
     this.Yzoom       = false; // Y zoom: chart from Ymin to Ymax or from 0 to Ymax
+    this.YonlyVisiblescale = true; // if Y zoom then auto scale Y only for visible charts
     // mouse repetition
     this.repeatMouseMode= true; // mouse repetition on / off
     this.repeatPerDelay =  500; // delay to mouse repeat
@@ -92,6 +104,7 @@ class js_chart {
     this.drwfilcol   = "rgba(250,250,250, 0.3)"; // draw zone fill color
     // cross & hint	style
     this.crXYline    = true;  // cross
+    this.crXYlineOnButton = true; // if cross = false then draw cross when left mouse key is pressed
     this.crXjump     = true;  // jump on X markers
     this.crYjumpM    = false; // jump on Y markers
     this.crYjumpP    = true;  // jump on Y values
@@ -155,7 +168,23 @@ class js_chart {
     this.barpointsize= 5;                        // bar point size
     this.barpointcol = "rgba(0, 250, 250, 0.3)"; // bar point color
     this.barperc     =  0.75; // percent filling bar markers
-    //
+
+    // Bold on mouse over legend square and string -> "bold" parameters
+    this.boldonover          = true; // make chart "bold" when mouse is over chart legend
+    this.lineBoldAlpha       = 1;    // alpha for "bold" line chart
+    this.lineBoldWidth       = 3;    // width for "bold" line chart
+    this.barBoldLineWidth    = 3;    // line width for "bold" bar chart
+    this.barBoldAlpha        = 0.8;  // alpha for "bold" bar chart
+    this.areaBoldLineWidth   = 3;    // line width for "bold" area chart
+    this.areaBoldLineAlpha   = 1;    // line alpha for "bold" area chart
+    this.areaBoldAreaAlpha   = 0.6;  // area alpha width for "bold" area chart
+    this.stairsBoldLineWidth = 3;    // line width for "bold" stairs chart
+    this.stairsBoldLineAlpha = 1;    // line alpha for "bold" stairs chart
+    // hide / show chart when legend square or string is clicked
+    this.hideonclick         = true; // enable hide/show chart on legend label click
+    this.inactivechartboxcol = "rgb(100, 100, 100)"; // inactive legend color
+
+    // what number is big?
     this.bigmax      = 10000; // above this number, all data will be converted to the decimal power
     // for a partial chart (from the scope of data)
     this.allmaxmin   = true; // false = auto from scope, true = auto from all data (if Ymax or Ymin  != 0 => these values will be constans)
@@ -168,31 +197,21 @@ class js_chart {
     this.hintselectshadow = true;                // on/off select shadow
     this.hintselectcol  = "rgba(0, 0, 0, 0.3)";  // select shadow color
     // shift chart left/rigth by moouse left click (if zoomed)
-    this.mouseclickLR   = true; // on/off shift
+    this.mouseclickLR   = true; // on/off shift arrows
     this.LRsize         = 1/6;  // click area (left and right) - fraction of the entire chart area 1/5 = 20%
     this.hintzoomcol    = "rgba(0, 250, 0, 0.15)"; // color of the shift click area
     this.undozoompx     = 20;   // the number of pixels by which the mouse must be moved to the left to undo the magnification
-    // visual zoom
-    this.vsOn           =  true; // visual zoom on / off
+    this.movezoombymouse= true; // enable moving chart by mouse in zoom mode
+    this.revarrowkeysinzoom = false;  // reverse arrow keys in zoom (scrolling)
+    this.revmousemoveinzoom = false;  // reverse mouse move in zoom (scrolling
+    // visual zoom - line with scrollbar in zoom mode
+    this.vsOn           = true; // visual zoom on / off
     this.vzonXaxis      = !this.drawaxis; // visual zoom on X axsis
-    this.vzcolor        = this.axdesccol; // visual zoom color
+    this.vzcolor        = this.axdesccol; // visual zoom line color
+    this.vzalpha        = 0.8;       // visual zoom line alpha
     this.vzwdtsm        = this.axw; // visual zoom small width
     this.vzwdtlg        = this.aw;  // visual zoom large width
-
-//--- internal ------------------------------------------------------------
-
-    this.zcorr       =    1;   // calculated correction for Yzoom
-    this.repeatMousePer=  0;   // current repeat period
-   // place for the legend
-    this.islegend    = false;
-    this.legmarg     =    5;   // margin of legend to chart
-    this.legpos      =    0;   // where is the legend ?
-    this.legstr      =   [];   // place for legend strings
-    this.legtop      =    0;   // place for the legend on the top
-    this.legleft     =    0;   // place for the legend on the left
-    this.legbottom   =    0;   // place for the legend on the bottom
-    this.legright    =    0;   // place for the legend on the right
-
+    // legend
     this.legframew   =    1;   // legend rectangle line width
     this.legframecol = "rgba(250, 250, 250, 0.7)"; // color of the legend frame
     this.legfillcol  = "rgba(150, 150, 150, 0.5)"; // color of the legend bacground
@@ -200,6 +219,20 @@ class js_chart {
     this.legfontmod  = " italic ";                 // legend font modifier
     this.legfont     = "px Courier New";           // legend font name
     this.legtxtcol   = "rgba(  0, 250, 250, 1)";   // legend text color
+
+//--- internal ------------------------------------------------------------
+
+    this.zcorr       =    1;   // calculated correction for Yzoom
+    this.repeatMousePer=  0;   // current repeat period
+   // place for the legend
+    this.islegend    = false;  // show legend?
+    this.legmarg     =    5;   // margin of legend to chart
+    this.legpos      =    0;   // where is the legend ?
+    this.legstr      =   [];   // place for legend strings
+    this.legtop      =    0;   // place for the legend on the top
+    this.legleft     =    0;   // place for the legend on the left
+    this.legbottom   =    0;   // place for the legend on the bottom
+    this.legright    =    0;   // place for the legend on the right
 
     // this must be for start
     if (typeof container == "undefined") return -1; // no container
@@ -230,7 +263,6 @@ class js_chart {
     document.getElementById(container).appendChild(this.layer2);
     this.ctx   = this.canvas.getContext("2d");
     this.ctxl2 = this.layer2.getContext("2d");
-
     this.alldatalength = 0;
 
     // zoom data
@@ -328,9 +360,15 @@ class js_chart {
       t.ctx.strokeStyle = "rgba(0,0,0,1)";
       t.ctx.fillStyle   = getStyle(t.style[i], "linecolor", getStyle(t.style[i], "fillcolor", t.areafill) );
       t.ctx.lineWidth   = t.hintcolfrwdth;
+      if (getStyle(t.style[i], "visible", "") == "NO") t.ctx.fillStyle=t.inactivechartboxcol;
+      if (getStyle(t.style[i], "boldover", "---") == "YES") {
+        t.ctx.lineWidth   = t.hintcolfrwdth + 4;
+        t.ctx.strokeStyle = changeRGBAalpha(t.ctx.fillStyle, 1);
+        t.ctx.fillStyle   = changeRGBAalpha(t.ctx.fillStyle, 1);
+      }
       t.ctx.globalAlpha = 1;
-      t.ctx.rect    (x, y - t.legpx, t.legpx, t.legpx);
       t.ctx.fillRect(x, y - t.legpx, t.legpx, t.legpx);
+      t.ctx.rect    (x, y - t.legpx, t.legpx, t.legpx);
       t.ctx.closePath();
       t.ctx.stroke();
       t.ctx.restore();
@@ -383,7 +421,7 @@ class js_chart {
     this.ctx.lineWidth   = this.legframew  ;
     this.ctx.strokeStyle = this.legframecol;
     this.ctx.fillStyle   = this.legfillcol ;
-    this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
+    this.ctx.font        = this.legfontmod + this.legpx + this.legfont;
 
     // the legend on top or bottom
     var cl = 0;
@@ -416,11 +454,19 @@ class js_chart {
       this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
       this.ctx.fillStyle = this.legtxtcol;
       for (let i=0; i < this.data.length; i++ ) {
+        if ( (this.data[i] == null) || (typeof this.data[i] == "undefined") ) continue;
         // color rectangle
         colRect(this, i, txtx, recy);
         txtx += this.legpx * 1.2;
         // text of legend
-        this.ctx.fillStyle = this.legtxtcol;
+        if (getStyle(this.style[i], "boldover", "---") == "YES") {
+          this.ctx.font        = "Bold " + this.legfontmod + this.legpx + this.legfont;
+          this.ctx.fillStyle   = getStyle(this.style[i], "linecolor", getStyle(this.style[i], "fillcolor", this.areafill) );
+        }
+        else {
+          this.ctx.font        = this.legfontmod + this.legpx + this.legfont;
+          this.ctx.fillStyle = this.legtxtcol;
+        }
         this.ctx.fillText(this.legstr[i], txtx, txty);
         txtx += (this.ctx.measureText(this.legstr[i]).width + this.legpx * 1);
       }
@@ -450,10 +496,17 @@ class js_chart {
       this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
       this.ctx.fillStyle = this.legtxtcol;
       for (let i=0; i < this.data.length; i++ ) {
-        // color rectangle
+          // color rectangle
         colRect(this, i, txtx, recy);
         // text of legend
-        this.ctx.fillStyle = this.legtxtcol;
+        if (getStyle(this.style[i], "boldover", "---") == "YES") {
+          this.ctx.font      = "Bold " + this.legfontmod + this.legpx + this.legfont;
+          this.ctx.fillStyle = getStyle(this.style[i], "linecolor", getStyle(this.style[i], "fillcolor", this.areafill) );
+        }
+        else {
+          this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
+          this.ctx.fillStyle = this.legtxtcol;
+        }
         this.ctx.fillText(this.legstr[i], txtx + this.legpx * 1.2, recy - this.legpx / 5);
         recy += this.legpx;
       }
@@ -536,6 +589,7 @@ class js_chart {
     this.to   = to;
     this.zoom = true;
     if ((this.from == 0) && (this.to == this.alldatalength)) this.zoom = false;
+    this.ctxl2.canvas.style.cursor = sthis.pointerCursor;
     this.draw();
   }
 
@@ -547,6 +601,7 @@ class js_chart {
     this.to   = from + cnt;
     this.zoom = true;
     if ((this.from == 0) && (this.to == this.alldatalength)) this.zoom = false;
+    this.ctxl2.canvas.style.cursor = this.pointerCursor;
     this.draw();
   }
 
@@ -555,6 +610,7 @@ class js_chart {
     this.to   = this.alldatalength;
     this.datalength = this.alldatalength;
     this.zoom = false;
+    this.ctxl2.canvas.style.cursor = this.autoCursor;
     this.draw();
   }
 
@@ -599,7 +655,6 @@ class js_chart {
     this.drl   = this.lvlv;                // draw left
     this.drr   = this.rgt - (this.drawaxis ? this.al * 1.5 : this.descfpx / 2); // draw right
     this.drv   = this.drb - this.drt;      // draw height
-
 
     this.make_chart();
   }
@@ -742,8 +797,8 @@ class js_chart {
       let locpointcolor  = getStyle(style, "pointcolor" , self.linepointcol );
       let locbeziercurve = getStyle(style, "beziercurve", self.beziercurve  ).toString() == "true";
       let locbezierconst = getStyle(style, "beziercnst" , self.beziercnst   );
-
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(loclinecolor, 0.3);
+      if (getStyle(style, "boldover", "---") == "YES") { loclinewidth = self.lineBoldWidth; loclinecolor = changeRGBAalpha(loclinecolor, self.lineBoldAlpha); }
 
       // too much points for marker for bezier curve mode - the chart looks unserious :-)
       if ( (self.bezierlvloff >= 0) && (( self.datalength / maxhm ) > self.bezierlvloff) ) locbeziercurve = false;
@@ -840,7 +895,6 @@ class js_chart {
     }
 
 
-
     // bar graph
     function do_bar_graph(data, style) {
       if (typeof data == "undefined") return; // if no data then exit
@@ -858,6 +912,7 @@ class js_chart {
       let locpointcolor= getStyle(style, "pointcolor" , self.barpointcol );
 
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(self.ctx.fillStyle, 0.3);
+      if (getStyle(style, "boldover", "---") == "YES") { self.ctx.lineWidth =self.barBoldLineWidth; self.ctx.fillStyle = changeRGBAalpha(self.ctx.fillStyle, self.barBoldAlpha); }
 
       self.ctx.beginPath();
       let xdef = false;             // is data?
@@ -917,11 +972,12 @@ class js_chart {
       let locbeziercurve = getStyle(style, "beziercurve", self.beziercurve  ).toString() == "true";
       let locbezierconst = getStyle(style, "beziercnst" , self.beziercnst   );
 
+      if (getStyle(style, "pointcolor" , null) == null) locpointcolor = changeRGBAalpha(locfillcolor, 0.3);
+      if (getStyle(style, "boldover", "---") == "YES") { loclinewidth = self.areaBoldLineWidth; loclinecolor = changeRGBAalpha(loclinecolor, self.areaBoldLineWidth); locfillcolor = changeRGBAalpha(locfillcolor, self.areaBoldAreaAlpha); }
+
       self.ctx.strokeStyle = loclinecolor;
       self.ctx.fillStyle   = locfillcolor;
       self.ctx.lineWidth   = loclinewidth;
-
-      if (getStyle(style, "pointcolor" , null) == null) locpointcolor = changeRGBAalpha(locfillcolor, 0.3);
 
       // too much points for marker for bezier curve mode - the chart looks unserious :-)
       if ( (self.bezierlvloff >= 0) && (( self.datalength / maxhm ) > self.bezierlvloff) ) locbeziercurve = false;
@@ -1002,6 +1058,7 @@ class js_chart {
       let locpointcolor  = getStyle(style, "pointcolor" , self.linepointcol );
 
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(loclinecolor, 0.3);
+      if (getStyle(style, "boldover", "---") == "YES") { loclinewidth = self.stairsBoldLineWidth; loclinecolor = changeRGBAalpha(loclinecolor, self.stairsBoldLineAlpha); }
 
       // Chart line
       self.ctx.strokeStyle = loclinecolor;
@@ -1085,9 +1142,10 @@ class js_chart {
       if (typeof self.style == "undefined") return;
       for (let i = 0; i < self.data.length; i++) {
         if (typeof self.style[i] == "undefined") continue;
-      }
-      for (let i = 0; i < self.data.length; i++) {
-        if (typeof self.style[i] == "undefined") continue;
+        if (getStyle(self.style[i], "visible", "") == "NO") {
+          if (isBar(i)) { self.barnr++; }
+          continue; // hide this chart
+        }
         if (getStyle(self.style[i], "type", "") == "line"  ) do_line_graph  (self.data[i], self.style[i]); else
         if (getStyle(self.style[i], "type", "") == "area"  ) do_area_graph  (self.data[i], self.style[i]); else
         if (getStyle(self.style[i], "type", "") == "bar"   ) do_bar_graph   (self.data[i], self.style[i]); else
@@ -1114,9 +1172,39 @@ class js_chart {
     var mousebuttons = 0;
     var lastRX = 0;
     var noclick= false;
-
+    var xmove =0;
+    var oldind = -1;
     // mouse events
     function on_mouseMove(ev) {
+
+      // bold on mouseover
+      if (self.boldonover) {
+        var ind = isinrect(ev.offsetX, ev.offsetY);
+        if ((ind >= 0) && (ind != oldind)) {
+          if (ind != oldind) setstyleparam(ind, "boldover", true);
+        }
+        else {
+          for (let ind=0; ind < self.style.length; ind++) setstyleparam(ind, "boldover", false);
+        }
+        if (ind != oldind) self.redraw();
+        oldind = ind;
+      }
+
+      // move chart by right mouse key
+      if (self.zoom && self.movezoombymouse)
+      {
+        if (ev.buttons==2) {
+          self.ctxl2.canvas.style.cursor = self.moveCursor;
+          xmove += ev.movementX;
+          if (Math.abs(xmove) >= (self.marhpx) ) {
+            if (xmove < 0) { if (self.revmousemoveinzoom) self.left();  else self.right(); }
+            else           { if (self.revmousemoveinzoom) self.right(); else self.left();  }
+            xmove=0;
+          }
+          return;
+        }
+        self.ctxl2.canvas.style.cursor = self.pointerCursor;
+      }
 
       let lastXshadow = lastX;
 
@@ -1233,6 +1321,7 @@ class js_chart {
         let difx = (self.marhpx * self.barperc) / 2 - wob / 2; // start of left border bars
         let xzero = self.lvlv + ((xnbr * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
         for ( let i = 0; i < self.data.length; i++) {
+        //  if (getStyle(self.style[i], "visible", "---") == "NO") continue;
           if (typeof self.data[i] == "undefined") continue;
           ya = self.zlvl - ((self.data[i][xnbr + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
           xa = xzero;
@@ -1273,13 +1362,17 @@ class js_chart {
         if (self.crXjump) x = xJump;
 
         // line vertical
-        if (self.crXYline && (x >= self.drl) && (x <= self.drr) ) {
-          self.ctxl2.beginPath();
-          self.ctxl2.moveTo(x, self.drb);
-          self.ctxl2.lineTo(x, self.drt);
-          self.ctxl2.stroke();
-          self.ctxl2.closePath();
+        if (   ( (self.crXYline && (x >= self.drl) && (x <= self.drr) ) ) ||
+               ( (self.crXYlineOnButton) && (ev.buttons==1) )
+           )
+        {
+            self.ctxl2.beginPath();
+            self.ctxl2.moveTo(x, self.drb);
+            self.ctxl2.lineTo(x, self.drt);
+            self.ctxl2.stroke();
+            self.ctxl2.closePath();
         }
+
         self.ctxl2.setLineDash(self.crXlinedash);
         // Y jumping...
         if (self.crYjumpM || self.crYjumpP) {
@@ -1314,14 +1407,19 @@ class js_chart {
           }
         }
 
-        if (self.crXYline && (y >= self.drt) && (y <= self.drb) ) {
-          // line horizontal
-          self.ctxl2.beginPath();
-          self.ctxl2.moveTo(self.drl , y);
-          self.ctxl2.lineTo(self.drr , y);
-          self.ctxl2.stroke();
-          self.ctxl2.closePath();
+
+        if (   ( (self.crXYline && (y >= self.drt) && (y <= self.drb) ) ) ||
+               ( (self.crXYlineOnButton) && (ev.buttons==1) )
+            )
+        {
+            // line horizontal
+            self.ctxl2.beginPath();
+            self.ctxl2.moveTo(self.drl , y);
+            self.ctxl2.lineTo(self.drr , y);
+            self.ctxl2.stroke();
+            self.ctxl2.closePath();
         }
+
 
         // big point around data point for every data table
         if (self.crpointhint || self.crlinetomouse) {
@@ -1368,6 +1466,8 @@ class js_chart {
                 difx = (wdh / 2) - (wob * (bnr)) - (wob / 2);
                 bnr++;
               }
+              if (getStyle(self.style[i], "visible", "---") == "NO") continue;
+
               self.ctxl2.beginPath();
               self.ctxl2.arc(xJump - difx, y2, self.hintpointw, 0, 2 * Math.PI);
               self.ctxl2.stroke();
@@ -1396,6 +1496,7 @@ class js_chart {
           let txt2 = "";
           txtw = self.ctxl2.measureText(txt).width;
           for (let i = 0; i < self.data.length; i++) {
+            if (getStyle(self.style[i], "visible", "---") == "NO") continue;
             if ((typeof self.data[i] != "undefined") && (typeof self.data[i][xnbr + self.from * self.zoom] != "undefined") && (self.data[i][xnbr + self.from * self.zoom] != null))
             s.push( (self.data[i][xnbr + self.from * self.zoom] * self.dcorr ).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalY, maximumFractionDigits: self.decimalY}) + " " + self.aYtxt);
             else s.push("no data");
@@ -1431,7 +1532,9 @@ class js_chart {
           self.ctxl2.fillText(txt , mx + self.hintfpx / 2 + txtw, my + self.hintfpx * 0.5 + self.hintfpx * 0); // X-axis descriptions
           self.ctxl2.fillText(txt2, mx + self.hintfpx / 2 + txtw, my + self.hintfpx * 0.5 + self.hintfpx * 1); // separator
           // data values
+          var v = 0;
           for (let i = 0; i < self.data.length; i++) {
+            if (getStyle(self.style[i], "visible", "---") == "NO") { v++; continue; }
             self.ctxl2.beginPath();
             if (isLine(i) )
               self.ctxl2.fillStyle   = getStyle(self.style[i], "linecolor", self.hintpointfill);
@@ -1441,17 +1544,17 @@ class js_chart {
             //ctxl2.fillRect(mx + hintfpx / 2, my + hintfpx * 0.5 + (hintfpx * (i + 2)), hintfpx, hintfpx - 2);
             self.ctxl2.strokeStyle = "rgba(0,0,0,1)";
             self.ctxl2.lineWidth   = self.hintcolfrwdth;
-            self.ctxl2.rect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)), self.hintfpx, self.hintfpx);
+            self.ctxl2.rect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i - v + 2)), self.hintfpx, self.hintfpx);
             self.ctxl2.stroke();
             self.ctxl2.beginPath();
-            self.ctxl2.fillRect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)), self.hintfpx, self.hintfpx);
+            self.ctxl2.fillRect(mx + self.hintfpx / 2, my + self.hintfpx * 0.5 + (self.hintfpx * (i - v + 2)), self.hintfpx, self.hintfpx);
             self.ctxl2.stroke();
             // text
             self.ctxl2.fillStyle = self.hinttxtcol;
             self.ctxl2.textAlign = "start";
-            self.ctxl2.fillText(" ", mx + self.hintfpx * 2 , my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)) );
+            self.ctxl2.fillText(" ", mx + self.hintfpx * 2 , my + self.hintfpx * 0.5 + (self.hintfpx * (i - v + 2)) );
             self.ctxl2.textAlign = "end";
-            self.ctxl2.fillText(s[i], mx + self.hintfpx / 2 + txtw, my + self.hintfpx * 0.5 + (self.hintfpx * (i + 2)) );
+            self.ctxl2.fillText(s[i-v], mx + self.hintfpx / 2 + txtw, my + self.hintfpx * 0.5 + (self.hintfpx * (i - v + 2)) );
           }
         }
 
@@ -1459,9 +1562,134 @@ class js_chart {
       self.ctxl2.setLineDash([]);
     }
 
+
+    function isinrect(x, y) {
+      var ind = -1;
+      var tstx = false;
+      var tsty = false;
+      var marg =  0;
+      var txt  = "";
+      var txtw =  0;
+      var txty = 0;
+      var frmy = 0;
+      var cl = 0;
+      var wd = 0;
+      var lf = 0;
+
+      if (!self.islegend) return -1;
+      // the legend on top or bottom
+      if ( ( self.legpos == 0 ) || ( self.legpos == 2 ) ) {
+        cl = 0;
+        for (let i=0; i < self.legstr.length; i++ ) {
+          if (typeof self.data[i] == "undefined") continue;
+          cl++;
+          txt += self.legstr[i]; // all txt together for measurement
+        }
+        self.ctx.font      = self.legfontmod + self.legpx + self.legfont;
+        self.ctx.fillStyle = self.legtxtcol;
+        txtw = self.ctx.measureText(txt).width + cl * self.legpx * 2.2 - self.legpx;
+        wd   =  txtw + marg * 2;
+        lf   = (self.ctx.canvas.width - wd) / 2;
+
+        txty = 0;
+        frmy = 0;
+        if (self.legpos==0) frmy = self.top - self.legpx * 2 - self.legframew - self.legmarg;
+        else                frmy = self.bot + self.legframew * 2 + self.legmarg;
+        txty = frmy + self.legpx / 0.8;
+        let txtx = lf + marg;
+
+        for (let i=0; i < self.data.length; i++ ) {
+          // is X in rectangle ?
+          tstx = (x >= txtx ) && (x <= (txtx + (self.legpx * 1.2) + self.ctx.measureText(self.legstr[i]).width) + 1);
+          tsty = (y >= txty - self.legpx +1 ) && (y <= (txty + 1) );
+          if (tstx && tsty) ind = i;
+          if ( ind >= 0 ) return ind;
+          txtx += self.legpx * 1.2;
+          txtx += (self.ctx.measureText(self.legstr[i]).width + self.legpx * 1);
+        }
+      }
+
+      // the legend on right or left
+      if ( ( self.legpos == 1 ) || ( self.legpos == 3 ) ) {
+        txtw = 0;
+        var lw = 0;
+        cl = 0;
+        for (let i=0; i < self.legstr.length; i++ ) {
+          lw = self.ctx.measureText(self.legstr[i]).width ;
+          if (typeof self.data[i] == "undefined") continue;
+          cl++;
+          if (lw > txtw ) txtw = lw;
+        }
+        wd =  txtw + self.legpx * 2.2;
+        lf = 0;
+        if (self.legpos == 1) lf   = self.rgt   + self.legframew + self.legmarg;
+        else                  lf   = self.margh + self.legframew;
+
+        frmy = (self.ctx.canvas.height - self.legpx * (self.legstr.length + 1) ) / 2;
+        let txtx = lf + marg;
+        var recy = frmy + self.legpx * 1.5;
+        self.ctx.font      = self.legfontmod + self.legpx + self.legfont;
+        self.ctx.fillStyle = self.legtxtcol;
+        for (let i=0; i < self.data.length; i++ ) {
+          self.ctx.fillStyle = self.legtxtcol;
+          tstx = (x >= txtx + self.legpx / 2) && ( x <= txtx + self.legpx / 2 + txtw + self.legpx * 1.2);
+          tsty = (y > (recy - self.legpx)) && (y < recy );
+          if (tstx && tsty) ind = i;
+          if ( ind >= 0 ) return ind;
+          recy += self.legpx;
+        }
+      }
+      return ind;
+    }
+
+    function drawstr(s) {
+      var h = self.ctx.canvas.height;
+      self.ctx.beginPath();
+      self.ctx.fillStyle   = "rgba(0, 0, 0, 1)";
+      self.ctx.fillRect(0, h-30, 300, 25);
+      self.ctx.lineWidth   = self.marw  ;
+      self.ctx.strokeStyle = self.descol;
+      self.ctx.fillStyle   = "rgb(255,255,0)";
+      self.ctx.fillText( s , 100, h-15 );
+      self.ctx.stroke();
+      self.ctx.fill();
+      self.ctx.closePath();
+    }
+
+    function setstyleparam(ind, par, state) {
+      if ( (self.style      == null) || (typeof self.style      == "undefined") ) return;
+      if (ind > self.style.length) return;
+      if ( (self.style[ind] == null) || (typeof self.style[ind] == "undefined") ) return;
+      if (getStyle(self.style[ind], par, "---") == "---") {
+        self.style[ind].push( par + "=" + (state ? "YES" : "NO") );
+        return;
+      }
+      for (let i=0; i < self.style[ind].length; i++) {
+        if (self.style[ind][i].indexOf(par) >= 0) {
+          self.style[ind][i] = par + "=" + (state ? "YES" : "NO");
+          break;
+        }
+      }
+    }
+
     // Onclick
     function on_canvas_click(ev) {
       if (self.data.length <= 0) return;
+
+      if (self.hideonclick) {
+        // hide chart
+        var ind = isinrect(ev.offsetX, ev.offsetY);
+        if (ind >= 0) {
+          var s = getStyle(self.style[ind], "visible", "---");
+          switch (s) {
+            case "---" : { setstyleparam(ind, "visible", false); break; }
+            case "NO"  : { setstyleparam(ind, "visible", true ); setstyleparam(ind, "boldover", true); break; }
+            case "YES" : { setstyleparam(ind, "visible", false); break; }
+          }
+          self.redraw();
+        }
+      }
+
       if (self.pointclicked == true) {
         self.pointclicked = false; // turn off mouse click
         // clear layer2 canvas
@@ -1492,6 +1720,7 @@ class js_chart {
         let ya = 0;
         for ( let i = 0; i < self.data.length; i++) {
           if (typeof self.data[i] == "undefined") continue;
+
           ya = self.zlvl - ( (self.data[i][xnbr + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
           xa = xzero;
           // if bar then make shift on x
@@ -1501,6 +1730,7 @@ class js_chart {
           }
           // check...
           if ( (Math.abs(xa - x) < sens) && (Math.abs(ya - y ) < sens) ) {
+            if (getStyle(self.style[i], "visible", "---") == "NO") continue;
             if (!noclick) self.pointclicked  = true;
             let txt  = self.axisXtxt +" [" + (self.desc[xnbr + self.from * self.zoom].toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalX, maximumFractionDigits: self.decimalX}) ) +
                                     "] = " + (self.data[i][xnbr + self.from * self.zoom] * self.dcorr).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalY, maximumFractionDigits: self.decimalY}) + " " + self.aYtxt;
@@ -1609,7 +1839,8 @@ class js_chart {
     function on_mouseDown(ev) {
       if (ev.buttons == 3) self.hintwithctrl = !self.hintwithctrl; // turn on/off cross
 
-      if ((self.multimsdown) && (ev.buttons == 2) ) {
+      if ((self.multimsdown) && (ev.buttons == 2)  && ev.shiftKey && !ev.ctrlKey && !ev.altKey) {
+        console.log("ev.buttons="+ev.buttons);
         var now = new Date();
         var ticks = now.getTime();
         if ( (ticks - oldticks) > self.multimstout) {mdcnt = 0; oldticks=ticks;}
@@ -1710,13 +1941,13 @@ class js_chart {
       CtrlKeyDown  = ev.ctrlKey ;
       ShiftKeyDown = ev.shiftKey;
       switch (event.key) {
-        // Left pressed
-        case "ArrowLeft" : { self.left();     if (ev.preventDefault) ev.preventDefault(); break; }
-        // Right pressed
-        case "ArrowRight": { self.right();    if (ev.preventDefault) ev.preventDefault(); break; }
-        // Up pressed
+        // Left key pressed
+        case "ArrowLeft" : { if (self.revarrowkeysinzoom) self.right(); else self.left();     if (ev.preventDefault) ev.preventDefault(); break; }
+        // Right key pressed
+        case "ArrowRight": { if (self.revarrowkeysinzoom) self.left();  else self.right();    if (ev.preventDefault) ev.preventDefault(); break; }
+        // Up key pressed
         case "ArrowUp"   : { self.home();     if (ev.preventDefault) ev.preventDefault(); break; }
-        // Down pressed
+        // Down key pressed
         case "ArrowDown" : { self.end();      if (ev.preventDefault) ev.preventDefault(); break; }
         case "Home"      : { self.home();     if (ev.preventDefault) ev.preventDefault(); break; }
         case "End"       : { self.end();      if (ev.preventDefault) ev.preventDefault(); break; }
@@ -1742,6 +1973,43 @@ class js_chart {
     }
 
 
+    function downloadChart(fname) {
+      var image = self.ctx.canvas.toDataURL("image/png", 1).replace("image/png", "image/octet-stream");
+      var anchor = document.createElement('a');
+      anchor.setAttribute('download', fname);
+      anchor.setAttribute('href', image);
+      anchor.click();
+      anchor.remove();
+    }
+
+
+    function savecsvfile(fname, sep){
+      var csv = self.axisXtxt;
+      for (let i=0; i < self.data.length; i++ ) {
+        if (typeof self.legstr[i] == "undefined") { csv += sep + "series_" + (i + 1).toString(); continue; }
+        else csv += sep + self.legstr[i];
+      }
+      csv += "\n";
+      for (let x = 0; x < self.desc.length; x++) {
+        csv += self.desc[x];
+        for (let i = 0; i < self.data.length; i++) {
+          if ( (self.data[i]    != null) && (typeof self.data[i]    != "undefined") &&
+               (self.data[i][x] != null) && (typeof self.data[i][x] != "undefined") )
+            csv += sep + self.data[i][x];
+          else
+            csv += sep;
+        }
+        csv += "\n";
+      }
+      //console.log(csv);
+      var anchor = document.createElement("a");
+      anchor.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURI(csv) );
+      anchor.setAttribute('download', fname);
+      anchor.click();
+      anchor.remove();
+    }
+
+
     // context menu off
     function onContextMenu(ev) {
       ev = ev || window.ev;
@@ -1749,7 +2017,9 @@ class js_chart {
       if (ev.preventDefault ) ev.preventDefault ();
       ev.cancelBubble = true;
       ev.returnValue = false;
-      return false;
+      if (ev.altKey && !ev.ctrlKey && self.downloadChartEnable) downloadChart(self.download_png_fname);
+      if (ev.altKey && ev.ctrlKey) savecsvfile(self.download_csv_fname, ";");
+      return;
     }
 
 
@@ -1765,7 +2035,7 @@ class js_chart {
       if ( this.onkeydown   ) this.ctxl2.canvas.addEventListener('keydown'    , on_keyDown     , true);
 
       if ( this.onkeyup     ) this.ctxl2.canvas.addEventListener('keyup'      , on_keyUp       , true);
-      if ( this.oncontext   ) this.ctxl2.canvas.addEventListener('contextmenu', onContextMenu  , true);
+      if ( this.oncontext   ) this.ctxl2.canvas.addEventListener('contextmenu', onContextMenu  , false);
 
       this.ctxl2.canvas.setAttribute("tabindex", 0);
       this.ctxl2.canvas.focus();
@@ -1790,15 +2060,18 @@ class js_chart {
     // let start calculate ...
     if ( Array.isArray(this.data) ) {
      for (let i=0; i < this.data.length; i++ ) {
-        if (typeof this.data[i] == "undefined") continue; // if no data then no min & max
+       if (typeof this.data[i] == "undefined") continue; // if no data then no min & max
         // for bars it's better
         if ( isBar(i) ) { self.barcnt++; self.hmarshift = true; }
+        if ((this.Yzoom & this.YonlyVisiblescale) &
+            (getStyle(this.style[i], "visible", "---") == "NO")) continue; // if invisible then no min & max
         // get max & min of data array
         rangev = getMinMax(this.data[i]);    // get min & max of data
         if (rangev.min < minv) minv = rangev.min; // max of data
         if (rangev.max > maxv) maxv = rangev.max; // min of data
        }
     }
+
     if (minv ==  Infinity) minv = 0; // min not found
     if (maxv == -Infinity) maxv = 0; // max not found
 
@@ -1822,6 +2095,8 @@ class js_chart {
     if (this.Ymax != 0) maxv = this.Ymax; // max Y constant value
     if (this.Ymin != 0) minv = this.Ymin; // min Y constant value
 
+    this.zoffs = 0;
+    this.zcorr = 1;
     // calculate Y zoom offset and correction
     if (this.Yzoom && (maxv > 0) && (minv>0) ) { // Y+
       this.zoffs = -minv;
@@ -1840,6 +2115,7 @@ class js_chart {
       this.desc  = [];
       for (let i = 0; i < this.datalength; i++) this.desc.push( (i + 1) );
     }
+
     // main canvas clear
     this.ctx.beginPath();
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
@@ -1867,6 +2143,12 @@ class js_chart {
     this.ctx.lineCap     = "round";
     this.ctx.lineJoin    = "miter";
     this.ctx.miterLimit  = 1;
+
+    this.ctxl2.lineWidth   = 1;
+    this.ctxl2.font        = this.descfontmod + this.descfpx + this.descfont;
+    this.ctxl2.lineCap     = "round";
+    this.ctxl2.lineJoin    = "miter";
+    this.ctxl2.miterLimit  = 1;
 
     this.aYtxt = self.axisYtxt.toString();
     // if the data plus is very small, calculate the multiplier and show it on the Y axis.
@@ -2064,20 +2346,24 @@ class js_chart {
     if (this.vsOn && this.zoom) {
       let zoomlvl = this.top + this.al;
       if (this.vzonXaxis)  zoomlvl = this.zlvl;
-      this.ctx.strokeStyle = this.vzcolor;
-      this.ctx.fillStyle   = this.vzcolor;
-      this.ctx.lineWidth   = this.vzwdtsm;
-      this.ctx.beginPath();
-      this.ctx.moveTo( this.drl, zoomlvl );
-      this.ctx.lineTo( this.drr, zoomlvl );
-      this.ctx.stroke();
+      let c = this.ctx;
+      c.lineCap     = "round";
+      c.lineJoin    = "miter";
+      c.miterLimit  = 1;
+      c.strokeStyle = changeRGBAalpha(this.vzcolor, this.vzalpha);
+      c.fillStyle   = this.vzcolor;
+      c.lineWidth   = this.vzwdtsm;
+      c.beginPath();
+      c.moveTo( this.drl, zoomlvl );
+      c.lineTo( this.drr, zoomlvl );
+      c.stroke();
       let all = (this.drr - this.drl) / this.alldatalength;
-      this.ctx.lineWidth = this.vzwdtlg;
-      this.ctx.beginPath();
-      this.ctx.moveTo( this.drl + this.from * all, zoomlvl );
-      this.ctx.lineTo( this.drl + this.to   * all, zoomlvl );
-      this.ctx.stroke();
-      this.ctx.closePath();
+      c.lineWidth = this.vzwdtlg;
+      c.beginPath();
+      c.moveTo( this.drl + this.from * all, zoomlvl );
+      c.lineTo( this.drl + this.to   * all, zoomlvl );
+      c.stroke();
+      c.closePath();
     }
     // draw markers and descriptions Y
     if (this.drawmark) {

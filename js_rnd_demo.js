@@ -184,7 +184,7 @@ function generate_random_data() {
   allStyle = [bar_st_1, area_st_1, line_st_1, bar_st_2, area_st_2, line_st_2, bar_st_3, area_st_3, line_st_3, bar_st_4, area_st_4, line_st_4];
   //allStyle = [bar_st_1, bar_st_2, bar_st_3, bar_st_4, bar_st_1, bar_st_2, bar_st_3, bar_st_4, bar_st_1, bar_st_2, bar_st_3, bar_st_4];
 
-  function rndStyle() { return allStyle[Math.round(Math.random() * (allStyle.length-1))]; }
+  function rndStyle() { return allStyle[Math.round(Math.random() * (allStyle.length-1))].slice(); }
   demostyle = [rndStyle(), rndStyle(), rndStyle(), rndStyle(), rndStyle(), rndStyle()];
 
   //demostyle = [bar_st_1, bar_st_2, bar_st_3];

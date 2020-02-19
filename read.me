@@ -1,7 +1,7 @@
 
 
     --------------------------   js_chart   ----------------------------
-      (c) 2019 SpeedBit, reg. Czestochowa, Poland 
+      (c) 2019/2020 SpeedBit, reg. Czestochowa, Poland 
     --------------------------------------------------------------------
     
     This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
   1. The js_chart class - short description
   2. Structure of js_chart class
   3. Description of the js_chart class
-  4. Properties of the js_chart class (111 items) 
+  4. Properties of the js_chart class (156 items) 
   5. A short summary of the file js_rnd_demo.js content - a description of the debug function
   6. The minimum html file needed to run the graph - example
 
@@ -36,6 +36,17 @@
 //  0. Revision
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  1.5  20-02-2020  New features:
+                    - click on legend make hide / show chart that has been clicked
+                    - mouse move over the chart legend make chart "bold"
+                    - scroll the chart with the right mouse button
+                    - download chart data by alt + ctrl + right mouse key
+                    - download chart png  by alt + right mouse key
+                    - there is a possibility of reverse action of the arrow keys when zoom is active
+                    - there is a possibility of reverse action of the chart scroll by mouse when zoom is active
+  
+  1.4  25-04-2019  syntax corrections
+  
   1.3  18-04-2019  Scaling the chart:
                     - Added chart option from min to max (y-axis extension) when Yzoom parameter is true;
                       Otherwise, the chart will be drawn from 0 to max as standard.
@@ -126,7 +137,7 @@
   - [small hint] clicking the left mouse button on the values of a particular chart - a small hint with parameters and data
   - [cross and big hint] pressing the CTRL key - a cross of coordinates and a large hint with the values of the graph for a given X coordinate
   - [cross and big hint] pressing both mouse buttons at the same time - switch on / off the coordinates cross and a large hint
-  - [points on graph] pressing the right mouse button 3 times (default) - switch on / off points on the graph values
+  - [points on graph] while holding the SHIFT key pressed, pressing the right mouse button 3 times (default) - switch on / off points on the graph values
   - [zoom      ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the right (select) - zooming the graph (graph of the selected values)
   - [undo zoom ] while holding the SHIFT key pressed, pressing the left mouse button and dragging to the left (undo zoom) - a graph with all values
   - [scroll    ] when the graph is in the zoom mode, an area appears in the left or right of the graph in which the click causes the graph to shift to the left or to the right (scroll)
@@ -134,6 +145,12 @@
     [Keys: Left, Right, Home, End, Esc] 
                  If key is pressed and chart is in zoom mode, the chart will be shifted to left / right / home / end of data. Esc key makes undo zoom. 
                  Use of the keys requires the chart must be focused!
+  - [hide/show] click on legend make hide / show chart that has been clicked
+  - [bold chart] mouse move over the chart legend make chart "bold"
+
+  - [scroll by mouse] scroll the chart with the right mouse button
+  - [download data] download chart data by alt + ctrl + right mouse key
+  - [download png ] download chart png  by alt + right mouse key
                  
 
  Is compatible with FireFox, Opera, Chrome. Tested in Firefox on Android 6.0 too.
@@ -397,6 +414,16 @@
     onkeyup              |  key up event on/off                                                 |  true
     oncontext            |  block context menu event on/off (turn off context memu)             |  true
   ----------------------------------------------------------------------------------------------------------------------------------------
+    // cursors
+    moveCursor           |  cursor in move mode                                                 |  "pointer"
+    pointerCursor        |  cursor in zoom mode                                                 | "crosshair"
+    autoCursor           |  cursor in normal mode                                               |   "auto"
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // download
+    downloadChartEnable  |  download chart enable                                               | true
+    download_png_fname   |  default filename for chart png file  (alt + right mouse key)        | "chart.png"
+    download_csv_fname   |  default filename for chart data file (alt + ctrl + right mouse key) | "data.csv"
+  ----------------------------------------------------------------------------------------------------------------------------------------
     axisXtxt             |  axis X description                                                  |  "x"
     axisYtxt             |  axis Y description                                                  |  "y"
     Ymax                 |  Xmin or 0 for auto                                                  |   0
@@ -413,7 +440,7 @@
     canvasfrcol          |  canvas frame color                                                  |  "rgba(  0,   0, 255, 1)"
   ----------------------------------------------------------------------------------------------------------------------------------------
     // markers
-    marw                 |  width of marker                                                     |   8
+    marsize              |  size of marker                                                      |   8
     marw                 |  width of marker                                                     |   2
     drawaxis             |  draw axis ?                                                         |  true
     drawarrow            |  draw axis arrows ?                                                  |  true
@@ -436,10 +463,11 @@
     drw0x                |  draw zero value X-axis                                              |  true
     drw0y                |  draw zero value Y-axis                                              |  false
     hmarshift            |  move X markers by 1/2 sie (for bars its better)                     |  false
-deleted:    addmaxmarg           |  additional margin from max value to border                          |  0.03;  // 0 = none, 0,01 = 1% of max value
+deleted: addmaxmarg      |  additional margin from max value to border                          |  0.03;  // 0 = none, 0,01 = 1% of max value
   ----------------------------------------------------------------------------------------------------------------------------------------
     // Yzoom
     Yzoom                |  Y zoom: chart from Ymin to Ymax or from 0 to Ymax                   |  false
+    YonlyVisiblescale    |  if Y zoom then auto scale Y only for visible charts                 | true
   ----------------------------------------------------------------------------------------------------------------------------------------
     // mouse repetition
     repeatMouseMode      |  mouse repetition on / off                                           |  true
@@ -465,6 +493,7 @@ deleted:    addmaxmarg           |  additional margin from max value to border  
   ----------------------------------------------------------------------------------------------------------------------------------------
     // cross & hint	style
     crXYline             |  cross                                                               |  true
+    crXYlineOnButton     |  if cross = false then draw cross when left mouse key is pressed     |  true
     crXjump              |  jump on X markers                                                   |  false
     crYjumpM             |  jump on Y markers                                                   |  false
     crYjumpP             |  jump on Y values                                                    |  true
@@ -536,6 +565,22 @@ deleted:    addmaxmarg           |  additional margin from max value to border  
     barpointcol          |  bar point color                                                     |  "rgba(  0, 250, 250, 0.3)"
     barperc              |  percent filling bar markers                                         |   0.75
   ----------------------------------------------------------------------------------------------------------------------------------------
+    // Bold on mouse over legend square and string -> "bold" parameters
+    boldonover           |  make chart "bold" when mouse is over chart legend                   | true;
+    lineBoldAlpha        |  alpha for "bold" line chart                                         | 1;
+    lineBoldWidth        |  width for "bold" line chart                                         | 3;
+    barBoldLineWidth     |  line width for "bold" bar chart                                     | 3;
+    barBoldAlpha         |  alpha for "bold" bar chart                                          | 0.8;
+    areaBoldLineWidth    |  line width for "bold" area chart                                    | 3;
+    areaBoldLineAlpha    |  line alpha for "bold" area chart                                    | 1;
+    areaBoldAreaAlpha    |  area alpha for "bold" area chart                                    | 0.6;
+    stairsBoldLineWidth  |  line width for "bold" stairs chart                                  | 3;
+    stairsBoldLineAlpha  |  line alpha for "bold" stairs chart                                  | 1;
+  ----------------------------------------------------------------------------------------------------------------------------------------
+    // hide / show chart when legend square or string is clicked
+    hideonclick          |  enable hide/show chart on legend label click                        | true
+    inactivechartboxcol  |  inactive legend color                                               | "rgb(100, 100, 100)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
     bigmax               |  above this number, all data will be converted to the decimal power  |  10000
   ----------------------------------------------------------------------------------------------------------------------------------------
     // for a partial chart (from the scope of data)
@@ -546,14 +591,19 @@ deleted:    addmaxmarg           |  additional margin from max value to border  
     multimsdowncnt       |  number cliks for points switch                                      |  3
     multimstout          |  timeout for points switch in ms                                     |  1000
     multimsdowncol       |  color for points switch                                             |  "rgba(0, 0, 0, 0.15)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
     // shadow when select zoom
     hintselectshadow     |  on/off select shadow                                                |  true
     hintselectcol        |  select shadow color                                                 |  "rgba(0, 0, 0, 0.3)"
+  ----------------------------------------------------------------------------------------------------------------------------------------
     // shift chart left/rigth by moouse left click (if zoomed)
     mouseclickLR         |  on/off shift                                                        |  true
     LRsize               |  click area (left and right) - fraction of the entire chart area     |  1/5 = 0.2 => 20%
     hintzoomcol          |  color of the shift click area                                       |  "rgba(0, 250, 0, 0.15)"
     undozoompx           |  the number of pixels to move the mouse to the left to undo the zoom | 20
+    movezoombymouse      |  enable moving chart by mouse in zoom mode                           | true
+    revarrowkeysinzoom   |  reverse arrow keys in zoom (scrolling)                              | false
+    revmousemoveinzoom   |  reverse mouse move in zoom (scrolling                               | false
   ----------------------------------------------------------------------------------------------------------------------------------------
     // visual zoom
     vsOn                 |  visual zoom on / off                                                |  true
