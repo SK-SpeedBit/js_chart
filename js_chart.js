@@ -3,8 +3,8 @@
 
 
 /*
-    -----------------------   js_chart ver. 1.5  -----------------------
-      (c) 2019/2020 SpeedBit, reg. Czestochowa, Poland
+    -----------------------   js_chart ver. 1.6  -----------------------
+      (c) 2019/2021 SpeedBit, reg. Czestochowa, Poland
     --------------------------------------------------------------------
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,14 +43,14 @@ class js_chart {
     this.downloadChartEnable = true; // download chart enable
     this.download_png_fname  = "chart.png"; // default filename for download chart png file  (altKey + right mouse key)
     this.download_csv_fname  = "data.csv";  // default filename for download chart data file (altKey + ctrlkey + right mouse key)
-
+    this.download_csv_listsep= ';';         // list separator
     // axis
     this.axisXtxt    =  "x";   // axis X description
     this.axisYtxt    =  "y";   // axis Y description
     this.Ymax        =    0;   // Xmin or 0 for auto
     this.Ymin        =    0;   // Ymin or 0 for auto
-    this.decimalX    =    0;   // decimal point X-axis
-    this.decimalY    =    0;   // decimal point Y-axis
+    this.axisdecimalX=    0;   // decimal point X-axis - Max 3
+    this.axisdecimalY=    2;   // decimal point Y-axis - Max 3
     // margins
     this.margv       =    5;   // vertical margin
     this.margh       =    5;   // horizontal margin
@@ -68,9 +68,11 @@ class js_chart {
     this.aw          =    9;  // arrow width
     this.axcol       = "rgba(0,0,0,1)"; // axis color
     this.axw         =    2;  // axis width
-    this.axisdesc    = true;  // draw description of axis ?
+    this.axisXdesc   = true;  // draw description of axis X
+    this.axisYdesc   = true;  // draw description of axis Y
     this.axdesccol   = "rgba(0,100,200,1)"; // axis description color
-    this.drawdesc    = true;  // draw values ?
+    this.drawXdesc   = true;  // draw X values
+    this.drawYdesc   = true;  // draw Y values
     this.dgroup      = true;  // use group digits
     this.drawmark    = true;  // draw markers ?
     this.descol      = "rgba(0,0,255,1)"; // description / markers color
@@ -158,7 +160,7 @@ class js_chart {
     // default bezier curve for line and area graph
     this.beziercurve  = true; // bezier curve or normal line ?
     this.beziercnst   = 3;    // bezier coefficient
-    this.bezierlvloff = 2;    // global level auto off bezier curve. if data points number for one X markers > bezierlvloff
+    this.bezierlvloff = 3;    // global level auto off bezier curve. if data points number for one X markers > bezierlvloff
                               // then bezier curve will be off. Value -1 block this feature. Optimal value is 3
     // default bar graph
     this.barline     = "rgb(0, 250, 250)";       // bar line color
@@ -219,6 +221,22 @@ class js_chart {
     this.legfontmod  = " italic ";                 // legend font modifier
     this.legfont     = "px Courier New";           // legend font name
     this.legtxtcol   = "rgba(  0, 250, 250, 1)";   // legend text color
+    // Live value on axis
+    this.XaxisLiveValue = false; // live value on X aaxis
+    this.YaxisLiveValue = false; // live value on Y aaxis
+    this.liveValueback  = "rgba(200, 200, 200, 0.8)"; // background color for live values on axis
+    this.liveValueColor = "rgba(0, 0, 0, 1)"; // foreground color for live values on axis
+    // all values
+    this.showAllValues  = false; // default value if in style no exist "showvalues=..."
+    // text values under cursor
+    this.textvalue      = true; // text value on cursor
+    this.textvalueoffset= 1;    // offset text value ( *this.descfpx )
+    this.formattxtvalues= true; // format values with decimal point
+
+    this.livevalfpx     = 12;                // font size for description
+    this.livevalfontmod = " italic ";        // font modifier
+    this.livevalfont    = "px Courier New";  // description font
+    this.valuedecimal   =  2;                // values decimal point - Max 5
 
 //--- internal ------------------------------------------------------------
 
@@ -289,7 +307,7 @@ class js_chart {
     this.barnr  = 0; // bar number for draw
     this.marhpx = 0;
     this.zlvl   = 0;
-    this.lvlv   = this.margh + this.marsize * 2 + this.legleft; // level vertical axis
+    this.lvlv   = this.margh + this.marsize * 2 * this.drawmark + this.legleft * this.islegend; // level vertical axis
 
     this.dcorr  = 1; // data corrector
     this.zoffs  = 0; // data offset
@@ -307,6 +325,20 @@ class js_chart {
     this.drv    = 0; // draw height
 
     this.allpoints = false; //
+
+    this.marpx = 0;
+    this.marmx = 0;
+    this.marax = 0;
+
+    this.marpl = 0;
+    this.marmi = 0;
+    this.marall= 0;
+
+    this.oldMouseEv=null;  // last mouse move event
+
+    this.marxdata   = { cnt:0, div:1};              // markers data X
+
+    this.internal_mose_flag = false;
 
   } // constructor
 
@@ -331,6 +363,7 @@ class js_chart {
       ctx.moveTo(x + radius.tl, y);
       ctx.lineTo(x + width - radius.tr, y);
       ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+
       ctx.lineTo(x + width, y + height - radius.br);
       ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
       ctx.lineTo(x + radius.bl, y + height);
@@ -351,6 +384,14 @@ class js_chart {
         if (s[0] == name) return s[1];
       }
       return defvalue;
+    }
+
+    function changeRGBAalpha(rgba, alpha) {
+      if (typeof rgba == "undefined") return rgba;
+      if ( !rgba.includes("rgba") ) return rgba;
+      let str = rgba.split(",");
+      str[3] = alpha + ")";
+      return str[0] + "," + str[1] + "," + str[2] + "," + str[3];
     }
 
     function colRect(t, i, x, y) {
@@ -454,7 +495,7 @@ class js_chart {
       this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
       this.ctx.fillStyle = this.legtxtcol;
       for (let i=0; i < this.data.length; i++ ) {
-        if ( (this.data[i] == null) || (typeof this.data[i] == "undefined") ) continue;
+        if ( (this.data[i] == null) || (typeof this.data[i] == "undefined") || (typeof this.legstr[i] == "undefined") ) continue;
         // color rectangle
         colRect(this, i, txtx, recy);
         txtx += this.legpx * 1.2;
@@ -496,6 +537,7 @@ class js_chart {
       this.ctx.font      = this.legfontmod + this.legpx + this.legfont;
       this.ctx.fillStyle = this.legtxtcol;
       for (let i=0; i < this.data.length; i++ ) {
+        if ( (this.data[i] == null) || (typeof this.data[i] == "undefined") || (typeof this.legstr[i] == "undefined") ) continue;
           // color rectangle
         colRect(this, i, txtx, recy);
         // text of legend
@@ -519,11 +561,11 @@ class js_chart {
 
 
   update(Ydata, Ystyle, Xdesc, XaxisTxt, YaxisTxt) {
-    if (typeof Ydata    != "undefined") this.data     = Ydata   ; // new data
-    if (typeof Ystyle   != "undefined") this.style    = Ystyle  ; // new style
-    if (typeof Xdesc    != "undefined") this.desc     = Xdesc   ; // new desc
-    if (typeof XaxisTxt != "undefined") this.axisXtxt = XaxisTxt; // new X axis text
-    if (typeof YaxisTxt != "undefined") this.axisYtxt = YaxisTxt; // new Y axis text
+    if ((typeof Ydata    != "undefined") && (Ydata    != null)) this.data     = Ydata   ; // new data
+    if ((typeof Ystyle   != "undefined") && (Ystyle   != null)) this.style    = Ystyle  ; // new style
+    if ((typeof Xdesc    != "undefined") && (Xdesc    != null)) this.desc     = Xdesc   ; // new desc
+    if ((typeof XaxisTxt != "undefined") && (XaxisTxt != null)) this.axisXtxt = XaxisTxt; // new X axis text
+    if ((typeof YaxisTxt != "undefined") && (YaxisTxt != null)) this.axisYtxt = YaxisTxt; // new Y axis text
     this.alldatalength = 0;
     // find the length and maximum values of new data
     if ( Array.isArray(this.data) ) {
@@ -536,7 +578,7 @@ class js_chart {
       this.to   = this.alldatalength;
       this.zoom = false;
     }
-    self.allpoints = false; // new draw..
+    this.allpoints = false; // new draw..
     this.draw();
   }
 
@@ -589,7 +631,7 @@ class js_chart {
     this.to   = to;
     this.zoom = true;
     if ((this.from == 0) && (this.to == this.alldatalength)) this.zoom = false;
-    this.ctxl2.canvas.style.cursor = sthis.pointerCursor;
+    this.ctxl2.canvas.style.cursor = this.pointerCursor;
     this.draw();
   }
 
@@ -640,20 +682,23 @@ class js_chart {
     this.layer2.height     = cv.offsetHeight;
 
     this.zlvl  = 0;
-    this.lvlv  = this.margh + this.marsize * 2 + this.legleft; // level vertical axis
+    this.lvlv  = this.margh + this.marsize * 2 * this.drawmark + this.legleft * this.islegend; // level vertical axis
     this.zlvl  = this.drb   - this.zerox; // level zero horizontal axis
 
-    this.lft   = this.margh + this.legleft;     // left margin
-    this.top   = this.margv + this.legtop ;     // top margin
-    this.rgt   = this.ctx.canvas.clientWidth  - this.margh - this.legright ;  // right margin
-    this.bot   = this.ctx.canvas.clientHeight - this.margv - this.legbottom;  // bottom margin
+    this.lft   = this.margh + this.legleft * this.islegend;     // left margin
+    this.top   = this.margv + this.legtop  * this.islegend;     // top margin
+    this.rgt   = this.ctx.canvas.clientWidth  - this.margh - this.legright  * this.islegend;  // right margin
+    this.bot   = this.ctx.canvas.clientHeight - this.margv - this.legbottom * this.islegend;  // bottom margin
 
     this.zerox = 0;              // level zero
-    this.drt   = this.top + this.al * 1.5 * this.drawaxis + !this.drawaxis * this.al * 0.3; // draw top
-    this.drt   = this.top + (this.drawaxis ? this.al * 1.5 : this.descfpx / 2);  // draw top
-    this.drb   = this.bot - this.marsize;  // draw bottom
+    //this.drt   = this.top + this.al * 1.5 * this.drawaxis + !this.drawaxis * this.al * 0.3; // draw top
+    //this.drt   = this.top + (this.drawaxis ? this.al * 1.5 : this.descfpx / 2);  // draw top
+    this.drt   = this.top + (this.drawaxis ? this.al * 1.5 : 0);  // draw top
+
+    this.drb   = this.bot - this.marsize * this.drawmark;  // draw bottom
     this.drl   = this.lvlv;                // draw left
-    this.drr   = this.rgt - (this.drawaxis ? this.al * 1.5 : this.descfpx / 2); // draw right
+    //this.drr   = this.rgt - (this.drawaxis ? this.al * 1.5 : this.descfpx / 2); // draw right
+    this.drr   = this.rgt - (this.drawaxis ? this.al * 1.5 : 0); // draw right
     this.drv   = this.drb - this.drt;      // draw height
 
     this.make_chart();
@@ -671,10 +716,13 @@ class js_chart {
     let rangev     = { minv:0, maxv:0};            // range of data - min & max
     let marpldata  = { cnt:0, factor:1, weight:1}; // markers data plus
     let marmidata  = { cnt:0, factor:1, weight:1}; // markers data minus
-    let marxdata   = { cnt:0, div:1};              // markers data X
+    //let marxdata   = { cnt:0, div:1};              // markers data X
 
     let maxhm = 0;
     let marh  = 0;
+
+    let vmp = 0;
+    let vmm = 0;
 
     function getMinMax(arr) {
       if (typeof arr == "undefined") return { "min":0, "max":0 };
@@ -770,7 +818,6 @@ class js_chart {
       return defvalue;
     }
 
-
     function changeRGBAalpha(rgba, alpha) {
       if (typeof rgba == "undefined") return rgba;
       if ( !rgba.includes("rgba") ) return rgba;
@@ -778,7 +825,6 @@ class js_chart {
       str[3] = alpha + ")";
       return str[0] + "," + str[1] + "," + str[2] + "," + str[3];
     }
-
 
     //--- GRAPHS ---------------------------------------------------------------------------------
 
@@ -799,6 +845,20 @@ class js_chart {
       let locbezierconst = getStyle(style, "beziercnst" , self.beziercnst   );
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(loclinecolor, 0.3);
       if (getStyle(style, "boldover", "---") == "YES") { loclinewidth = self.lineBoldWidth; loclinecolor = changeRGBAalpha(loclinecolor, self.lineBoldAlpha); }
+      let localshowAllValues = getStyle(style, "showallvalues"  , self.showAllValues).toString() == "true";
+      let loctxtvaluescolor  = getStyle(style, "txtvaluescolor" , loclinecolor );
+      // https://github.com/outoftrun - thanks Nick :-)
+      let locdashlinestr = getStyle(style, "dash" , "[]" );
+      locdashlinestr = locdashlinestr.trimLeft();
+      locdashlinestr = locdashlinestr.trimRight();
+      locdashlinestr = locdashlinestr.slice(1,-1);
+      let locdashline = [];
+      if (locdashlinestr != "") {
+          let params = locdashlinestr.split(",");
+          self.ctx.setLineDash (params);
+      }
+      else
+        self.ctx.setLineDash ([]);
 
       // too much points for marker for bezier curve mode - the chart looks unserious :-)
       if ( (self.bezierlvloff >= 0) && (( self.datalength / maxhm ) > self.bezierlvloff) ) locbeziercurve = false;
@@ -807,6 +867,7 @@ class js_chart {
       self.ctx.strokeStyle = loclinecolor;
       self.ctx.fillStyle   = loclinecolor;
       self.ctx.lineWidth   = loclinewidth;
+
       let lastdef = false;
       let x = 0; let x1 = 0;
       let y = 0; let y1 = 0;
@@ -874,11 +935,12 @@ class js_chart {
 
         lastdef = x0def;
       }
+
+      self.ctx.setLineDash ([]);
+
       // data big points
       if (loclinepoints || self.allpoints) {
         self.ctx.beginPath();
-        self.ctx.strokeStyle = changeRGBAalpha(locpointcolor, 1);
-        self.ctx.fillStyle   = locpointcolor;
         if ( (typeof data[0 + self.from * self.zoom] != "undefined") && (data[0 + self.from * self.zoom] != null) ) {
           self.ctx.arc(self.lvlv + self.hmarshift * (self.marhpx / 2), self.zlvl - (data[0 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr, locpointsize, 0, 2 * Math.PI);
           self.ctx.stroke();
@@ -891,7 +953,40 @@ class js_chart {
           self.ctx.stroke();
           self.ctx.fill();
         }
+        self.ctx.closePath();
       }
+
+      if (localshowAllValues) {
+        self.ctx.font = ( (getStyle(style, "boldover", "---") == "YES") ? "Bold" : "" ) + self.descfontmod + self.descfpx + self.descfont;
+        self.ctx.strokeStyle  = loctxtvaluescolor;
+        self.ctx.fillStyle    = loctxtvaluescolor;
+        self.ctx.textAlign    = "center";
+        self.ctx.textBaseline = "middle";
+        self.ctx.beginPath();
+        for (let i = 0; i < self.datalength; i++) {
+          if ( (typeof data[i + self.from * self.zoom] == "undefined") || (data[i + self.from * self.zoom] == null) ) continue;
+          let val = data[i + self.from * self.zoom];
+          let valstr = val;
+          if (self.formattxtvalues)
+            valstr = val.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.valuedecimal, maximumFractionDigits: self.valuedecimal});
+          let w = self.ctx.measureText(valstr).width;
+          if ((w + self.descfpx) > self.marhpx) break; // auto off
+          let locy = - (data[i + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset + // offset up/down
+                     self.zlvl - (data[i + self.from * self.zoom] + self.zoffs ) * self.wght * self.dcorr * self.zcorr;
+          if ((locy < self.drt) || (locy > self.drb)) locy += 2*(data[i + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset;
+          //self.ctx.fillText( valstr,
+          //                   self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2),
+          //                   locy);
+          let locx = self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2);
+          if ((locx - w/2 - self.descfpx/2) < self.lvlv) locx = locx + w/2 + self.descfpx/2;
+          if ((locx + w/2 + self.descfpx/2) > self.drr ) locx = locx - w/2 - self.descfpx/2;
+          self.ctx.fillText( valstr, locx, locy);
+          self.ctx.stroke();
+          self.ctx.fill();
+        }
+        self.ctx.closePath();
+      }
+
     }
 
 
@@ -910,29 +1005,37 @@ class js_chart {
       let locpoints    = getStyle(style, "points"     , self.barpoints   ).toString() == "true";
       let locpointsize = getStyle(style, "pointsize"  , self.barpointsize);
       let locpointcolor= getStyle(style, "pointcolor" , self.barpointcol );
-
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(self.ctx.fillStyle, 0.3);
       if (getStyle(style, "boldover", "---") == "YES") { self.ctx.lineWidth =self.barBoldLineWidth; self.ctx.fillStyle = changeRGBAalpha(self.ctx.fillStyle, self.barBoldAlpha); }
+      let localshowAllValues = getStyle(style, "showallvalues" , self.showAllValues).toString() == "true";
+      let loctxtvaluescolor  = getStyle(style, "txtvaluescolor", self.ctx.strokeStyle);
 
       self.ctx.beginPath();
       let xdef = false;             // is data?
       let wdh  = self.marhpx * self.barperc; // place for all bars
       let wob  = wdh / self.barcnt; // width of one bar
+
+      // too much bars...
+      if (self.marxdata.div > 1) { wob = wob / (self.marxdata.div * 1); }
+
       let x = 0;
       let y = 0;
       for (let i = 0; i < self.datalength; i++) {
         xdef = (typeof data[i + self.from * self.zoom] != "undefined") && (data[i + self.from * self.zoom] != null);
         if (xdef) {
-          x = self.lvlv + ((i * self.marhpx) / self.xdiv) + (wob * self.barnr) + self.hmarshift * ((self.marhpx / 2) - (wdh / 2));
+          //x = self.lvlv + ((i * self.marhpx) / self.xdiv) + (wob * self.barnr) + self.hmarshift * ((self.marhpx / 2) - (wdh / 2));
           y = self.zlvl - ((data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
+          x = self.lvlv + self.hmarshift * (self.marhpx / 2) - wob/2*self.barcnt + ((i * self.marhpx) / self.xdiv) + (wob * self.barnr);
           // draw rectangle
           self.ctx.rect(x , y, wob, self.zlvl - y);
         }
       }
+
       self.ctx.stroke();
       self.ctx.fill();
       self.ctx.closePath();
       self.barnr++; // bar counter ++
+
       // data big points
       if (locpoints || self.allpoints) {
         self.ctx.beginPath();
@@ -950,6 +1053,37 @@ class js_chart {
           self.ctx.fill();
         }
       }
+
+      if (localshowAllValues) {
+        self.ctx.font = ( (getStyle(style, "boldover", "---") == "YES") ? "Bold" : "" ) + self.descfontmod + self.descfpx + self.descfont;
+        self.ctx.strokeStyle  = loctxtvaluescolor;
+        self.ctx.fillStyle    = loctxtvaluescolor;
+        self.ctx.textAlign    = "center";
+        self.ctx.textBaseline = "middle";
+        self.ctx.beginPath();
+        for (let i = 0; i < self.datalength; i++) {
+          if ( (typeof data[i + self.from * self.zoom] == "undefined") || (data[i + self.from * self.zoom] == null) ) continue;
+          let val = data[i + self.from * self.zoom];
+          let valstr = val;
+          if (self.formattxtvalues)
+            valstr = val.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.valuedecimal, maximumFractionDigits: self.valuedecimal});
+          let w = self.ctx.measureText(valstr).width;
+          if ((w + self.descfpx) > self.marhpx) break; // auto off
+          let locx = self.lvlv + ((i * self.marhpx) / self.xdiv) + (wob * self.barnr) + self.hmarshift * ((self.marhpx / 2) - (wdh / 2) - wob/2);
+          let locy = - (data[i + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset + // offset up/down
+                     self.zlvl - (data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr;
+          if ((locy < self.drt) || (locy > self.drb)) locy += 2*(data[i + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset;
+          //self.ctx.fillText( valstr, x, locy);
+          //let locx = self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2);
+          if ((locx - w/2 - self.descfpx/2) < self.lvlv) locx = locx + w/2 + self.descfpx/2;
+          if ((locx + w/2 + self.descfpx/2) > self.drr ) locx = locx - w/2 - self.descfpx/2;
+          self.ctx.fillText( valstr, locx, locy);
+          self.ctx.stroke();
+          self.ctx.fill();
+        }
+        self.ctx.closePath();
+      }
+
     }
 
 
@@ -971,9 +1105,10 @@ class js_chart {
       let locpointcolor  = getStyle(style, "pointcolor" , self.areapointcol );
       let locbeziercurve = getStyle(style, "beziercurve", self.beziercurve  ).toString() == "true";
       let locbezierconst = getStyle(style, "beziercnst" , self.beziercnst   );
-
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor = changeRGBAalpha(locfillcolor, 0.3);
       if (getStyle(style, "boldover", "---") == "YES") { loclinewidth = self.areaBoldLineWidth; loclinecolor = changeRGBAalpha(loclinecolor, self.areaBoldLineWidth); locfillcolor = changeRGBAalpha(locfillcolor, self.areaBoldAreaAlpha); }
+      let localshowAllValues = getStyle(style, "showallvalues" , self.showAllValues).toString() == "true";
+      let loctxtvaluescolor  = getStyle(style, "txtvaluescolor", loclinecolor);
 
       self.ctx.strokeStyle = loclinecolor;
       self.ctx.fillStyle   = locfillcolor;
@@ -1040,6 +1175,34 @@ class js_chart {
           self.ctx.fill();
         }
       }
+      if (localshowAllValues) {
+        self.ctx.font = ( (getStyle(style, "boldover", "---") == "YES") ? "Bold" : "" ) + self.descfontmod + self.descfpx + self.descfont;
+        self.ctx.strokeStyle  = loctxtvaluescolor;
+        self.ctx.fillStyle    = loctxtvaluescolor;
+        self.ctx.textAlign    = "center";
+        self.ctx.textBaseline = "middle";
+        self.ctx.beginPath();
+        for (let i = 0; i < self.datalength; i++) {
+          if ( (typeof data[i + self.from * self.zoom] == "undefined") || (data[i + self.from * self.zoom] == null) ) continue;
+          let val = data[i + self.from * self.zoom];
+          let valstr = val;
+          if (self.formattxtvalues)
+            valstr = val.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.valuedecimal, maximumFractionDigits: self.valuedecimal});
+          let w = self.ctx.measureText(valstr).width;
+          if ((w + self.descfpx) > self.marhpx) break; // auto off
+          let locy = - (data[i + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset + // offset up/down
+                     self.zlvl - (data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr;
+          if ((locy < self.drt) || (locy > self.drb)) locy += 2*(data[i + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset;
+          let locx = self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2);
+          if ((locx - w/2 - self.descfpx/2) < self.lvlv) locx = locx + w/2 + self.descfpx/2;
+          if ((locx + w/2 + self.descfpx/2) > self.drr ) locx = locx - w/2 - self.descfpx/2;
+          self.ctx.fillText( valstr, locx, locy);
+          self.ctx.stroke();
+          self.ctx.fill();
+        }
+        self.ctx.closePath();
+      }
+
     }
 
 
@@ -1056,9 +1219,10 @@ class js_chart {
       let loclinepoints  = getStyle(style, "points"     , self.linepoints   ).toString() == "true";
       let locpointsize   = getStyle(style, "pointsize"  , self.linepointsize);
       let locpointcolor  = getStyle(style, "pointcolor" , self.linepointcol );
-
       if (getStyle(style, "pointcolor" , null) == null) locpointcolor  = changeRGBAalpha(loclinecolor, 0.3);
       if (getStyle(style, "boldover", "---") == "YES") { loclinewidth = self.stairsBoldLineWidth; loclinecolor = changeRGBAalpha(loclinecolor, self.stairsBoldLineAlpha); }
+      let localshowAllValues = getStyle(style, "showallvalues" , self.showAllValues).toString() == "true";
+      let loctxtvaluescolor  = getStyle(style, "txtvaluescolor", loclinecolor);
 
       // Chart line
       self.ctx.strokeStyle = loclinecolor;
@@ -1067,30 +1231,32 @@ class js_chart {
       let lastdef = false;
       let x = 0; let x1 = 0;
       let y = 0; let y1 = 0;
+
       for (let i = 0; i < self.datalength; i++) {
         let x0def = (typeof data[i + 0 + self.from * self.zoom] != "undefined") && (data[i + 0 + self.from * self.zoom] != null);
         let x1def = (typeof data[i + 1 + self.from * self.zoom] != "undefined") && (data[i + 1 + self.from * self.zoom] != null);
         if (i == self.datalength - 1) x1def = false;
         x = self.lvlv + ((i * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
-        if (x0def) y = self.zlvl - ((data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
-        else       y = self.zlvl;
-        if (x1def) y1 = self.zlvl - ((data[i + 1 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr); else y1=y;
+        if (x0def) y  = self.zlvl - ((data[i + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
+        else       y  = self.zlvl;
+        if (x1def) y1 = self.zlvl - ((data[i + 1 + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
+        else       y1 = y;
         // first data
         if (x0def && !lastdef && x1def) {
           self.ctx.beginPath();
           self.ctx.moveTo(x, y);
-          self.ctx.lineTo(x + self.marhpx , y);
+          self.ctx.lineTo(x + self.marhpx / self.xdiv , y);
         }
         // middle data
         if (x0def && x1def) {
-          self.ctx.lineTo(x + self.marhpx , y);
-          self.ctx.lineTo(x + self.marhpx , y1);
+          self.ctx.lineTo(x + self.marhpx / self.xdiv , y);
+          self.ctx.lineTo(x + self.marhpx / self.xdiv , y1);
         }
         // last data
         if (x0def && !x1def  ) {
           if (i+1 < self.datalength) {
             self.ctx.moveTo(x, y1);
-            self.ctx.lineTo(x + self.marhpx , y1);
+            self.ctx.lineTo(x + self.marhpx / self.xdiv , y1);
           }
           self.ctx.stroke();
           //self.ctx.fill();
@@ -1100,7 +1266,7 @@ class js_chart {
         // true last data
         if (x0def && !lastdef && !x1def ) {
           if (i+1 < self.datalength) {
-            self.ctx.lineTo(x + self.marhpx , y);
+            self.ctx.lineTo(x + self.marhpx / self.xdiv , y);
           }
           else {
             self.ctx.save();
@@ -1115,6 +1281,7 @@ class js_chart {
         }
         lastdef = x0def;
       }
+
       // data big points
       if (loclinepoints || self.allpoints) {
         self.ctx.beginPath();
@@ -1132,6 +1299,37 @@ class js_chart {
           self.ctx.stroke();
           self.ctx.fill();
         }
+      }
+      if (localshowAllValues) {
+        self.ctx.font = ( (getStyle(style, "boldover", "---") == "YES") ? "Bold" : "" ) + self.descfontmod + self.descfpx + self.descfont;
+        self.ctx.strokeStyle  = loctxtvaluescolor;
+        self.ctx.fillStyle    = loctxtvaluescolor;
+        self.ctx.textAlign    = "center";
+        self.ctx.textBaseline = "middle";
+        self.ctx.beginPath();
+        for (let i = 0; i < self.datalength; i++) {
+          if ( (typeof data[i + self.from * self.zoom] == "undefined") || (data[i + self.from * self.zoom] == null) ) continue;
+          let val = data[i + self.from * self.zoom];
+          let valstr = val;
+          if (self.formattxtvalues)
+            valstr = val.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.valuedecimal, maximumFractionDigits: self.valuedecimal});
+          let w = self.ctx.measureText(valstr).width;
+          if ((w + self.descfpx) > self.marhpx) break; // auto off
+          let locy = - ( val > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset + // offset up/down
+                     self.zlvl - ( val + self.zoffs) * self.wght * self.dcorr * self.zcorr;
+          if ((locy < self.drt) || (locy > self.drb)) locy += 2*(data[i + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset;
+          //self.ctx.fillText( valstr,
+          //                   self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2),
+          //                   locy);
+          let locx = self.lvlv + (i * self.marhpx) / self.xdiv + self.hmarshift * (self.marhpx / 2);
+          if ((locx - w/2 - self.descfpx/2) < self.lvlv) locx = locx + w/2 + self.descfpx/2;
+          if ((locx + w/2 + self.descfpx/2) > self.drr ) locx = locx - w/2 - self.descfpx/2;
+          self.ctx.fillText( valstr, locx, locy);
+
+          self.ctx.stroke();
+          self.ctx.fill();
+        }
+        self.ctx.closePath();
       }
     }
 
@@ -1170,25 +1368,36 @@ class js_chart {
     var Zto   = 0;
     var mouseisdown  = false;
     var mousebuttons = 0;
-    var lastRX = 0;
     var noclick= false;
     var xmove =0;
     var oldind = -1;
+
     // mouse events
     function on_mouseMove(ev) {
+      // for refresh
+      if (ev==null) ev = self.oldMouseEv;
+      else self.oldMouseEv = ev;
+      if (ev==null) return;
 
-      // bold on mouseover
+      // bold on legend mouseover
+      if (self.internal_mose_flag) return;
       if (self.boldonover) {
         var ind = isinrect(ev.offsetX, ev.offsetY);
+
         if ((ind >= 0) && (ind != oldind)) {
           if (ind != oldind) setstyleparam(ind, "boldover", true);
         }
         else {
           for (let ind=0; ind < self.style.length; ind++) setstyleparam(ind, "boldover", false);
         }
-        if (ind != oldind) self.redraw();
+
+        if (ind != oldind) {
+          self.internal_mose_flag = true;
+          self.draw();
+        }
         oldind = ind;
       }
+      self.internal_mose_flag = false;
 
       // move chart by right mouse key
       if (self.zoom && self.movezoombymouse)
@@ -1318,7 +1527,9 @@ class js_chart {
         let sens = self.hintpointw * 2;
         let wdh = self.marhpx * self.barperc; // room for all bars
         let wob = wdh / self.barcnt;          // width of one bar
-        let difx = (self.marhpx * self.barperc) / 2 - wob / 2; // start of left border bars
+
+        let difx = (self.marhpx * self.barperc) / 2 ;//- wob / 2; // start of left border bars
+
         let xzero = self.lvlv + ((xnbr * self.marhpx) / self.xdiv) + self.hmarshift * (self.marhpx / 2);
         for ( let i = 0; i < self.data.length; i++) {
         //  if (getStyle(self.style[i], "visible", "---") == "NO") continue;
@@ -1380,13 +1591,13 @@ class js_chart {
           let y2 = 0;
           // jump on Y markers
           if ( self.crYjumpM ) {
-            ynbr = Math.round( (y - self.zlvl) / marpx );
-            y1 = self.zlvl + (ynbr * marpx);
+            ynbr = Math.round( (y - self.zlvl) / self.marpx );
+            y1 = self.zlvl + (ynbr * self.marpx);
             y  = y1;
           }
           let ydef=false;
           if ( self.crYjumpP ) {
-            let sens    = marax;
+            let sens    = self.marax;
             let oldydif =  sens;
             for (let i = 0; i < self.data.length; i++) {
               // jump on Y data
@@ -1402,7 +1613,10 @@ class js_chart {
               }
               else continue;
               // jump on markers & data
-              if (self.crYjumpM && self.crYjumpP) if ( Math.abs( y2 - y1 ) < sens ) { y = y2;  break; }
+              if (self.crYjumpM && self.crYjumpP) if ( Math.abs( y2 - y1 ) < sens ) {
+                if (getStyle(self.style[i], "visible", "") != "NO")
+                  y = y2;
+                }
             }
           }
         }
@@ -1422,12 +1636,13 @@ class js_chart {
 
 
         // big point around data point for every data table
-        if (self.crpointhint || self.crlinetomouse) {
+        if (self.crpointhint || self.crlinetomouse || self.textvalue) {
           let ydef;
           let y2;
           let bnr  = 0;
           let difx = 0;
           self.ctxl2.setLineDash([]);
+
           for (let i = 0; i < self.data.length; i++ ) {
             ydef = (typeof self.data[i] != "undefined") && (typeof self.data[i][xnbr + self.from * self.zoom] != "undefined") && (self.data[i][xnbr + self.from * self.zoom] != null) ;
             if (ydef)
@@ -1463,15 +1678,38 @@ class js_chart {
               if ( isBar(i) ) {
                 let wdh = self.marhpx * self.barperc; // room for all bars
                 let wob = wdh / self.barcnt;          // width of one bar
-                difx = (wdh / 2) - (wob * (bnr)) - (wob / 2);
+                // too many bars...
+                if (self.marxdata.div > 1) { wob = wob / (self.marxdata.div * 1); }
+
+                difx =  - (wob/1 * (bnr)) +  (self.barcnt-1)*wob/2;
                 bnr++;
               }
               if (getStyle(self.style[i], "visible", "---") == "NO") continue;
-
               self.ctxl2.beginPath();
               self.ctxl2.arc(xJump - difx, y2, self.hintpointw, 0, 2 * Math.PI);
               self.ctxl2.stroke();
               if (self.crpointfill) self.ctxl2.fill();
+            }
+            // value text
+            //if (self.textvalue && (self.marxdata.div == 1)) {
+            if (self.textvalue ) {
+              if (getStyle(self.style[i], "visible", "---") == "NO") continue;
+              // text value color = color from style or color from line
+              self.ctxl2.fillStyle   = getStyle(self.style[i], "txtvaluescolor", getStyle(self.style[i], "linecolor", self.hintpointfill));
+              self.ctxl2.font        = self.livevalfontmod + self.livevalfpx + self.livevalfont;
+              self.ctxl2.beginPath();
+              self.ctxl2.textAlign    = "center";
+              self.ctxl2.textBaseline = "middle";
+              let val =  self.data[i][xnbr + self.from * self.zoom];
+              if (self.formattxtvalues)
+                val = val.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.valuedecimal, maximumFractionDigits: self.valuedecimal});
+              let locy = y2 - (self.data[i][xnbr + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset;
+              if ((locy < self.drt) || (locy > self.drb)) locy = y2 + (self.data[i][xnbr + self.from * self.zoom] > 0 ? 1 : -1) * self.descfpx * self.textvalueoffset;
+              let locx =  xJump - difx;
+              let w = self.ctx.measureText(val).width;
+              if ((locx - w/2 - self.descfpx/2) < self.lvlv) locx = locx + w/2 + self.descfpx/2;
+              if ((locx + w/2 + self.descfpx/2) > self.drr ) locx = locx - w/2 - self.descfpx/2;
+              self.ctxl2.fillText( val, locx, locy);
             }
             // line to mouse
             if (self.crlinetomouse) {
@@ -1485,6 +1723,7 @@ class js_chart {
           }
         }
 
+
         // hint...
         if (self.crHint && ! wassmallhint) {
           self.ctxl2.setLineDash([]);
@@ -1492,18 +1731,23 @@ class js_chart {
           let s = [];
           let txtw = 0;
           let txtwt= 0;
-          let txt  = self.axisXtxt + " = " + (self.desc[xnbr + self.from * self.zoom].toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalX, maximumFractionDigits: self.decimalX}) ) ;
+          let txt = "";
+          if (typeof (self.desc[xnbr + self.from * self.zoom]) == 'number')
+            txt  = self.axisXtxt + " = " + (self.desc[xnbr + self.from * self.zoom].toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.axisdecimalX, maximumFractionDigits: self.axisdecimalX}) ) ;
+          else
+            txt  = self.axisXtxt + " = " + (self.desc[xnbr + self.from * self.zoom] ) ;
+
           let txt2 = "";
           txtw = self.ctxl2.measureText(txt).width;
           for (let i = 0; i < self.data.length; i++) {
             if (getStyle(self.style[i], "visible", "---") == "NO") continue;
             if ((typeof self.data[i] != "undefined") && (typeof self.data[i][xnbr + self.from * self.zoom] != "undefined") && (self.data[i][xnbr + self.from * self.zoom] != null))
-            s.push( (self.data[i][xnbr + self.from * self.zoom] * self.dcorr ).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalY, maximumFractionDigits: self.decimalY}) + " " + self.aYtxt);
+            s.push( (self.data[i][xnbr + self.from * self.zoom] * self.dcorr ).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.valuedecimal, maximumFractionDigits: self.valuedecimal}) + " " + self.aYtxt);
             else s.push("no data");
             txtwt = self.ctxl2.measureText(s[i]).width + (self.hintfpx * 3);
             if (txtwt > txtw) txtw = txtwt;
           }
-          while (self.ctxl2.measureText(txt2).width < txtw) txt2 += "-";
+          while (self.ctxl2.measureText(txt2).width < txtw) { txt2 += String.fromCharCode(0x2500); if (txt2.length > 20) break; }
 
           self.ctxl2.beginPath();
           if (self.hintmaxalpha) self.ctxl2.fillStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
@@ -1515,12 +1759,17 @@ class js_chart {
           self.ctxl2.textAlign    = "start";
           let mx;
           let my;
+
+          // level value chart on "0" position
+          //lastY = self.zlvl - ((self.data[0][xnbr + self.from * self.zoom] + self.zoffs) * self.wght * self.dcorr * self.zcorr);
+
           // out of X+
           if ((lastX + txtw + self.hintfpx *3 ) > self.drr) mx = lastX - self.hintfpx * 3 - txtw;
           else                                              mx = lastX + self.hintfpx * 2;
           // out of Y-
           if ((lastY + self.hintfpx * (s.length + 4 + 1) ) > self.drb) my = lastY - self.hintfpx * (s.length + 4 + 1) ;
           else                                                         my = lastY + self.hintfpx * 2;
+
           self.ctxl2.lineWidth   = self.hintframewidth;
           self.ctxl2.strokeStyle = self.hintrectcol;
           if (self.hintmaxalpha) self.ctxl2.fillStyle = changeRGBAalpha(self.ctxl2.fillStyle, 1);
@@ -1555,6 +1804,88 @@ class js_chart {
             self.ctxl2.fillText(" ", mx + self.hintfpx * 2 , my + self.hintfpx * 0.5 + (self.hintfpx * (i - v + 2)) );
             self.ctxl2.textAlign = "end";
             self.ctxl2.fillText(s[i-v], mx + self.hintfpx / 2 + txtw, my + self.hintfpx * 0.5 + (self.hintfpx * (i - v + 2)) );
+          }
+        }
+        // live value on axis
+        if (self.XaxisLiveValue || self.YaxisLiveValue) {
+          self.ctxl2.font         = self.descfontmod + self.descfpx + self.descfont;
+          let mar  = 2;
+          let maxw = 0;
+          let w    = 0;
+          let axtxt = "";
+
+          // Y
+          if (self.YaxisLiveValue) {
+            axtxt = ( (self.zlvl - y) / (self.wght * self.dcorr * self.zcorr) - self.zoffs).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.axisdecimalY, maximumFractionDigits: self.axisdecimalY}) ;
+            w = self.ctxl2.measureText(axtxt).width;
+            // max length of y txt
+            w    = self.ctxl2.measureText( minv.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.axisdecimalY, maximumFractionDigits: self.axisdecimalY}) ).width;
+            maxw = self.ctxl2.measureText( maxv.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.axisdecimalY, maximumFractionDigits: self.axisdecimalY}) ).width;
+            if (maxw > w) w = maxw;
+            // Y frame desc
+            self.ctxl2.beginPath();
+            self.ctxl2.textAlign    = "end";
+            self.ctxl2.textBaseline = "middle";
+            self.ctxl2.fillStyle = self.liveValueback;
+            self.ctxl2.fillRect(self.lvlv - self.aw - w - mar , y - self.descfpx/2 - mar, 1 + w + mar * 2, self.descfpx + mar * 2);
+            self.ctxl2.fillStyle = self.liveValueColor;
+            self.ctxl2.fillText(axtxt, self.lvlv - self.aw, y );
+            self.ctxl2.stroke();
+            self.ctxl2.fill();
+            self.ctxl2.closePath();
+          }
+
+          // X
+          if (self.XaxisLiveValue) {
+            let hor  = x;
+            let rhor = 1;
+            self.ctxl2.font         = self.descfontmod + self.descfpx + self.descfont;
+            // max length of desc
+            w=maxw;
+            if (self.zoom) {
+              w    = self.ctxl2.measureText(self.desc[self.from]).width;
+              maxw = self.ctxl2.measureText(self.desc[self.to-1]).width;
+            }
+            else {
+              w    = self.ctxl2.measureText(self.desc[0]).width;
+              maxw = self.ctxl2.measureText(self.desc[self.desc.length-1  ]).width;
+            }
+            if (maxw > w) w = maxw;
+
+            axtxt = self.desc[xnbr + self.from * self.zoom];
+            // X frame desc
+            self.ctxl2.beginPath();
+            self.ctxl2.save();
+            // always rotate 90 grad
+            self.ctxl2.translate(self.drl, self.drb);
+            self.ctxl2.rotate( -0.5 * Math.PI );
+            rhor = (x) - self.lvlv;
+            self.ctxl2.fillStyle = self.liveValueback;
+            self.ctxl2.fillRect(self.drb - self.zlvl - self.marsize + mar ,
+                                rhor - self.descfpx / 2 - mar + self.descfpx / 2 * (xnbr == 0) * !self.hmarshift,
+                                -(1 + w + mar * 2),
+                                self.descfpx + mar * 2
+                              );
+            self.ctxl2.restore();
+            // X desc text
+            self.ctxl2.fillStyle = self.liveValueColor;
+            self.ctxl2.textAlign    = "end";
+            self.ctxl2.textBaseline = "middle";
+            // always rotate 90 grad
+            self.ctxl2.save();
+            self.ctxl2.textBaseline = "middle";
+            self.ctxl2.textAlign = "end";
+            self.ctxl2.translate(self.drl, self.drb);
+            self.ctxl2.rotate( -0.5 * Math.PI );
+            if (typeof axtxt != "undefined")
+              self.ctxl2.fillText( axtxt.toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.axisdecimalX, maximumFractionDigits: self.axisdecimalX}),
+                                   self.drb - self.zlvl - self.marsize,
+                                   rhor + self.descfpx / 2 * (xnbr == 0) * !self.hmarshift);
+            self.ctxl2.restore();
+
+            self.ctxl2.stroke();
+            self.ctxl2.fill();
+            self.ctxl2.closePath();
           }
         }
 
@@ -1675,7 +2006,6 @@ class js_chart {
     // Onclick
     function on_canvas_click(ev) {
       if (self.data.length <= 0) return;
-
       if (self.hideonclick) {
         // hide chart
         var ind = isinrect(ev.offsetX, ev.offsetY);
@@ -1683,10 +2013,11 @@ class js_chart {
           var s = getStyle(self.style[ind], "visible", "---");
           switch (s) {
             case "---" : { setstyleparam(ind, "visible", false); break; }
-            case "NO"  : { setstyleparam(ind, "visible", true ); setstyleparam(ind, "boldover", true); break; }
+            case "NO"  : { setstyleparam(ind, "visible", true ); if (self.boldonover) setstyleparam(ind, "boldover", true); break; }
             case "YES" : { setstyleparam(ind, "visible", false); break; }
           }
           self.redraw();
+          return ;
         }
       }
 
@@ -1732,8 +2063,8 @@ class js_chart {
           if ( (Math.abs(xa - x) < sens) && (Math.abs(ya - y ) < sens) ) {
             if (getStyle(self.style[i], "visible", "---") == "NO") continue;
             if (!noclick) self.pointclicked  = true;
-            let txt  = self.axisXtxt +" [" + (self.desc[xnbr + self.from * self.zoom].toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalX, maximumFractionDigits: self.decimalX}) ) +
-                                    "] = " + (self.data[i][xnbr + self.from * self.zoom] * self.dcorr).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.decimalY, maximumFractionDigits: self.decimalY}) + " " + self.aYtxt;
+            let txt  = self.axisXtxt +" [" + (self.desc[xnbr + self.from * self.zoom].toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.axisdecimalX, maximumFractionDigits: self.axisdecimalX}) ) +
+                                    "] = " + (self.data[i][xnbr + self.from * self.zoom] * self.dcorr).toLocaleString(undefined, {useGrouping: self.dgroup, minimumFractionDigits: self.valuedecimal, maximumFractionDigits: self.valuedecimal}) + " " + self.aYtxt;
             self.ctxl2.font = self.hintfontmod + self.hintfpx + self.hintfont;
             let txtw = self.ctxl2.measureText(txt).width;
             // small hint
@@ -1806,6 +2137,13 @@ class js_chart {
     function on_mouseout() {
       self.ctxl2.clearRect(0, 0, self.ctxl2.canvas.width, self.ctxl2.canvas.height);
       self.pointclicked = false;
+      self.oldMouseEv   = null;
+      lastX = 0;
+      lastY = 0;
+      mouseisdown  = false;
+      mousebuttons = 0;
+      oldind = -1;
+      noclick= false;
     }
 
 
@@ -1982,8 +2320,15 @@ class js_chart {
       anchor.remove();
     }
 
+    function DecimalSeparator() {
+        var n = 1.1;
+        n = n.toLocaleString().substring(1, 2);
+        return n;
+    }
 
-    function savecsvfile(fname, sep){
+
+    function savecsvfile(fname){
+      var sep = self.download_csv_listsep;
       var csv = self.axisXtxt;
       for (let i=0; i < self.data.length; i++ ) {
         if (typeof self.legstr[i] == "undefined") { csv += sep + "series_" + (i + 1).toString(); continue; }
@@ -1995,7 +2340,7 @@ class js_chart {
         for (let i = 0; i < self.data.length; i++) {
           if ( (self.data[i]    != null) && (typeof self.data[i]    != "undefined") &&
                (self.data[i][x] != null) && (typeof self.data[i][x] != "undefined") )
-            csv += sep + self.data[i][x];
+            csv += sep + self.data[i][x].toLocaleString();
           else
             csv += sep;
         }
@@ -2018,7 +2363,7 @@ class js_chart {
       ev.cancelBubble = true;
       ev.returnValue = false;
       if (ev.altKey && !ev.ctrlKey && self.downloadChartEnable) downloadChart(self.download_png_fname);
-      if (ev.altKey && ev.ctrlKey) savecsvfile(self.download_csv_fname, ";");
+      if (ev.altKey && ev.ctrlKey) savecsvfile(self.download_csv_fname);
       return;
     }
 
@@ -2063,8 +2408,7 @@ class js_chart {
        if (typeof this.data[i] == "undefined") continue; // if no data then no min & max
         // for bars it's better
         if ( isBar(i) ) { self.barcnt++; self.hmarshift = true; }
-        if ((this.Yzoom & this.YonlyVisiblescale) &
-            (getStyle(this.style[i], "visible", "---") == "NO")) continue; // if invisible then no min & max
+        if ((this.Yzoom & this.YonlyVisiblescale) & (getStyle(this.style[i], "visible", "---") == "NO")) continue; // if invisible then no min & max
         // get max & min of data array
         rangev = getMinMax(this.data[i]);    // get min & max of data
         if (rangev.min < minv) minv = rangev.min; // max of data
@@ -2075,9 +2419,12 @@ class js_chart {
     if (minv ==  Infinity) minv = 0; // min not found
     if (maxv == -Infinity) maxv = 0; // max not found
 
+    // turn off YZoom if not necessary
+    if (this.Yzoom && (this.Ymax==0) && (this.Ymin!=0) ) this.Yzoom=false;
+    if (this.Yzoom && (this.Ymax!=0) && (this.Ymin==0) ) this.Yzoom=false;
+
     if ((maxv>0) && (minv>0) && !this.Yzoom) minv = 0;
     if ((maxv<0) && (minv<0) && !this.Yzoom) maxv = 0;
-
 
     // check parameters
     if (this.Ymax <= this.Ymin) { this.Ymax = 0; this.Ymin = 0; }
@@ -2108,12 +2455,17 @@ class js_chart {
     }
 
     // decimal points 0 .. 5
-    if ((this.decimalX < 0 ) || (this.decimalX > 5 )) this.decimalX = 0;
-    if ((this.decimalY < 0 ) || (this.decimalY > 5 )) this.decimalY = 0;
+    if ((this.axisdecimalX < 0 ) || (this.axisdecimalX > 3 )) this.axisdecimalX = 1;
+    if ((this.axisdecimalY < 0 ) || (this.axisdecimalY > 3 )) this.axisdecimalY = 1;
+    if ((this.valuedecimal < 0 ) || (this.valuedecimal > 5 )) this.valuedecimal = 0;
     // initialize description X-axis table if not exists
     if ((typeof this.desc == "undefined") || (this.desc == null) || (this.desc == 0) || (this.desc.length == 0) ) {
       this.desc  = [];
       for (let i = 0; i < this.datalength; i++) this.desc.push( (i + 1) );
+    }
+    // desc items control
+    for (let i = 0; i < this.desc.length; i++) {
+      if ((typeof this.desc[i] == "undefined") || (this.desc[i] == null) ) this.desc[i] = "";
     }
 
     // main canvas clear
@@ -2153,7 +2505,7 @@ class js_chart {
     this.aYtxt = self.axisYtxt.toString();
     // if the data plus is very small, calculate the multiplier and show it on the Y axis.
     let tm = Math.abs( Math.max( Math.abs(maxv), Math.abs(minv) ) );
-    if ( ( tm * Math.pow(10, this.decimalY ) ) < 1) {
+    if ( ( tm * Math.pow(10, this.valuedecimal ) ) < 1) {
       let tw = 1;
       let ti = 0;
       if (tm > 0)
@@ -2167,7 +2519,7 @@ class js_chart {
         maxv *= tw;
         this.dcorr = tw;
       }
-      if (this.decimalY == 0) this.decimalY = 2; //ti;
+      if (this.valuedecimal == 0) this.valuedecimal = 2; //ti;
     }
 
     // if the data plus is very big, calculate the divider and show it on the Y axis.
@@ -2185,7 +2537,7 @@ class js_chart {
         maxv = maxv / tw;
         this.dcorr = 1 / tw;
       }
-      this.decimalY = 0;
+      this.valuedecimal = 0;
     }
 
     // for zoom
@@ -2205,9 +2557,13 @@ class js_chart {
     let maxw      = 0;
     // find max width of X-axis description
     for (let i = this.from * this.zoom; i < this.desc.length; i++) {
-      maxw = this.ctx.measureText( this.desc[i].toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalX, maximumFractionDigits:this.decimalX}) ).width;
+      maxw = this.ctx.measureText( this.desc[i].toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.axisdecimalX, maximumFractionDigits:this.axisdecimalX}) ).width;
       if (maxw > marwxdesc) marwxdesc = maxw;
     }
+
+    // if X description is not needed then max width of desciption string will be zero
+    if (!this.drawXdesc) marwxdesc=0;
+
     // if descritions X-axis heigth > room we have to change the drawing area and move X-axis up
     if ((this.drb - this.zlvl) < marwxdesc) {
       //this.top = this.margv + marwxdesc - this.zerox; // new bottom margin
@@ -2222,39 +2578,43 @@ class js_chart {
     }
 
     // count max markers (from font pixels)
-    let marpl = Math.round( Math.abs( (this.zlvl - this.drt) / this.descfpx ) );  // max markers plus max counter
-    let marmi = Math.round( Math.abs( (this.drb - this.zlvl) / this.descfpx ) );  // max markers minus max counter
-    let marall= marpl + marmi;                                                    // max all markers counter
+    this.marpl = Math.round( Math.abs( (this.zlvl - this.drt) / this.descfpx ) );  // max markers plus max counter
+    this.marmi = Math.round( Math.abs( (this.drb - this.zlvl) / this.descfpx ) );  // max markers minus max counter
+    this.marall= this.marpl + this.marmi;                                                    // max all markers counter
     // get marker plus count and weigth
-    marpldata = getMaxMarkerValue(maxv - (minv > 0 ? minv * this.Yzoom : 0), marpl);
-    marpl     = marpldata.cnt;
-    let vmp   = marpldata.value;
+    marpldata = getMaxMarkerValue(maxv - (minv > 0 ? minv * this.Yzoom : 0), this.marpl);
+    this.marpl= marpldata.cnt;
+    vmp       = marpldata.value;
     // get marker minus count and weigth
-    marmidata = getMaxMarkerValue(minv - (maxv < 0 ? maxv * this.Yzoom : 0), marmi);
-    marmi     = marmidata.cnt;
-    let vmm   = marmidata.value;
+    marmidata = getMaxMarkerValue(minv - (maxv < 0 ? maxv * this.Yzoom : 0), this.marmi);
+    this.marmi= marmidata.cnt;
+    vmm       = marmidata.value;
 
     // calculate pixels for one marker
-    let marpx = (Math.abs(( this.zlvl - this.drt ) / marpl));  // pixels plus for one marker
-    let marmx = (Math.abs(( this.drb - this.zlvl ) / marmi));  // pixels minus for one marker
-    let marax = Math.max(marpx, marmx);                        // max pixels all for one marker
-    marpx = marax;
-    marmx = marax;
+    this.marpx = (Math.abs(( this.zlvl - this.drt ) / this.marpl));  // pixels plus for one marker
+    this.marmx = (Math.abs(( this.drb - this.zlvl ) / this.marmi));  // pixels minus for one marker
+    this.marax = Math.max(this.marpx, this.marmx);                   // max pixels all for one marker
+    this.marpx = this.marax;
+    this.marmx = this.marax;
 
     // get max value of markers weight
     if ( vmp > vmm ) vmm = vmp;
     if ( vmm > vmp ) vmp = vmm;
 
     // calculate new markers
-    marpl  = Math.floor(Math.abs( (this.zlvl - this.drt) / marax) );  // new markers plus max counter
-    marmi  = Math.floor(Math.abs( (this.drb - this.zlvl) / marax) );  // new markers minus max counter
-    marall = marpl + marmi;                                           // new all markers max counter
+    this.marpl  = Math.floor(Math.abs( (this.zlvl - this.drt) / this.marax) );  // new markers plus max counter
+    this.marmi  = Math.floor(Math.abs( (this.drb - this.zlvl) / this.marax) );  // new markers minus max counter
+    this.marall = this.marpl + this.marmi;                                           // new all markers max counter
 
     // level vertical shift (from description text width) only if no room for descrition
-    let wp = this.ctx.measureText( (maxv).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalY, maximumFractionDigits: this.decimalY}) ).width + this.descfpx;  // width max Y text plus
-    let wm = this.ctx.measureText( (minv).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalY, maximumFractionDigits: this.decimalY}) ).width + this.descfpx;  // width min Y text plus
+    let wp = this.ctx.measureText( (maxv).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.axisdecimalY, maximumFractionDigits: this.axisdecimalY}) ).width + this.descfpx;  // width max Y text plus
+    let wm = this.ctx.measureText( (minv).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.axisdecimalY, maximumFractionDigits: this.axisdecimalY}) ).width + this.descfpx;  // width min Y text plus
     //let lvlt =  this.lft + this.marsize / 2 + this.legleft + Math.max(wp, wm); // level vertical axis
-    let lvlt =  this.lft + this.marsize / 2 + Math.max(wp, wm); // level vertical axis
+
+    // if Y description is not needed then max width of desciption string will be zero
+    if (!this.drawYdesc) { wp = 0; wm = 0; }
+
+    let lvlt = this.lft + this.marsize * this.drawmark / 2 + Math.max(wp, wm); // level vertical axis
 
     if (lvlt > this.lvlv) {
       this.lvlv = lvlt;
@@ -2262,12 +2622,16 @@ class js_chart {
     }
     // if the number of markers minus == 0 then level X-axis must be calculated becouse the description
     // of this axis is below drawing area. we have to move the axis up by the height of the axis description
-    maxhm    = Math.round( Math.abs( (this.lvlv - this.drr) / this.descfpx ) ) + 1;  // max markers counter
-    marxdata = getXmarkersDiv(this.datalength - 0, maxhm);
-    maxhm    = marxdata.cnt;
-    this.xdiv     = marxdata.div;
+    if (this.rotdescX)
+      maxhm    = Math.round( Math.abs( (this.lvlv - this.drr) / this.descfpx ) ) + 1;  // max markers counter
+    else
+      maxhm    = Math.round( Math.abs( (this.lvlv - this.drr) / marwxdesc ) ) + 1;  // max markers counter
+
+    this.marxdata = getXmarkersDiv(this.datalength - 0, maxhm);
+    maxhm    = this.marxdata.cnt;
+    this.xdiv= this.marxdata.div;
     marh     = Math.min(this.datalength - 1, maxhm) + 1 * this.hmarshift; // +1 if shift
-    this.marhpx   = ( this.drr - this.lvlv ) / marh;  // pixels for one marker X
+    this.marhpx = ( this.drr - this.lvlv ) / marh;  // pixels for one marker X
 
     // let start draw ...
     // chart zone control (for test)
@@ -2300,24 +2664,24 @@ class js_chart {
       }
 
       let i = 0;
-      let lvl = (this.zlvl - i * marpx );
+      let lvl = (this.zlvl - i * this.marpx );
       while (lvl >= this.drt) {
         this.ctx.beginPath();
-        this.ctx.moveTo(this.lvlv, this.zlvl - i * marpx);
-        this.ctx.lineTo(this.drr , this.zlvl - i * marpx);
+        this.ctx.moveTo(this.lvlv, this.zlvl - i * this.marpx);
+        this.ctx.lineTo(this.drr , this.zlvl - i * this.marpx);
         this.ctx.stroke();
         i++;
-        lvl = (this.zlvl - i * marpx);
+        lvl = (this.zlvl - i * this.marpx);
       }
       // mesh Y-
       i = 1;
-      lvl = (this.zlvl + i * marmx);
+      lvl = (this.zlvl + i * this.marmx);
       while (lvl <= this.drb) {
         this.ctx.beginPath();
-        this.ctx.moveTo(this.lvlv, this.zlvl + i * marmx);
-        this.ctx.lineTo(this.drr , this.zlvl + i * marmx);
+        this.ctx.moveTo(this.lvlv, this.zlvl + i * this.marmx);
+        this.ctx.lineTo(this.drr , this.zlvl + i * this.marmx);
         i++;
-        lvl = (this.zlvl + i * marmx);
+        lvl = (this.zlvl + i * this.marmx);
         this.ctx.stroke();
       }
     }
@@ -2366,7 +2730,7 @@ class js_chart {
       c.closePath();
     }
     // draw markers and descriptions Y
-    if (this.drawmark) {
+    if (this.drawmark || this.drawYdesc) {
       this.ctx.lineWidth   = this.marw  ;
       this.ctx.strokeStyle = this.descol;
       this.ctx.fillStyle   = this.descol;
@@ -2379,47 +2743,49 @@ class js_chart {
       if (maxv>0) {
         i = 1 * !this.drw0y;
         zerodwd = true;
-        lvl = (this.zlvl - i * marpx );
-        while (lvl >= this.drt) {
+        lvl = (this.zlvl - i * this.marpx );
+        while (lvl >= this.drt ) {
           this.ctx.beginPath();
-          this.ctx.moveTo(this.lvlv - this.marsize / 2, lvl);
-          this.ctx.lineTo(this.lvlv + this.marsize / 2, lvl);
-          if (this.drawdesc) {
+          if (this.drawmark) {
+            this.ctx.moveTo(this.lvlv - this.marsize / 2, lvl);
+            this.ctx.lineTo(this.lvlv + this.marsize / 2, lvl);
+          }
+          if (this.drawYdesc) {
             //if (i == 0)
             //  this.ctx.fillText( "0" , this.lvlv - this.marsize, lvl);
             //else
               let ofs = ( ((minv > 0) && this.Yzoom) ? minv : 0);
-              this.ctx.fillText( (ofs +  i * vmp ).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalY, maximumFractionDigits: this.decimalY}) , this.lvlv - this.marsize, lvl );
+              this.ctx.fillText( (ofs +  i * vmp ).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.axisdecimalY, maximumFractionDigits: this.axisdecimalY}) , this.lvlv - this.marsize, lvl );
           }
           i++;
-          lvl = (this.zlvl - i * marpx);
+          lvl = (this.zlvl - i * this.marpx);
           this.ctx.stroke();
         }
       }
-      // markers plus & axis Y- description
+      // markers minus & axis Y- description
       if (minv<0) {
         if (!zerodwd)	i = 1 * !this.drw0y;
         else          i = 1;
-        lvl = (this.zlvl + i * marmx);
+        lvl = (this.zlvl + i * this.marmx);
         while (lvl <= this.drb) {
           this.ctx.beginPath();
           this.ctx.moveTo(this.lvlv - this.marsize / 2, lvl);
           this.ctx.lineTo(this.lvlv + this.marsize / 2, lvl);
-          if (this.drawdesc) {
+          if (this.drawYdesc) {
             //if (i == 0)
             //  this.ctx.fillText( "0" , this.lvlv - this.marsize, lvl);
             //else
               let ofs = ( ((maxv < 0) && this.Yzoom) ? maxv : 0);
-              this.ctx.fillText( (ofs -i * vmm ).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalY, maximumFractionDigits: this.decimalY}) , this.lvlv - this.marsize, lvl );
+              this.ctx.fillText( (ofs -i * vmm ).toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.axisdecimalY, maximumFractionDigits: this.axisdecimalY}) , this.lvlv - this.marsize, lvl );
           }
           i++;
-          lvl = (this.zlvl + i * marmx);
+          lvl = (this.zlvl + i * this.marmx);
           this.ctx.stroke();
         }
       }
     }
     // draw markers and descriptions X
-    if (this.drawmark) {
+    if (this.drawmark || this.drawXdesc) {
       this.ctx.lineWidth   = this.marw  ;
       this.ctx.strokeStyle = this.descol;
       this.ctx.fillStyle   = this.descol;
@@ -2433,9 +2799,11 @@ class js_chart {
         while (hor <= this.drr) {
           if (i > marh) break;
           this.ctx.beginPath();
-          this.ctx.moveTo(hor, this.zlvl - this.marsize / 2);
-          this.ctx.lineTo(hor, this.zlvl + this.marsize / 2);
-          if (this.drawdesc) {
+          if (this.drawmark) {
+            this.ctx.moveTo(hor, this.zlvl - this.marsize / 2);
+            this.ctx.lineTo(hor, this.zlvl + this.marsize / 2);
+          }
+          if (this.drawXdesc) {
             if (!this.rotdescX) {
               if (typeof this.desc[i * this.xdiv ] != "undefined")
                 this.ctx.fillText( this.desc[i * this.xdiv + this.from * this.zoom], hor - ( (i == 0) * this.descfpx / 2), this.zlvl + this.marsize );
@@ -2448,7 +2816,7 @@ class js_chart {
               this.ctx.rotate( -0.5 * Math.PI );
               let rhor = (i * this.marhpx) + this.hmarshift * (this.marhpx / 2);
               if (typeof this.desc[i * this.xdiv + this.from * this.zoom] != "undefined")
-                this.ctx.fillText( this.desc[i * this.xdiv + this.from * this.zoom].toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.decimalX, maximumFractionDigits: this.decimalX}), this.drb - this.zlvl - this.marsize, rhor + this.descfpx / 2 * (i == 0) * !this.hmarshift);
+                this.ctx.fillText( this.desc[i * this.xdiv + this.from * this.zoom].toLocaleString(undefined, {useGrouping: this.dgroup, minimumFractionDigits: this.axisdecimalX, maximumFractionDigits: this.axisdecimalX}), this.drb - this.zlvl - this.marsize, rhor + this.descfpx / 2 * (i == 0) * !this.hmarshift);
               this.ctx.restore();
             }
           }
@@ -2493,7 +2861,7 @@ class js_chart {
         this.ctx.fill();
       }
       this.ctx.beginPath();
-      if (this.axisdesc) {
+      if (this.axisXdesc) {
         // text X
         this.ctx.fillStyle = this.axdesccol;
         let txw = this.ctx.measureText(self.axisXtxt).width;
@@ -2513,6 +2881,8 @@ class js_chart {
           this.ctx.textBaseline = "top";
           this.ctx.fillText(self.axisXtxt, this.drr + this.descfpx / 2, this.zlvl + this.descfpx / 2);
         }
+      }
+      if (this.axisYdesc) {
         // text Y
         this.ctx.textAlign = "start";
         this.ctx.textBaseline  = "middle";
@@ -2524,7 +2894,7 @@ class js_chart {
 
     // do draw lines, areas, bars as defined ...
     do_graph();
-
+    on_mouseMove(null);
   }
 
 }
